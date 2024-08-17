@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      
+      apiBase: "https://api-rtve2030.rtve.es", // overwritten by NUXT_PUBLIC_API_BASE if LOADED FROM .env
     },
   },
   vite: {
