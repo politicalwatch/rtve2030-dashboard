@@ -1,20 +1,23 @@
 <template>
-  <div>
+  <div class="container">
     Hello
     {{ data }}
   </div>
 </template>
 
 <script lang="ts" setup>
-const { $api } = useNuxtApp()
-const userRepo = dashboardApiRepo($api)
-const { data } = await useAsyncData(() => userRepo.getStat(),{
-  server:false
-})
+const { $api } = useNuxtApp();
+// const { data } = await useAsyncData(() => userRepo.getStats(), {
+//   server: false,
+// });
+const data = ref<Stat[] | null>(null);
 
-console.log(data)
+onMounted(async () => {
+  const userRepo = dashboardApiRepo($api);
+  console.log($api)
+  data.value = await  userRepo.getStats()
+  console.log(data.value)
+})
 </script>
 
-<style>
-
-</style>
+<style></style>
