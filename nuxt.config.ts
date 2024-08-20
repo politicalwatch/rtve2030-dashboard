@@ -4,9 +4,22 @@ import dsv from "@rollup/plugin-dsv";
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "@vueuse/nuxt", "@nuxt/icon"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@vueuse/nuxt",
+    "@nuxt/icon",
+    "@nuxtjs/google-fonts"
+  ],
+  css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
+  
+  ssr: false,
   imports: {
     dirs: ["types/*.ts"],
+  },
+  googleFonts: {
+    families: {
+      "Roboto+Slab": [400, 600],
+    }
   },
 
   tailwindcss: {

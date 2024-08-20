@@ -6,7 +6,7 @@ import {  formatLocale } from "d3";
    grouping: [3],
    currency: ["", "\u202F M€"],
    minus: "\u2212",
-   percent: "\u202F%",
+   percent: "%",
  });
 // https://stackoverflow.com/questions/38466245/d3-formatted-numbers-not-displaying-thousands-separator
 function localES_money(num) {
@@ -29,11 +29,16 @@ function N(num) {
   return locale.format(",.0f")(num);
 }
 
+function PCT(num){
+  return locale.format(",.2%")(num);
+}
+
 const format = {
   localES_money,
   localES,
   locale,
   F,
   N,
+  PCT
 };
 export default format;
