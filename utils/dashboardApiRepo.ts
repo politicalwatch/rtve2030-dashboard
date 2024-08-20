@@ -10,7 +10,37 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   },
   async getGlobalStats(): Promise<any[]> {
     return fetch<any[]>("/stats/global");
-  }
+  },
+
+  async getStatsCounter(
+    startDate?: RawDateString,
+    endDate?: RawDateString
+  ): Promise<StatsCounter> {
+    if (!startDate || !endDate) {
+      return fetch<StatsCounter>("/stats/counters");
+    }
+    return fetch<StatsCounter>("/stats/counters", {
+      query: {
+        start_date: startDate,
+        end_date: endDate,
+      },
+    });
+  },
+
+  async getEvolution(
+    startDate?: RawDateString,
+    endDate?: RawDateString
+  ): Promise<statsEvolution> {
+    if (!startDate || !endDate) {
+      return fetch<statsEvolution>("/stats/evolution");
+    }
+    return fetch<statsEvolution>("/stats/evolution", {
+      query: {
+        start_date: startDate,
+        end_date: endDate,
+      },
+    });
+  },
 });
 
 

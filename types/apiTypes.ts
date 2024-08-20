@@ -61,7 +61,7 @@ export interface SdgByChannel {
   ocurrences: number;
 }
 
-export interface globalStats {
+export interface GlobalStats {
   global: {
     total_duration: number;
     tagged_duration: number;
@@ -70,8 +70,53 @@ export interface globalStats {
     by_channel: ByChannel[],
     by_sdg: SdgByChannel[]
 }
-export interface globalStatsResponse {
+export interface GlobalStatsResponse {
      date: string;
     id: number;
-    stats: globalStats
+    stats: GlobalStats
 }
+
+/*
+* return data form /stats/counter. Mainly used for global counters
+* @remark all durations in miliseconds   
+*/ 
+export interface StatsCounter {
+  total_duration: number;
+  tagged_duration: number;
+  programs_count: number;
+  episodes_count: number;
+}
+
+export interface dateDuration {
+    date: RawDateString,
+    total_duration: number
+}
+
+export interface statsEvolution {
+    init: RawDateString,
+    end: RawDateString,
+    hoursPeriod: dateDuration[]
+}
+
+
+/** dates 
+ * Reference: https://blog.logrocket.com/handling-date-strings-typescript/
+*/
+type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+type zeroToNine = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+/**
+ * Years
+ */
+type YYYY = `19${zeroToNine}${zeroToNine}` | `20${zeroToNine}${zeroToNine}`;
+/**
+ * Months
+ */
+type MM = `0${oneToNine}` | `1${0 | 1 | 2}`;
+/**
+ * Days
+ */
+type DD = `${0}${oneToNine}` | `${1 | 2}${zeroToNine}` | `3${0 | 1}`;
+/**
+ * YYYYMMDD
+ */
+export type RawDateString = `${YYYY}-${MM}-${DD}`;
