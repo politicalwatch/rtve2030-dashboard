@@ -30,11 +30,11 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   async getEvolution(
     startDate?: RawDateString,
     endDate?: RawDateString
-  ): Promise<statsEvolution> {
+  ): Promise<StatsEvolution> {
     if (!startDate || !endDate) {
-      return fetch<statsEvolution>("/stats/evolution");
+      return fetch<StatsEvolution>("/stats/evolution");
     }
-    return fetch<statsEvolution>("/stats/evolution", {
+    return fetch<StatsEvolution>("/stats/evolution", {
       query: {
         start_date: startDate,
         end_date: endDate,

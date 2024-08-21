@@ -87,15 +87,15 @@ export interface StatsCounter {
   episodes_count: number;
 }
 
-export interface dateDuration {
+export interface DateDuration {
     date: RawDateString,
     total_duration: number
 }
 
-export interface statsEvolution {
+export interface StatsEvolution {
     init: RawDateString,
     end: RawDateString,
-    hoursPeriod: dateDuration[]
+    hoursPeriod: DateDuration[]
 }
 
 

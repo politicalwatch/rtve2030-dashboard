@@ -1,5 +1,20 @@
 <template>
   <div class="container">
+    <section class="grid grid-cols-5 gap-8 items-center my-4">
+      <DateSelector />
+      <div>
+        <select>
+          <option>choose date</option>
+        </select>
+      </div>
+      <div class="col-span-3">
+        <chartsSimpleAreaChart
+          v-if="evolutionData != null"
+          :statsData="evolutionData"
+        ></chartsSimpleAreaChart>
+
+      </div>
+    </section>
     <div class="grid grid-cols-5 gap-8">
       <div>
         <chartsNumberCounter

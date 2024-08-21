@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@vueuse/nuxt",
     "@nuxt/icon",
-    "@nuxtjs/google-fonts"
+    "@nuxtjs/google-fonts",
+    "shadcn-nuxt"
   ],
   css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
   
