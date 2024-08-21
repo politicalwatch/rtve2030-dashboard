@@ -17,6 +17,7 @@ import { useElementSize } from "@vueuse/core";
 interface Props {
   statsData: StatsEvolution;
   formatter?: Function;
+  timeSpan?: [Date, Date];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -111,6 +112,16 @@ const averagedData = computed(() => {
     .map((d, i) => ({ date: globalData.value[i].date, total_duration: d }));
 });
 
+const averagedFilteredData = computed(() => {
+  if (props.timeSpan !== undefined) {
+    return averagedData.value.filter(
+      (d) =>
+        new Date(d.date) >= props.timeSpan[0] &&
+        new Date(d.date) <= props.timeSpan[1]
+    );
+  } else return [];
+});
+
 // generators
 const areaGenerator = computed(() => {
   return area()
@@ -119,6 +130,20 @@ const areaGenerator = computed(() => {
     .y1((d) => heightScale.value(d.total_duration));
 });
 
+// selected period  ---------------
+const selectedPeriodRect = computed(() => {
+  // let's fill with white the non selected region
+  if (props.timeSpan === undefined) return undefined;
+  const y1 = availableHeighForBars.value;
+  const x0 = timeScale.value(props.timeSpan[0]);
+  const x1 = timeScale.value(props.timeSpan[1]);
+  return {
+    x0,
+    width: x1 - x0,
+    y0: 0,
+    height: y1 - 0,
+  };
+});
 /** intraction */
 
 const mouseXPosition = ref(0);
@@ -153,9 +178,14 @@ const onMouseExitCanvas = () => {
           <g class="area-canvas" :transform="`translate(0,0)`">
             <!--- area C -->
             <path
-              fill="#333"
+              fill="#eee"
               stroke="none"
               :d="areaGenerator(averagedData)"
+            ></path>
+            <path
+              fill="#333"
+              stroke="none"
+              :d="areaGenerator(averagedFilteredData)"
             ></path>
 
             <!-- <path
@@ -164,6 +194,7 @@ const onMouseExitCanvas = () => {
               fill="none"
               :d="lineGenerator(averagedData)"
             ></path> -->
+           
           </g>
           <!-- x axis -->
           <g id="axis" :transform="`translate(0,${availableHeighForBars})`">
@@ -172,22 +203,22 @@ const onMouseExitCanvas = () => {
               :key="i"
               :transform="`translate( ${timeScale(d)},0)`"
             >
-             <line
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="4"
-              stroke="#000"
-              stroke-width="1"              
-            />
-            <text
-              x="0"
-              :y="xAxisHeight*0.66"              
-              text-anchor="middle"
-              class="text-2xs font-thin fill-neutral-500"
-            >
-          {{ d.getFullYear()}}
-            </text>
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="4"
+                stroke="#000"
+                stroke-width="1"
+              />
+              <text
+                x="0"
+                :y="xAxisHeight * 0.66"
+                text-anchor="middle"
+                class="text-2xs font-thin fill-neutral-500"
+              >
+                {{ d.getFullYear() }}
+              </text>
             </g>
           </g>
         </g>

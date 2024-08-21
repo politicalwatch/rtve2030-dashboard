@@ -11,6 +11,7 @@
         <chartsSimpleAreaChart
           v-if="evolutionData != null"
           :statsData="evolutionData"
+          :time-span="filters.timespan"
         ></chartsSimpleAreaChart>
 
       </div>
@@ -72,6 +73,7 @@
 
 <script lang="ts" setup>
 const { $api } = useNuxtApp();
+const filters = useFiltersStore()
 const userRepo = dashboardApiRepo($api);
 
 const { data: counterData } = await useAsyncData(() =>

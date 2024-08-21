@@ -12,7 +12,8 @@
           initial-focus
           :min-value="new CalendarDate(1900, 1, 1)"
           :max-value="today(getLocalTimeZone())"
-          :preventDeselect="true"          
+          :preventDeselect="true"
+          @update:model-value="updateModelValue"          
         />
       </PopoverContent>
     </Popover>
@@ -29,7 +30,8 @@
           initial-focus
           :min-value="initDate"
           :max-value="today(getLocalTimeZone())"
-          :preventDeselect="true"          
+          :preventDeselect="true"  
+          @update:model-value="updateModelValue"           
         />
       </PopoverContent>
     </Popover>
@@ -43,7 +45,19 @@ import { Calendar } from "@/components/ui/calendar";
 const placeholder = ref('')
 const initDate = ref(parseDate('2022-01-01'))
 const endDate = ref(today(getLocalTimeZone()))
+const filters = useFiltersStore()
 
+function updateModelValue(){
+  console.log('updateModelValue')
+  filters.timespan=[initDate.value.toDate(getLocalTimeZone()), endDate.value.toDate(getLocalTimeZone())]
+}
+
+// watch(() => filters.timespan, (value) => {
+//   if (value) {
+//     initDate.value = parseDate(value[0])
+//     endDate.value = parseDate(value[1])
+//   }
+// })
 </script>
 
 <style scoped></style>

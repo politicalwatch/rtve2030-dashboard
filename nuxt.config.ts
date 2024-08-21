@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@nuxt/icon",
     "@nuxtjs/google-fonts",
-    "shadcn-nuxt"
+    "shadcn-nuxt",
+    "@pinia/nuxt"
   ],
   css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
   
