@@ -1,5 +1,9 @@
 export const useFiltersStore = defineStore("filters", () => {
-  const timespan = ref<[Date,Date]>([new Date(initDate), new Date()]);
+  const timespan = ref<[Date,Date]>([new Date(initDateString), new Date()]);
 
-  return { timespan };
+   function updateTimespan(newTimespan: [Date, Date]) {
+     timespan.value = newTimespan;
+   }
+
+  return { timespan: readonly(timespan), updateTimespan };
 });

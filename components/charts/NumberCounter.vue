@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
       class=" border-l border-r border-black/30 w-full"
     >
       <div
-        class="h-1 bg-slate-600"
+        class="h-1 bg-slate-600 transition-all duration-1000"
         :style="{ width: (varValue / maxValue) * 100 + '%' }"
       ></div>
       <div class="w-full flex justify-between text-2xs px-1">

@@ -3,9 +3,7 @@
     <section class="grid grid-cols-5 gap-8 items-center my-4">
       <DateSelector />
       <div>
-        <select>
-          <option>choose date</option>
-        </select>
+        <PeriodSelector></PeriodSelector>
       </div>
       <div class="col-span-3">
         <chartsSimpleAreaChart
@@ -13,15 +11,14 @@
           :statsData="evolutionData"
           :time-span="filters.timespan"
         ></chartsSimpleAreaChart>
-
       </div>
     </section>
     <div class="grid grid-cols-5 gap-8">
       <div>
         <chartsNumberCounter
-          v-if="counterData != null"
-          :varValue="msToHours(counterData.total_duration)"
-          :maxValue="msToHours(counterData.total_duration)"
+          v-if="globalCounterData != null || timeSpanCounterData != null"
+          :varValue="msToHours(timeSpanCounterData.total_duration)"
+          :maxValue="msToHours(globalCounterData.total_duration)"
         >
           horas analizadas
         </chartsNumberCounter>
@@ -29,9 +26,9 @@
 
       <div>
         <chartsNumberCounter
-          v-if="counterData != null"
-          :varValue="msToHours(counterData.tagged_duration)"
-          :maxValue="msToHours(counterData.tagged_duration)"
+          v-if="globalCounterData != null || timeSpanCounterData != null"
+          :varValue="msToHours(timeSpanCounterData.tagged_duration)"
+          :maxValue="msToHours(globalCounterData.tagged_duration)"
         >
           horas Agenda 2030
         </chartsNumberCounter>
@@ -39,8 +36,10 @@
 
       <div>
         <chartsNumberCounter
-          v-if="counterData != null"
-          :varValue="counterData.tagged_duration / counterData.total_duration"
+          v-if="globalCounterData != null || timeSpanCounterData != null"
+          :varValue="
+            timeSpanCounterData.tagged_duration / timeSpanCounterData.total_duration
+          "
           :maxValue="1"
           :formatter="format.PCT"
         >
@@ -50,9 +49,9 @@
 
       <div>
         <chartsNumberCounter
-          v-if="counterData != null"
-          :varValue="counterData.programs_count"
-          :maxValue="counterData.programs_count"
+          v-if="globalCounterData != null || timeSpanCounterData != null"
+          :varValue="timeSpanCounterData.programs_count"
+          :maxValue="globalCounterData.programs_count"
         >
           programas
         </chartsNumberCounter>
@@ -60,9 +59,9 @@
 
       <div>
         <chartsNumberCounter
-          v-if="counterData != null"
-          :varValue="counterData.episodes_count"
-          :maxValue="counterData.episodes_count"
+          v-if="globalCounterData != null || timeSpanCounterData != null"
+          :varValue="timeSpanCounterData.episodes_count"
+          :maxValue="globalCounterData.episodes_count"
         >
           episodios
         </chartsNumberCounter>
@@ -73,24 +72,44 @@
 
 <script lang="ts" setup>
 const { $api } = useNuxtApp();
-const filters = useFiltersStore()
+const filters = useFiltersStore();
 const userRepo = dashboardApiRepo($api);
 
-const { data: counterData } = await useAsyncData(() =>
+const { timespan } = storeToRefs(filters);
+
+const { data: globalCounterData } = await useAsyncData(() =>
   userRepo.getStatsCounter()
 );
 const { data: evolutionData } = await useAsyncData(() =>
   userRepo.getEvolution()
 );
 
+const { data: timeSpanCounterData } = await useAsyncData(
+  `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+    timespan.value[0]
+  )}`,
+  () =>
+    userRepo.getStatsCounter(
+      jsDatetoApiString(timespan.value[0]),
+      jsDatetoApiString(timespan.value[1])
+    ),
+  {
+    immediate: true,
+    watch: [timespan],
+  }
+);
+
 const data = ref<Stat[] | null>(null);
-// const counterData = ref<StatsCounter|null> (null)
+// const globalCounterData = ref<StatsCounter|null> (null)
 
 onMounted(async () => {
   console.log($api);
   data.value = await userRepo.getStats();
   console.log(data.value);
 });
+
+const isDataReady=computed(()=>globalCounterData!=null && evolutionData!=null && timeSpanCounterData!=null)
+
 </script>
 
 <style></style>

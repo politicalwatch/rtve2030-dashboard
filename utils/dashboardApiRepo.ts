@@ -13,8 +13,8 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   },
 
   async getStatsCounter(
-    startDate?: RawDateString,
-    endDate?: RawDateString
+    startDate?: string,
+    endDate?: string
   ): Promise<StatsCounter> {
     if (!startDate || !endDate) {
       return fetch<StatsCounter>("/stats/counters");
@@ -28,8 +28,8 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   },
 
   async getEvolution(
-    startDate?: RawDateString,
-    endDate?: RawDateString
+    startDate?: string,
+    endDate?: string
   ): Promise<StatsEvolution> {
     if (!startDate || !endDate) {
       return fetch<StatsEvolution>("/stats/evolution");

@@ -88,13 +88,13 @@ export interface StatsCounter {
 }
 
 export interface DateDuration {
-    date: RawDateString,
+    date: string,
     total_duration: number
 }
 
 export interface StatsEvolution {
-    init: RawDateString,
-    end: RawDateString,
+    init: string,
+    end: string,
     hoursPeriod: DateDuration[]
 }
 

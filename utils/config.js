@@ -3,4 +3,4 @@ export const testGlobal = {
   
 };
 
-export const initDate=  "2015-01-01"
+export const initDateString=  "2015-01-01"
