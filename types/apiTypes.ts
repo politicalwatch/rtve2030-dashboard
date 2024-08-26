@@ -98,6 +98,18 @@ export interface StatsEvolution {
     hoursPeriod: DateDuration[]
 }
 
+/** stats/sdg */
+export interface StatsGoal {
+  goal: string;
+  duration: number;
+  occurrences: number;
+}
+export interface StatsSdg {
+  sdg: string;
+  duration: number;
+  occurrences: number;
+  goals: StatsGoal[];
+}
 
 /** dates 
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/

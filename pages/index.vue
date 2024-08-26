@@ -67,6 +67,27 @@
         </chartsNumberCounter>
       </div>
     </div>
+
+    <div class="mt-8">
+      <WrappersSdg
+        v-if="sdgData != null" 
+        :sdgData="sdgData">
+      </WrappersSdg>
+    </div>
+
+
+    <!-- frequency chart
+     <FrequencyChart
+          :topicsStyles="STYLES"
+          :topic="topic"
+          :dataset="topicsByWeek"
+          :aggreagatedDataset="allTopicsByWeek"
+          :loadingDynamicData="loadingDynamicData"
+          @update:showComparativeMode="getAllTopicsByWeek()"
+          v-if="topicsByWeek != null"
+        />
+
+        -->
   </div>
 </template>
 
@@ -80,9 +101,15 @@ const { timespan } = storeToRefs(filters);
 const { data: globalCounterData } = await useAsyncData(() =>
   userRepo.getStatsCounter()
 );
+
 const { data: evolutionData } = await useAsyncData(() =>
   userRepo.getEvolution()
 );
+
+const { data: sdgData } = await useAsyncData(() =>
+  userRepo.getOdsAndGoals()
+);
+
 
 const { data: timeSpanCounterData } = await useAsyncData(
   `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(

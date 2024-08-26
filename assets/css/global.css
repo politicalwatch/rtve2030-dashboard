@@ -1,0 +1,3 @@
+.chart-titles{
+    @apply font-heads font-semibold text-xs mb-2
+}

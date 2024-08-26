@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <div>
     <div>
-      <h2 class="title font-heads font-semibold text-xs mb-2">
+      <h2 class="chart-titles">
         <slot></slot>
       </h2>
       <div class="number-counter border-l border-r border-black/30 text-right px-1">
