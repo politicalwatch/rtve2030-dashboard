@@ -56,6 +56,41 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       },
     });
   },
+
+  async getPrograms(
+    startDate?: string,
+    endDate?: string,
+    channel?: Channels[],
+    topic?: SdgTopic[]
+  ): Promise<StatsSdg[]> {
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(channel && { channel }),
+      ...(topic && { topic }),
+    };
+    console.log(query);
+    return fetch<StatsSdg[]>("/stats/programs", {
+      query,
+    });
+  },
+
+  async getChannels(
+    startDate?: string,
+    endDate?: string,
+    topic?: SdgTopic[]
+  ): Promise<StatsSdg[]> {
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(topic && { topic }),
+    };
+    console.log(query);
+    return fetch<StatsSdg[]>("/stats/channels", {
+      query,
+    });
+  },
+
 });
 
 

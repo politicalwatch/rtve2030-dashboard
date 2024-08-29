@@ -25,10 +25,10 @@ export enum Channels{
     LA1 = "La 1",
     LA2 = "La 2",
     CLAN = "Clan TVE",
-    C24H = "Canal 24H",
-    TDP = "Teledeporte",
+    C24H = "Canal 24H",    
     PLAYZ = "PLAYZ"
 }
+// TDP = "Teledeporte",
 
 // response from api /stats
 export interface Stat {

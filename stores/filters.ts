@@ -6,6 +6,7 @@ export const useFiltersStore = defineStore("filters", () => {
    }
 
    const sdgActive= ref < SdgTopic []>([]);
+   const channels= ref < Channels []>([]);
 
-  return { timespan: readonly(timespan), updateTimespan, sdgActive };
+  return { timespan: readonly(timespan), updateTimespan, sdgActive, channels };
 });
