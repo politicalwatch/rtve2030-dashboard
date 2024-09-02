@@ -16,7 +16,7 @@
     <div class="grid grid-cols-5 gap-8">
       <div>
         <chartsNumberCounter
-          v-if="globalCounterData != null || timeSpanCounterData != null"
+          v-if="globalCounterData != null && timeSpanCounterData != null"
           :varValue="msToHours(timeSpanCounterData.total_duration)"
           :maxValue="msToHours(globalCounterData.total_duration)"
         >
@@ -26,7 +26,7 @@
 
       <div>
         <chartsNumberCounter
-          v-if="globalCounterData != null || timeSpanCounterData != null"
+          v-if="globalCounterData != null && timeSpanCounterData != null"
           :varValue="msToHours(timeSpanCounterData.tagged_duration)"
           :maxValue="msToHours(globalCounterData.tagged_duration)"
         >
@@ -36,7 +36,7 @@
 
       <div>
         <chartsNumberCounter
-          v-if="globalCounterData != null || timeSpanCounterData != null"
+          v-if="globalCounterData != null && timeSpanCounterData != null"
           :varValue="
             timeSpanCounterData.tagged_duration /
             timeSpanCounterData.total_duration
@@ -50,7 +50,7 @@
 
       <div>
         <chartsNumberCounter
-          v-if="globalCounterData != null || timeSpanCounterData != null"
+          v-if="globalCounterData != null && timeSpanCounterData != null"
           :varValue="timeSpanCounterData.programs_count"
           :maxValue="globalCounterData.programs_count"
         >
@@ -60,7 +60,7 @@
 
       <div>
         <chartsNumberCounter
-          v-if="globalCounterData != null || timeSpanCounterData != null"
+          v-if="globalCounterData != null && timeSpanCounterData != null"
           :varValue="timeSpanCounterData.episodes_count"
           :maxValue="globalCounterData.episodes_count"
         >
@@ -73,10 +73,22 @@
       <WrappersSdg v-if="sdgData != null" :sdgData="sdgData"> </WrappersSdg>
     </div>
 
-    <div class="mt-8">
-      <WrappersChannels v-if="Channels != null" :channelData="channelsData"> </WrappersChannels>
+    <div class="mt-8 grid grid-cols-5">
+      <div class="col-span-2">
+        <WrappersChannels
+          v-if="channelsData != null"
+          :channelsData="channelsData"
+        >
+        </WrappersChannels>
+      </div>
+      <div class="col-span-3">
+        <WrappersProgramsWr
+          v-if="programsData != null"
+          :programsData="programsData"
+        >
+        </WrappersProgramsWr>
+      </div>
     </div>
-
 
     <!-- frequency chart
      <FrequencyChart
@@ -99,7 +111,7 @@ const filters = useFiltersStore();
 const userRepo = dashboardApiRepo($api);
 
 /** following data depends only on timespan***/
-const { timespan, channels,sdgActive } = storeToRefs(filters);
+const { timespan, channels, sdgActive } = storeToRefs(filters);
 const { data: globalCounterData } = await useAsyncData(() =>
   userRepo.getStatsCounter()
 );
@@ -128,41 +140,39 @@ const { data: timeSpanCounterData } = await useAsyncData(
 const { data: sdgData } = await useAsyncData(() => userRepo.getOdsAndGoals());
 
 const { data: programsData } = await useAsyncData(
-`stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+  `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
     timespan.value[0]
   )}-programs${channels.value.join("-")}
   -sdg${sdgActive.value.join("-")}`,
   () =>
-  userRepo.getPrograms(
-    jsDatetoApiString(timespan.value[0]),
-    jsDatetoApiString(timespan.value[1]),
-    channels.value,
-    sdgActive.value 
-  ),
-  {
-    immediate: true,
-    watch: [timespan, channels, sdgActive ],
-  }
-);
-
-const { data: channelsData } = await useAsyncData(
-`stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
-    timespan.value[0]
-  )}
-  -sdg${filters.sdgActive.join("-")}`,
-  () =>
-  userRepo.getChannels(
-    jsDatetoApiString(timespan.value[0]),
-    jsDatetoApiString(timespan.value[1]),
-    sdgActive.value
-  ),
+    userRepo.getPrograms(
+      jsDatetoApiString(timespan.value[0]),
+      jsDatetoApiString(timespan.value[1]),
+      channels.value,
+      sdgActive.value
+    ),
   {
     immediate: true,
     watch: [timespan, channels, sdgActive],
   }
 );
 
-
+const { data: channelsData } = await useAsyncData(
+  `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+    timespan.value[0]
+  )}
+  -sdg${filters.sdgActive.join("-")}`,
+  () =>
+    userRepo.getChannels(
+      jsDatetoApiString(timespan.value[0]),
+      jsDatetoApiString(timespan.value[1]),
+      sdgActive.value
+    ),
+  {
+    immediate: true,
+    watch: [timespan, channels, sdgActive],
+  }
+);
 
 const data = ref<Stat[] | null>(null);
 // const globalCounterData = ref<StatsCounter|null> (null)

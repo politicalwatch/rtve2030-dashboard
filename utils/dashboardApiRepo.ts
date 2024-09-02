@@ -62,15 +62,14 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     endDate?: string,
     channel?: Channels[],
     topic?: SdgTopic[]
-  ): Promise<StatsSdg[]> {
+  ): Promise<StatsPrograms[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(channel && { channel }),
       ...(topic && { topic }),
     };
-    console.log(query);
-    return fetch<StatsSdg[]>("/stats/programs", {
+    return fetch<StatsPrograms[]>("/stats/programs", {
       query,
     });
   },
@@ -79,14 +78,13 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     startDate?: string,
     endDate?: string,
     topic?: SdgTopic[]
-  ): Promise<StatsSdg[]> {
+  ): Promise<StatsChannel[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(topic && { topic }),
     };
-    console.log(query);
-    return fetch<StatsSdg[]>("/stats/channels", {
+    return fetch<StatsChannel[]>("/stats/channels", {
       query,
     });
   },

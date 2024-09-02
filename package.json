@@ -14,6 +14,7 @@
     "@nuxt/icon": "^1.4.5",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.5.3",
+    "@tanstack/vue-table": "^8.20.5",
     "@vueuse/core": "^11.0.1",
     "@vueuse/nuxt": "^10.11.1",
     "class-variance-authority": "^0.7.0",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@rollup/plugin-dsv": "^3.0.4",
+    "@types/d3": "^7.4.3",
     "typescript": "^5.5.4",
     "vue-tsc": "^1"
   }

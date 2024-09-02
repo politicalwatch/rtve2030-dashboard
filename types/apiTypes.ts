@@ -104,12 +104,32 @@ export interface StatsGoal {
   duration: number;
   occurrences: number;
 }
+
 export interface StatsSdg {
-  sdg: string;
+  sdg: SdgTopic;
   duration: number;
   occurrences: number;
   goals: StatsGoal[];
 }
+
+// stats/channel
+export interface TopicsDuration {
+  topic: SdgTopic;
+  duration: number;
+  ocurrences: number;
+}
+
+export interface StatsChannel {
+  name: Channels;
+  total_duration: number;
+  tagged_duration: number;
+  episode_count?: number;
+  program_count?: number;
+  topics: TopicsDuration[];
+}
+
+// stats/programs
+export interface StatsPrograms extends StatsChannel {}
 
 /** dates 
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/
