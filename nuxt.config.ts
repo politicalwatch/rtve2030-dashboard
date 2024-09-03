@@ -20,6 +20,7 @@ export default defineNuxtConfig({
   css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
   alias: {
     "@types": resolve(projDir, "types"),
+    pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
   },
   ssr: false,
   imports: {
