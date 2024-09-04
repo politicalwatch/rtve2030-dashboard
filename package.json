@@ -35,5 +35,8 @@
     "@types/d3": "^7.4.3",
     "typescript": "^5.5.4",
     "vue-tsc": "^1"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }
