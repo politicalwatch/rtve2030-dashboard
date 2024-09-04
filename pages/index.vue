@@ -236,21 +236,21 @@ watch(programsData, () => {
     baseDataStore.programsData = cloneDeep(programsData.value);
     mustLoadBase.value.programsData = false;
   }
-}, { deep: true });
+}, { deep: true, immediate:true });
 
 watch(channelsData, () => {
   if (mustLoadBase.value.channelsData) {
     baseDataStore.channelsData = cloneDeep(channelsData.value);
     mustLoadBase.value.channelsData = false;
   }
-}, { deep: true });
+}, { deep: true, immediate:true });
 
 watch(sdgData, () => {
   if (mustLoadBase.value.sdgData) {
     baseDataStore.sdgData = cloneDeep(sdgData.value);
     mustLoadBase.value.sdgData = false;
   }
-}, { deep: true });
+}, { deep: true, immediate:true });
 
 /* loading  */
 const loading = ref(false);
