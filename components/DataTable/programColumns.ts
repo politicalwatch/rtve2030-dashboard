@@ -1,6 +1,6 @@
 import { h } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
-import miniBarChart from "./miniBarChart.vue";
+import miniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
@@ -38,7 +38,7 @@ export const columns: ColumnDef<TableChannels>[] = [
       return h(
         "button",
         {
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),          
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
         ["Analizadas ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
