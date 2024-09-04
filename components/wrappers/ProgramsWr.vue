@@ -20,10 +20,12 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+const maxTotalDuration = computed(() => {
+  return Math.max(...props.programsData.map((prg) => prg.total_duration));
+});
 
 const dataForTable = computed(() => {
   return props.programsData.map((chan) => {
-    // lets sum all the durations of the topics in chan.topics grouped by chan.topics.topic
     
     const aggrData= rollups(chan.topics, (v) => sum(v, (d) => d.duration), (d) => d.topic)
     // get top 5 topics
@@ -33,7 +35,8 @@ const dataForTable = computed(() => {
       total_duration: chan.total_duration,
       tagged_duration: chan.tagged_duration,
       episode_count: chan.episode_count,
-      sdgs: topTopics.map((topic) => topic[0] as SdgTopic)
+      sdgs: topTopics.map((topic) => topic[0] as SdgTopic),
+      maxTotalDuration: maxTotalDuration.value,
     };
   });
 

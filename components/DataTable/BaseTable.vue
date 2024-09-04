@@ -17,7 +17,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import type { ColumnDef, SortingState } from "@tanstack/vue-table";
+import type {
+  ColumnDef,
+  SortingState,
+  ExpandedState,
+} from "@tanstack/vue-table";
+
+
+
 import GoalSub from "./GoalSub.vue";
 
 const props = defineProps<{
@@ -26,7 +33,7 @@ const props = defineProps<{
 }>();
 
 const sorting = ref<SortingState>([]);
-const expanded = ref<boolean>({});
+const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
   get data() {
@@ -42,6 +49,11 @@ const table = useVueTable({
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
   onExpandedChange: (updaterOrValue) => valueUpdater(updaterOrValue, expanded),
   getExpandedRowModel: getExpandedRowModel(),
+  initialState: {
+    pagination: {
+      pageSize: 15,
+    },
+  },
   // getSubRows: (row) => row.getExpandedRowModel().rows,
   state: {
     get sorting() {
@@ -52,6 +64,31 @@ const table = useVueTable({
     },
   },
 });
+
+const tableCurrentPage = computed(() => {
+  return table.getState().pagination.pageIndex;
+});
+
+function getVisiblePages() {
+  const currentPage = tableCurrentPage.value;
+  const pageCount = table.getPageCount();
+  const visiblePages = [];
+
+  if (currentPage <= 3) {
+    for (let i = 1; i <= 4; i++) {
+      visiblePages.push(i);
+    }
+  } else if (currentPage >= pageCount - 3) {
+    for (let i = pageCount - 4; i <= pageCount; i++) {
+      visiblePages.push(i);
+    }
+  } else {
+    for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+      visiblePages.push(i);
+    }
+  }
+  return visiblePages;
+}
 </script>
 
 <template>
@@ -100,24 +137,71 @@ const table = useVueTable({
         </template>
       </TableBody>
     </Table>
-    <!-- pagination -->
-     <div class="flex items-center justify-end py-4 space-x-2">
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanPreviousPage()"
-        @click="table.previousPage()"
-      >
-        Previous
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanNextPage()"
+    <!-- pagination getPageCount() is the total number of pages. While pageIndex start with 0.
+      so max page is getPageCount() - 1 
+      page array also starts with 1 so when we loop through it we need to subtract 1 from it to use it as pageIndex
+    -->
+
+    <div
+      class="flex items-center justify-center py-4 space-x-2 w-full"
+      v-if="table.getPageCount() > 1"
+    >
+      <button :disabled="tableCurrentPage === 0" @click="table.previousPage()">
+        <Icon name="lucide:chevron-left" class="text-gray-400" />
+      </button>
+
+      <template v-if="table.getPageCount() <= 6">
+        <button
+          v-for="page in table.getPageCount()"
+          :key="page"
+          class="text-gray-400 text-xs"
+          :class="{ 'font-bold !text-black': page === tableCurrentPage + 1 }"
+          @click="table.setPageIndex(page - 1)"
+        >
+          {{ page }}
+        </button>
+      </template>
+      <!-- larger pages -->
+      <template v-else>        
+        <button
+          class="text-gray-400 text-xs"
+          :class="{ 'font-bold !text-black': tableCurrentPage === 0 }"
+          v-if="!getVisiblePages().includes(1)"
+          @click="table.setPageIndex(0)"
+        >
+          1
+        </button>
+        <span v-if="tableCurrentPage > 4">...</span>
+
+        <button
+          v-for="page in getVisiblePages()"
+          :key="page"
+          class="text-gray-400 text-xs"
+          :class="{ 'font-bold !text-black': page === tableCurrentPage + 1 }"
+          @click="table.setPageIndex(page - 1)"
+        >
+          {{ page }}
+        </button>
+        <span v-if="tableCurrentPage < table.getPageCount() - 3">...</span>
+
+        <button
+          v-if="!getVisiblePages().includes(table.getPageCount() )"
+          class="text-gray-400 text-xs"
+          :class="{
+            'font-bold !text-black':
+              tableCurrentPage === table.getPageCount() -1,
+          }"
+          @click="table.setPageIndex(table.getPageCount()-1)"
+        >
+          {{ table.getPageCount()  }}
+        </button>
+      </template>
+      <button
+        :disabled="tableCurrentPage === table.getPageCount()"
         @click="table.nextPage()"
       >
-        Next
-      </Button>
+        <Icon name="lucide:chevron-right" class="text-gray-400" />
+      </button>
     </div>
   </div>
 </template>

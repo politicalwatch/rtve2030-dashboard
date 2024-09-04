@@ -2,7 +2,7 @@ import {  formatLocale } from "d3";
 
  const locale = formatLocale({
    decimal: ",",
-   thousands: "\u202F",
+   thousands: "\u205F",
    grouping: [3],
    currency: ["", "\u202F M€"],
    minus: "\u2212",

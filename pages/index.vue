@@ -70,21 +70,30 @@
     </div>
 
     <div class="mt-8">
-      <WrappersSdg v-if="sdgData != null" :sdgData="sdgData"> </WrappersSdg>
+      <WrappersSdgWr
+        v-if="sdgData != null && baseDataStore.sdgData != null"
+        :sdgData="sdgData"
+        :baseData="baseDataStore.sdgData"
+      >
+      </WrappersSdgWr>
     </div>
 
-    <div class="mt-8 grid grid-cols-5">
+    <div class="mt-8 grid grid-cols-5 gap-8" >
       <div class="col-span-2">
         <WrappersChannels
-          v-if="channelsData != null"
+          v-if="channelsData != null && baseDataStore.channelsData != null"
           :channelsData="channelsData"
+          :baseData="baseDataStore.channelsData"
+          :hasActiveFilters="filters.hasActiveFilters"
         >
         </WrappersChannels>
       </div>
       <div class="col-span-3">
         <WrappersProgramsWr
-          v-if="programsData != null"
+          v-if="programsData != null && baseDataStore.programsData != null"
           :programsData="programsData"
+          :baseData="baseDataStore.programsData"
+          :hasActiveFilters="filters.hasActiveFilters"
         >
         </WrappersProgramsWr>
       </div>
@@ -106,18 +115,32 @@
 </template>
 
 <script lang="ts" setup>
+import { cloneDeep } from "lodash";
+
 const { $api } = useNuxtApp();
 const filters = useFiltersStore();
-const userRepo = dashboardApiRepo($api);
+const baseDataStore = useBaseData();
+const apiRepo = dashboardApiRepo($api);
+
+/* status flag */
+const mustLoadBase = ref({
+  globalCounterData: true,
+  evolutionData: true,
+  timeSpanCounterData: true,
+  sdgData: true,
+  programsData: true,
+  channelsData: true,
+});
 
 /** following data depends only on timespan***/
 const { timespan, channels, sdgActive } = storeToRefs(filters);
+
 const { data: globalCounterData } = await useAsyncData(() =>
-  userRepo.getStatsCounter()
+  apiRepo.getStatsCounter()
 );
 
 const { data: evolutionData } = await useAsyncData(() =>
-  userRepo.getEvolution()
+  apiRepo.getEvolution()
 );
 
 const { data: timeSpanCounterData } = await useAsyncData(
@@ -125,7 +148,7 @@ const { data: timeSpanCounterData } = await useAsyncData(
     timespan.value[0]
   )}`,
   () =>
-    userRepo.getStatsCounter(
+    apiRepo.getStatsCounter(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1])
     ),
@@ -137,7 +160,7 @@ const { data: timeSpanCounterData } = await useAsyncData(
 
 /** following data depends on filters ***/
 
-const { data: sdgData } = await useAsyncData(() => userRepo.getOdsAndGoals());
+const { data: sdgData } = await useAsyncData(() => apiRepo.getOdsAndGoals());
 
 const { data: programsData } = await useAsyncData(
   `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
@@ -145,7 +168,7 @@ const { data: programsData } = await useAsyncData(
   )}-programs${channels.value.join("-")}
   -sdg${sdgActive.value.join("-")}`,
   () =>
-    userRepo.getPrograms(
+    apiRepo.getPrograms(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       channels.value,
@@ -163,7 +186,7 @@ const { data: channelsData } = await useAsyncData(
   )}
   -sdg${filters.sdgActive.join("-")}`,
   () =>
-    userRepo.getChannels(
+    apiRepo.getChannels(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       sdgActive.value
@@ -179,7 +202,7 @@ const data = ref<Stat[] | null>(null);
 
 onMounted(async () => {
   console.log($api);
-  data.value = await userRepo.getStats();
+  data.value = await apiRepo.getStats();
   console.log(data.value);
 });
 
@@ -190,6 +213,48 @@ const isDataReady = computed(
     timeSpanCounterData != null &&
     sdgData != null
 );
+
+/** this part of the code is in charge of "updating the store with the base data"
+ * Base data means the data used for charts when no filter is applied
+ * It is important because data availabie in this page is  always updated with filters
+ *  */
+watch(timespan, () => {
+  console.log("timestamp updated");
+  mustLoadBase.value.globalCounterData = true;
+  mustLoadBase.value.evolutionData = true;
+  mustLoadBase.value.timeSpanCounterData = true;
+  mustLoadBase.value.sdgData = true;
+  mustLoadBase.value.programsData = true;
+  mustLoadBase.value.channelsData = true;
+});
+
+// watch(
+//   programsData,
+//   () => {
+//     if(mustLoadBase.value.programsData){
+//       baseDataStore.programsData = cloneDeep(programsData.value);
+//       mustLoadBase.value.programsData = false;
+
+//     }
+//   },
+//   { deep: true,
+//    }
+// );
+
+watchEffect(() => {
+  if (mustLoadBase.value.programsData) {
+    baseDataStore.programsData = cloneDeep(programsData.value);
+    mustLoadBase.value.programsData = false;
+  }
+  if (mustLoadBase.value.channelsData) {
+    baseDataStore.channelsData = cloneDeep(channelsData.value);
+    mustLoadBase.value.channelsData = false;
+  }
+  if (mustLoadBase.value.sdgData) {
+    baseDataStore.sdgData = cloneDeep(sdgData.value);
+    mustLoadBase.value.sdgData = false;
+  }
+});
 
 /* loading  */
 const loading = ref(false);

@@ -19,26 +19,25 @@ export const columns: ColumnDef<TableChannels>[] = [
     header: () => h("div", { class: "text-right" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
-      return h(sdgSquares,
-        {
+      return h(sdgSquares, {
         sdgs: sdgs,
-        });
+      });
     },
   },
 
   {
-    accessorKey: "total_duration",
+    accessorKey: "tagged_duration",
     header: () => h("div", { class: "text-right" }, ""),
     cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("total_duration"));
-      const formatted = new Intl.NumberFormat("es-Es").format(
-        msToHours(amount)
-      );
+      const amount = row.original.tagged_duration;
+      const formatted = format.N(msToHours(amount));
       return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
+
   {
-    accessorKey: "tagged_duration",
+    accessorFn: (row) => `${row.total_duration / row.maxTotalDuration}`,
+    id: "duration",
     header: ({ column }) => {
       return h(
         "button",
@@ -49,12 +48,21 @@ export const columns: ColumnDef<TableChannels>[] = [
       );
     },
     cell: ({ row }) => {
-      const totalDuration = Number.parseFloat(row.getValue("total_duration"));
-      const taggedDuration = Number.parseFloat(row.getValue("tagged_duration"));
-      return h(miniBarChart, {
+      const totalDuration = row.original.total_duration;
+      const taggedDuration = row.original.tagged_duration;
+      const maxTotalDuration = row.original.maxTotalDuration;
+      const filteredTaggedDuration = row.original.filteredTaggedDuration;      
+      const props = {
         total_duration: totalDuration,
         tagged_duration: taggedDuration,
-      });
+        maxTotalDuration: maxTotalDuration,
+      };
+
+      if (filteredTaggedDuration !== undefined) {
+        props.filteredTaggedDuration = filteredTaggedDuration;
+      }
+
+      return h(miniBarChart, props);
     },
   },
 ];

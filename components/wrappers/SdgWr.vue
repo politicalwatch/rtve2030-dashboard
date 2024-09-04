@@ -16,7 +16,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-5">
+    <div class="grid grid-cols-5 gap-8">
     <ChartsScannerRadialOds
     class="col-span-2"
       v-if="sdgData != null"
@@ -33,15 +33,10 @@
     <DataTableBaseTable :columns="columns" :data="sdgData" class="col-span-3"/>
 
     </div>
-
-    
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { useElementSize } from "@vueuse/core";
 const filtersStore = useFiltersStore();
 const { sdgActive } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
@@ -49,6 +44,7 @@ import { columns } from '../DataTable/sdgColumns';
 
 interface Props {
   sdgData: Array<StatsSdg>;
+  baseData: Array<StatsSdg>;
   timeSpan?: [Date, Date];
 }
 
@@ -65,6 +61,20 @@ function sdgClickHandler(sdgId: SdgTopic) {
 }
 
 const props = withDefaults(defineProps<Props>(), {});
+const maxTotalDuration = computed(() => {
+  return Math.max(...props.sdgData.map((sdg) => sdg.total_duration));
+});
+
+const dataForTables = computed(() => {
+  return props.sdgData.map((sdg) => {
+    return {
+      name: sdg.name,
+      total_duration: sdg.total_duration,
+      tagged_duration: sdg.tagged_duration,
+      episode_count: sdg.episode_count,
+    };
+  });
+});
 
 
 </script>

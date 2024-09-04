@@ -16,14 +16,14 @@ export const columns: ColumnDef<TableChannels>[] = [
   // },
   {
     accessorKey: "name",
-    header: () => h("div", { class: "text-left" }, "Programa"),
+    header: () => h("div", { class: "text-right" }, "Programa"),
     cell: ({ row, getValue }) => {
-      return h("div", { class: "text-left" }, getValue());
+      return h("div", { class: "text-right" }, getValue());
     },
   },
   {
     accessorKey: "sdgs",
-    header: () => h("div", { class: "text-left" }, "ods"),
+    header: () => h("div", { class: "text-right" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -33,33 +33,38 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
 
   {
-    accessorKey: "total_duration",
-    header: () => h("div", { class: "text-right" }, "Horas"),
-    cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("total_duration"));
-      const formatted = new Intl.NumberFormat("es-Es").format(
-        msToHours(amount)
+    accessorKey: "tagged_duration",
+    header: ({ column }) => {
+      return h(
+        "button",
+        {
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),          
+        },
+        ["Analizadas ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
-      return h("div", { class: "text-right font-medium" }, formatted);
+    },
+    cell: ({ row }) => {
+      const amount = msToHours(row.original.tagged_duration);
+
+      return h("div", { class: "text-right font-medium" }, format.N(amount));
     },
   },
   {
-    accessorKey: "tagged_duration",
+    accessorKey: "total_duration",
     header: ({ column }) => {
       return h(
         "button",
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Duración", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["\u2001 \u2001 \u2001", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
-      const totalDuration = Number.parseFloat(row.getValue("total_duration"));
-      const taggedDuration = Number.parseFloat(row.getValue("tagged_duration"));
       return h(miniBarChart, {
-        total_duration: totalDuration,
-        tagged_duration: taggedDuration,
+        total_duration: row.original.total_duration,
+        tagged_duration: row.original.tagged_duration,
+        maxTotalDuration: row.original.maxTotalDuration,
       });
     },
   },
@@ -68,8 +73,8 @@ export const columns: ColumnDef<TableChannels>[] = [
     header: () => h("div", { class: "text-right" }, "Episodios"),
     cell: ({ row, getValue }) => {
       const count = Number.parseInt(getValue());
-     
-      return h("div", { class: "text-left font-medium" }, count);
+
+      return h("div", { class: "text-right font-medium" }, count);
     },
   },
 ];
