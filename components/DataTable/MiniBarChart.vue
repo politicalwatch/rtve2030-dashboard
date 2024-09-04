@@ -28,8 +28,9 @@ const filteredTaggedTimePercentage = computed(() => {
 </script>
 
 <template>
-  <TooltipProvider :delayDuration="0">
+  
     <div class="w-full h-5 bg-gray-50 relative">
+      <TooltipProvider :delayDuration="0">
       <!-- <Tooltip>
         <TooltipTrigger as-child>
           <div
@@ -69,7 +70,7 @@ const filteredTaggedTimePercentage = computed(() => {
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip v-show="filteredTaggedDuration">
+      <Tooltip v-if="filteredTaggedDuration">
         <TooltipTrigger as-child>
           <div
             class="h-full absolute bg-gray-800 z-20"
@@ -80,6 +81,7 @@ const filteredTaggedTimePercentage = computed(() => {
           <p>{{ format.N(msToHours(filteredTaggedDuration)) }} horas</p>
         </TooltipContent>
       </Tooltip>
+        </TooltipProvider>
+
     </div>
-  </TooltipProvider>
 </template>

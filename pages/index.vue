@@ -228,33 +228,29 @@ watch(timespan, () => {
   mustLoadBase.value.channelsData = true;
 });
 
-// watch(
-//   programsData,
-//   () => {
-//     if(mustLoadBase.value.programsData){
-//       baseDataStore.programsData = cloneDeep(programsData.value);
-//       mustLoadBase.value.programsData = false;
-
-//     }
-//   },
-//   { deep: true,
-//    }
-// );
-
-watchEffect(() => {
+// this block is in charge of updating the base data store with the data from the api
+// it is updated only with mustLoadBase flag is true, and it is only true when the timespan changes
+// BUG: when filters are active, the base data is not correct since base data should be the data without filters applied
+watch(programsData, () => {
   if (mustLoadBase.value.programsData) {
     baseDataStore.programsData = cloneDeep(programsData.value);
     mustLoadBase.value.programsData = false;
   }
+}, { deep: true });
+
+watch(channelsData, () => {
   if (mustLoadBase.value.channelsData) {
     baseDataStore.channelsData = cloneDeep(channelsData.value);
     mustLoadBase.value.channelsData = false;
   }
+}, { deep: true });
+
+watch(sdgData, () => {
   if (mustLoadBase.value.sdgData) {
     baseDataStore.sdgData = cloneDeep(sdgData.value);
     mustLoadBase.value.sdgData = false;
   }
-});
+}, { deep: true });
 
 /* loading  */
 const loading = ref(false);
