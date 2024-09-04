@@ -1,6 +1,6 @@
 import { h } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
-import miniBarChart from "./MiniBarChart.vue";
+import MiniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
@@ -61,7 +61,7 @@ export const columns: ColumnDef<TableChannels>[] = [
       );
     },
     cell: ({ row }) => {
-      return h(miniBarChart, {
+      return h(MiniBarChart, {
         total_duration: row.original.total_duration,
         tagged_duration: row.original.tagged_duration,
         maxTotalDuration: row.original.maxTotalDuration,

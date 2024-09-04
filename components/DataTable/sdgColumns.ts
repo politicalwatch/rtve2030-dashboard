@@ -1,6 +1,6 @@
 import { h } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
-import miniBarChart from "./MiniBarChart.vue";
+import MiniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
