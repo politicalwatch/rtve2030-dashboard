@@ -53,7 +53,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.N(msToHours(total_duration)) }} horas</p>
+          <p>Horas analizadas: {{ format.N(msToHours(total_duration)) }} horas</p>
         </TooltipContent>
       </Tooltip>
 
@@ -65,7 +65,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.N(msToHours(tagged_duration)) }} horas</p>
+          <p> Horas de agenda ODS detectada: {{ format.N(msToHours(tagged_duration)) }} horas</p>
         </TooltipContent>
       </Tooltip>
 

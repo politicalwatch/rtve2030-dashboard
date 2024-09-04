@@ -40,7 +40,7 @@ export const columns: ColumnDef<TableChannels>[] = [
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Analizadas ", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["Detectadas ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
