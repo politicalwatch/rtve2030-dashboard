@@ -123,13 +123,14 @@ export interface StatsChannel {
   name: Channels;
   total_duration: number;
   tagged_duration: number;
-  episode_count?: number;
   program_count?: number;
   topics: TopicsDuration[];
 }
 
 // stats/programs
-export interface StatsPrograms extends StatsChannel {}
+export interface StatsPrograms extends StatsChannel {
+  episode_count?: number;
+}
 
 /** dates 
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/

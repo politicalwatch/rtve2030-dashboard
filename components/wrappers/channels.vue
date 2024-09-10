@@ -66,6 +66,12 @@ const dataForTable = computed(() => {
 
     const result = {
       maxTotalDuration: maxTotalDuration.value,
+      basePrograms: props.baseData.find(
+        (chan2) => chan.name === chan2.name
+      )?.program_count,
+      programs: props.channelsData.find(
+        (chan2) => chan.name === chan2.name
+      )?.program_count,
       filteredTaggedDuration: props.hasActiveFilters?props.channelsData.find(
         (chan2) => chan.name === chan2.name
       )?.tagged_duration:undefined,

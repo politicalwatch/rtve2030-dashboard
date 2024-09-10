@@ -5,5 +5,6 @@ export interface TableChannels {
   tagged_duration: number;
   maxTotalDuration: number;
   filteredTaggedDuration?: number;
-  programs?: number; // tbd check
+  programs?: number;
+  basePrograms?: number; // tbd check
 }

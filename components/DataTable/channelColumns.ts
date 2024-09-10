@@ -52,17 +52,37 @@ export const columns: ColumnDef<TableChannels>[] = [
       const taggedDuration = row.original.tagged_duration;
       const maxTotalDuration = row.original.maxTotalDuration;
       const filteredTaggedDuration = row.original.filteredTaggedDuration;
-      const props = {
+      const miniBarProps: {
+        total_duration: number;
+        tagged_duration: number;
+        maxTotalDuration: number;
+        filteredTaggedDuration?: number;
+      } = {
         total_duration: totalDuration,
         tagged_duration: taggedDuration,
         maxTotalDuration: maxTotalDuration,
       };
-
       if (filteredTaggedDuration !== undefined) {
-        props.filteredTaggedDuration = filteredTaggedDuration;
+        miniBarProps.filteredTaggedDuration = filteredTaggedDuration;
       }
-
-      return h(MiniBarChart, props);
+      return h(MiniBarChart, miniBarProps);
+    },
+  },
+  {
+    accessorKey: "programs",
+    header: () => h("div", { class: "text-right" }, "Programas"),
+    cell: ({ row, getValue }) => {
+      const basePrograms = row.original.basePrograms ?? 0;
+      const programs = row.original.programs ?? 0;
+      return h(
+        "div",
+        { class: "text-right font-medium" },
+        [
+          h("span", { class: "font-black" }, programs),
+          "/",
+          basePrograms
+        ]
+      );
     },
   },
 ];
