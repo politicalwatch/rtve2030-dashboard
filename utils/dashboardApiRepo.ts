@@ -88,6 +88,25 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       query,
     });
   },
+  async getTags(
+    startDate?: string,
+    endDate?: string,
+    topic?: SdgTopic[],
+    channel?: Channels[],
+    program?: string[]
+  ): Promise<StatsTags[]> {
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(topic && { topic }),
+      ...(channel && { channel }),
+      ...(program && { program }),
+    };
+    return fetch<StatsTags[]>("/stats/tags", {
+      query,
+    });
+  },
+
 
 });
 

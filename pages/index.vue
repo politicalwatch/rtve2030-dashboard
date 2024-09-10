@@ -99,6 +99,15 @@
       </div>
     </div>
 
+    <div class="mt-8">
+      <WrappersTagsWr
+        v-if="tagsData != null && baseDataStore.tagsData != null"
+        :tagsData="tagsData"
+        :baseData="baseDataStore.tagsData"
+        :hasActiveFilters="filters.hasActiveFilters"
+      >
+      </WrappersTagsWr>
+    </div>
     <!-- frequency chart
      <FrequencyChart
           :topicsStyles="STYLES"
@@ -130,6 +139,7 @@ const mustLoadBase = ref({
   sdgData: true,
   programsData: true,
   channelsData: true,
+  tagsData: true,
 });
 
 /** following data depends only on timespan***/
@@ -197,13 +207,19 @@ const { data: channelsData } = await useAsyncData(
   }
 );
 
-const data = ref<Stat[] | null>(null);
-// const globalCounterData = ref<StatsCounter|null> (null)
+// ------------------ tags (terms) --------------------// 
+
+const { data: tagsData } = await useAsyncData(() => apiRepo.getTags(
+  jsDatetoApiString(timespan.value[0]),
+  jsDatetoApiString(timespan.value[1]),
+  sdgActive.value,
+  channels.value
+));
+
+
 
 onMounted(async () => {
-  console.log($api);
-  data.value = await apiRepo.getStats();
-  console.log(data.value);
+ 
 });
 
 const isDataReady = computed(
@@ -252,14 +268,24 @@ watch(sdgData, () => {
   }
 }, { deep: true, immediate:true });
 
+watch(tagsData, () => {
+  if (mustLoadBase.value.tagsData) {
+    baseDataStore.tagsData = cloneDeep(tagsData.value);
+    mustLoadBase.value.tagsData = false;
+  }
+}, { deep: true, immediate:true });
+
 /* loading  */
 const loading = ref(false);
 useNuxtApp().hook("page:start", () => {
   loading.value = true;
 });
+
 useNuxtApp().hook("page:finish", () => {
   loading.value = false;
 });
+
+
 </script>
 
 <style></style>

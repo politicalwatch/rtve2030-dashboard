@@ -132,6 +132,14 @@ export interface StatsPrograms extends StatsChannel {
   episode_count?: number;
 }
 
+// stats/tags
+export interface StatsTags {
+  subtopic: string;
+  tag: string;
+  duration: number;
+  occurrences: number;
+}
+
 /** dates 
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/
 */
