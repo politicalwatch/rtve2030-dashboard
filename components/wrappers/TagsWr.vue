@@ -69,15 +69,14 @@ const dataForTable = computed(() => {
     filtered_occurrences: tag.occurrences,
     maxTotalOccurrences: maxTotalCountTags.value,
     sdgs: tag.subtopics.map((subtopic) => subtopicToTopic(subtopic)),
+    hasActiveFilters: props.hasActiveFilters,
   }));
 });
 
 /* this function takes a subtopic with the format "X.Y  name" and returns the SdgTopic with number X */
 function subtopicToTopic(subtopic: string) {
   const topicNumber = subtopic.split(".")[0]
-  const key = "ODS" + topicNumber;
-  console.log(key)
-  // CHECK IF key is in SdgTopic enum
+  const key = "ODS" + topicNumber;  // CHECK IF key is in SdgTopic enum
     return SdgTopic[key];
   
   

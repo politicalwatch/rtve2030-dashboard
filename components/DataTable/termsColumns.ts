@@ -1,6 +1,6 @@
 import { h } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
-import MiniBarChart from "./MiniBarChart.vue";
+import MiniBarChartDos from "./MiniBarChartDos.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
@@ -43,28 +43,27 @@ export const columns: ColumnDef<TableTags>[] = [
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Apariciones del término", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["Ocurrencias", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
       const totalDuration = row.original.total_occurrences;
-      const taggedDuration = 0 // no need in this case
       const maxTotalOccurrences = row.original.maxTotalOccurrences;
       const filteredTaggedOcc = row.original.filtered_occurrences;
+      const hasActiveFilters = row.original.hasActiveFilters;
       const miniBarProps: {
-        total_duration: number;
-        tagged_duration: number;
-        maxTotalDuration: number;
-        filteredTaggedOcc?: number;
+        total: number;
+        maxTotal: number;
+        filtered?: number;
+        hasActiveFilters: boolean;
       } = {
-        total_duration: totalDuration,
-        tagged_duration: taggedDuration,
-        maxTotalDuration: maxTotalOccurrences,
+        total: totalDuration,
+        maxTotal: maxTotalOccurrences,
       };
       if (filteredTaggedOcc !== undefined) {
-        miniBarProps.filteredTaggedOcc = filteredTaggedOcc;
+        miniBarProps.filtered = filteredTaggedOcc;
       }
-      return h(MiniBarChart, miniBarProps);
+      return h(MiniBarChartDos, miniBarProps);
     },
   },
 ];

@@ -15,5 +15,6 @@ export interface TableTags {
   total_occurrences: number;
   maxTotalOccurrences: number;
   filtered_occurrences?: number;
+  hasActiveFilters: boolean;
 
 }
