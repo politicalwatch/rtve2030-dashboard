@@ -59,6 +59,7 @@ export const columns: ColumnDef<TableTags>[] = [
       } = {
         total: totalDuration,
         maxTotal: maxTotalOccurrences,
+        hasActiveFilters: hasActiveFilters,
       };
       if (filteredTaggedOcc !== undefined) {
         miniBarProps.filtered = filteredTaggedOcc;

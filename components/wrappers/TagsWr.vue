@@ -8,7 +8,21 @@
         class="col-span-2"
       />
 
-      <div class="col-span-3">Tag cloud</div>
+      <div class="col-span-3" ref="wordcloudContainer">
+        <VueWordCloud 
+          :words="topWords" 
+          :color="colorfn"
+          :style="{width: width + 'px', height: height + 'px'}"
+          v-if="width > 0 && height > 0"
+          :fontFamily="'Roboto'"
+          font-size-ratio="4"
+          enter-animation="flipX"
+          leave-animation="flipY"
+          :rotation="getRotation"
+        />
+
+
+      </div>
     </div>
   </div>
 </template>
@@ -16,6 +30,11 @@
 <script lang="ts" setup>
 import { columns } from "../DataTable/termsColumns";
 import { groups, rollups, rollup, sum } from "d3";
+import VueWordCloud from 'vuewordcloud';
+import { scaleSequential, interpolate } from 'd3';
+import {useElementSize} from '@vueuse/core'
+import { _300 as green300, _700 as green700 } from "#twcss/theme/colors/green";
+
 interface Props {
   tagsData: Array<StatsTags>;
   baseData: Array<StatsTags>;
@@ -60,15 +79,15 @@ const tagsDataAggregatedByTag = computed(() => {
   return tags.map((tag) => tag[1]);
 });
 
-const dataForTable = computed(() => {
+const dataForTable = computed<TableTags[]>(() => {
   return tagsDataAggregatedByTag.value.map((tag) => ({
     name: tag.tag,
     total_occurrences: basetagsDataAggregatedByTag.value.find(
       (tag2) => tag2.tag === tag.tag
-    )?.occurrences,
+    )?.occurrences ?? 0,
     filtered_occurrences: tag.occurrences,
     maxTotalOccurrences: maxTotalCountTags.value,
-    sdgs: tag.subtopics.map((subtopic) => subtopicToTopic(subtopic)),
+    sdgs: tag.subtopics.map((subtopic) => subtopicToTopic(subtopic)).filter((topic): topic is SdgTopic => topic !== null),
     hasActiveFilters: props.hasActiveFilters,
   }));
 });
@@ -79,8 +98,44 @@ function subtopicToTopic(subtopic: string) {
   const key = "ODS" + topicNumber;  // CHECK IF key is in SdgTopic enum
     return SdgTopic[key];
   
-  
   return null;
+}
+// -------------- WORDCLOUD --------------
+// get top words for wordcloud. top 50
+const topWords = computed(() => {
+  return dataForTable.value.sort((a, b) => b.filtered_occurrences - a.filtered_occurrences).slice(0, 30).map((tag) => [tag.name, tag.filtered_occurrences]);
+});
+
+// create a sequential color scale using d3. It must use two green colors and interpolate between them
+const colorScale = computed(() => {
+  const minColor = green300  // Light green
+  const maxColor = green700;  // Dark green
+  const minValue = Math.min(...topWords.value.map(d => d[1]));
+  const maxValue = Math.max(...topWords.value.map(d => d[1]));
+  
+  return scaleSequential()
+    .domain([minValue, maxValue])
+    .interpolator(interpolate(minColor, maxColor));
+})
+const colorfn = ([word, weight]: [string, number], fontSize: number, colorPalette: string[]) => {
+  return colorScale.value(weight);
+}
+
+const wordcloudContainer = ref(null)
+
+const {width, height} = useElementSize(wordcloudContainer)
+
+function getRotation(){
+  if(Math.random() < 0.25)
+    return 0
+  else if(Math.random() < 0.5)
+  return 1/8
+  else if(Math.random() < 0.75)
+  return 3/4
+  else 
+  return 7/8
+  
+
 }
 </script>
 
