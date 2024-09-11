@@ -7,7 +7,7 @@ export const useFiltersStore = defineStore("filters", () => {
 
   const sdgActive = ref<SdgTopic[]>([]);
   const channels = ref<Channels[]>([]);
-
+  const programs = ref<string[]>([]);
   // New getter
   const hasActiveFilters = computed(() => {
     return sdgActive.value.length > 0 || channels.value.length > 0;
@@ -19,5 +19,6 @@ export const useFiltersStore = defineStore("filters", () => {
     sdgActive,
     channels,
     hasActiveFilters,
+    programs,
   };
 });

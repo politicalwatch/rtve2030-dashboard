@@ -29,16 +29,18 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
 
   async getOdsAndGoals(
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    channel?: Channels[],
+    program?: string[]
   ): Promise<StatsSdg[]> {
-    if (!startDate || !endDate) {
-      return fetch<StatsSdg[]>("/stats/sdg");
-    }
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(channel && { channel }),
+      ...(program && { program }),
+    };
     return fetch<StatsSdg[]>("/stats/sdg", {
-      query: {
-        start_date: startDate,
-        end_date: endDate,
-      },
+      query,
     });
   },
 

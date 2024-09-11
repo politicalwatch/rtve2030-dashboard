@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    {{ programasQueryString }}
     <section class="grid grid-cols-5 gap-8 items-center my-4">
       <DateSelector />
       <div>
@@ -78,7 +79,7 @@
       </WrappersSdgWr>
     </div>
 
-    <div class="mt-8 grid grid-cols-5 gap-8" >
+    <div class="mt-8 grid grid-cols-5 gap-8 border-t border-black pt-2">
       <div class="col-span-2">
         <WrappersChannels
           v-if="channelsData != null && baseDataStore.channelsData != null"
@@ -130,7 +131,7 @@ const { $api } = useNuxtApp();
 const filters = useFiltersStore();
 const baseDataStore = useBaseData();
 const apiRepo = dashboardApiRepo($api);
-
+const nuxtApp = useNuxtApp();
 /* status flag */
 const mustLoadBase = ref({
   globalCounterData: true,
@@ -155,7 +156,7 @@ const { data: evolutionData } = await useAsyncData(() =>
 
 const { data: timeSpanCounterData } = await useAsyncData(
   `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
-    timespan.value[0]
+    timespan.value[1]
   )}`,
   () =>
     apiRepo.getStatsCounter(
@@ -168,33 +169,72 @@ const { data: timeSpanCounterData } = await useAsyncData(
   }
 );
 
-/** following data depends on filters ***/
+/** ------------ the following data depends on filters ----------- ***/
 
-const { data: sdgData } = await useAsyncData(() => apiRepo.getOdsAndGoals());
+const sdgQueryString = computed(() => {
+  return `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+    timespan.value[1]
+  )}
+  -programs${filters.programs.join("-")}
+  -channels${filters.channels.join("-")}`;
+});
+
+const { data: sdgData } = await useAsyncData(
+  sdgQueryString.value,
+  () =>
+    apiRepo.getOdsAndGoals(
+      jsDatetoApiString(timespan.value[0]),
+      jsDatetoApiString(timespan.value[1]),
+      filters.channels
+    ),
+  {
+    immediate: true,
+    getCachedData: (key) => {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+    watch: [sdgQueryString],
+  }
+);
+
+const programasQueryString = computed(() => {
+  return `stats/programas${jsDatetoApiString(
+    timespan.value[0]
+  )}-${jsDatetoApiString(timespan.value[1])}-channels-${filters.channels.join(
+    "-"
+  )}
+  -sdg${sdgActive.value.join("-")}`;
+});
 
 const { data: programsData } = await useAsyncData(
-  `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
-    timespan.value[0]
-  )}-programs${channels.value.join("-")}
-  -sdg${sdgActive.value.join("-")}`,
-  () =>
-    apiRepo.getPrograms(
+  programasQueryString.value,
+  () => {
+    return apiRepo.getPrograms(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       channels.value,
       sdgActive.value
-    ),
+    );
+  },
   {
     immediate: true,
-    watch: [timespan, channels, sdgActive],
+    getCachedData: (key) => {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+    watch: [programasQueryString],
   }
 );
 
-const { data: channelsData } = await useAsyncData(
-  `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+const channelsQueryString = computed(() => {
+  return `stats/channels/${jsDatetoApiString(
     timespan.value[0]
+  )}-${jsDatetoApiString(timespan.value[1])}-channels-${filters.channels.join(
+    "-"
   )}
-  -sdg${filters.sdgActive.join("-")}`,
+  -sdg${sdgActive.value.join("-")}`;
+});
+
+const { data: channelsData } = await useAsyncData(
+  channelsQueryString.value,
   () =>
     apiRepo.getChannels(
       jsDatetoApiString(timespan.value[0]),
@@ -203,24 +243,38 @@ const { data: channelsData } = await useAsyncData(
     ),
   {
     immediate: true,
-    watch: [timespan, channels, sdgActive],
+    getCachedData: (key) => {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+    watch: [channelsQueryString],
   }
 );
+// ------------------ tags (terms) --------------------//
 
-// ------------------ tags (terms) --------------------// 
-
-const { data: tagsData } = await useAsyncData(() => apiRepo.getTags(
-  jsDatetoApiString(timespan.value[0]),
-  jsDatetoApiString(timespan.value[1]),
-  sdgActive.value,
-  channels.value
-));
-
-
-
-onMounted(async () => {
- 
+const tagsQueryString = computed(() => {
+  return `stats/tags${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+    timespan.value[1]
+  )}-channels-${filters.channels.join("-")}
+  -sdg${sdgActive.value.join("-")}`;
 });
+
+const { data: tagsData } = await useAsyncData(
+  tagsQueryString.value,
+  () =>
+    apiRepo.getTags(
+      jsDatetoApiString(timespan.value[0]),
+      jsDatetoApiString(timespan.value[1]),
+      filters.sdgActive,
+      filters.channels
+    ),
+  {
+    immediate: true,
+    getCachedData: (key) => {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+    watch: [tagsQueryString],
+  }
+);
 
 const isDataReady = computed(
   () =>
@@ -247,33 +301,49 @@ watch(timespan, () => {
 // this block is in charge of updating the base data store with the data from the api
 // it is updated only with mustLoadBase flag is true, and it is only true when the timespan changes
 // BUG: when filters are active, the base data is not correct since base data should be the data without filters applied
-watch(programsData, () => {
-  if (mustLoadBase.value.programsData) {
-    baseDataStore.programsData = cloneDeep(programsData.value);
-    mustLoadBase.value.programsData = false;
-  }
-}, { deep: true, immediate:true });
+watch(
+  programsData,
+  () => {
+    if (mustLoadBase.value.programsData) {
+      baseDataStore.programsData = cloneDeep(programsData.value);
+      mustLoadBase.value.programsData = false;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
-watch(channelsData, () => {
-  if (mustLoadBase.value.channelsData) {
-    baseDataStore.channelsData = cloneDeep(channelsData.value);
-    mustLoadBase.value.channelsData = false;
-  }
-}, { deep: true, immediate:true });
+watch(
+  channelsData,
+  () => {
+    if (mustLoadBase.value.channelsData) {
+      baseDataStore.channelsData = cloneDeep(channelsData.value);
+      mustLoadBase.value.channelsData = false;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
-watch(sdgData, () => {
-  if (mustLoadBase.value.sdgData) {
-    baseDataStore.sdgData = cloneDeep(sdgData.value);
-    mustLoadBase.value.sdgData = false;
-  }
-}, { deep: true, immediate:true });
+watch(
+  sdgData,
+  () => {
+    if (mustLoadBase.value.sdgData) {
+      baseDataStore.sdgData = cloneDeep(sdgData.value);
+      mustLoadBase.value.sdgData = false;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
-watch(tagsData, () => {
-  if (mustLoadBase.value.tagsData) {
-    baseDataStore.tagsData = cloneDeep(tagsData.value);
-    mustLoadBase.value.tagsData = false;
-  }
-}, { deep: true, immediate:true });
+watch(
+  tagsData,
+  () => {
+    if (mustLoadBase.value.tagsData) {
+      baseDataStore.tagsData = cloneDeep(tagsData.value);
+      mustLoadBase.value.tagsData = false;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 /* loading  */
 const loading = ref(false);
@@ -284,8 +354,6 @@ useNuxtApp().hook("page:start", () => {
 useNuxtApp().hook("page:finish", () => {
   loading.value = false;
 });
-
-
 </script>
 
 <style></style>
