@@ -5,6 +5,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useVueTable,
+  getFilteredRowModel,
   getExpandedRowModel,
 } from "@tanstack/vue-table";
 
@@ -17,20 +18,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { Input } from "@/components/ui/input";
+
 import type {
   ColumnDef,
   SortingState,
   ExpandedState,
 } from "@tanstack/vue-table";
 
-
+const columnFilters = ref<ColumnFiltersState>([]);
 
 import GoalSub from "./GoalSub.vue";
-
-const props = defineProps<{
+const afterNextTick = ref(false);
+onMounted(async () => {
+  await nextTick();
+  afterNextTick.value = true;
+});
+interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-}>();
+  searchColumnName?: keyof TData;
+  teleportTarget?: string;
+  placeholder?: string;
+}
+
+const props = withDefaults(defineProps<Props<TData, TValue>>(), {
+  searchColumnName: undefined,
+  teleportTarget: "body",
+  placeholder: "Filtrar términos...",
+});
 
 const sorting = ref<SortingState>([]);
 const expanded = ref<ExpandedState>({});
@@ -48,6 +64,10 @@ const table = useVueTable({
 
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
   onExpandedChange: (updaterOrValue) => valueUpdater(updaterOrValue, expanded),
+  onColumnFiltersChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, columnFilters),
+  getFilteredRowModel: getFilteredRowModel(),
+
   getExpandedRowModel: getExpandedRowModel(),
   initialState: {
     pagination: {
@@ -61,6 +81,9 @@ const table = useVueTable({
     },
     get expanded() {
       return expanded.value;
+    },
+    get columnFilters() {
+      return columnFilters.value;
     },
   },
 });
@@ -93,6 +116,35 @@ function getVisiblePages() {
 
 <template>
   <div class="border rounded-md">
+    <template
+      v-if="
+        teleportTarget !== 'body' &&
+        searchColumnName != undefined &&
+        afterNextTick
+      "
+    >
+      <Teleport defer :to="teleportTarget">
+        <div class="relative w-full max-w-md items-center">
+          <Input
+            class="pr-10 placeholder:text-gray-300"
+            :placeholder="placeholder"
+            :model-value="
+              table.getColumn(searchColumnName)?.getFilterValue() ?? ''
+            "
+            @update:model-value="
+              table
+                .getColumn(searchColumnName)
+                ?.setFilterValue($event as string)
+            "
+          />
+          <span
+            class="absolute end-0 inset-y-0 flex items-center justify-center px-2"
+          >
+            <Icon name="lucide:search" class="size-4 text-gray-200 " />
+          </span>
+        </div>
+      </Teleport>
+    </template>
     <Table>
       <TableHeader>
         <TableRow
@@ -162,7 +214,7 @@ function getVisiblePages() {
         </button>
       </template>
       <!-- larger pages -->
-      <template v-else>        
+      <template v-else>
         <button
           class="text-gray-400 text-xs"
           :class="{ 'font-bold !text-black': tableCurrentPage === 0 }"
@@ -185,15 +237,15 @@ function getVisiblePages() {
         <span v-if="tableCurrentPage < table.getPageCount() - 3">...</span>
 
         <button
-          v-if="!getVisiblePages().includes(table.getPageCount() )"
+          v-if="!getVisiblePages().includes(table.getPageCount())"
           class="text-gray-400 text-xs"
           :class="{
             'font-bold !text-black':
-              tableCurrentPage === table.getPageCount() -1,
+              tableCurrentPage === table.getPageCount() - 1,
           }"
-          @click="table.setPageIndex(table.getPageCount()-1)"
+          @click="table.setPageIndex(table.getPageCount() - 1)"
         >
-          {{ table.getPageCount()  }}
+          {{ table.getPageCount() }}
         </button>
       </template>
       <button
