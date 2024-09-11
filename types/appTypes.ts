@@ -9,6 +9,16 @@ export interface TableChannels {
   basePrograms?: number; // tbd check
 }
 
+export interface TablePrograms {
+  canal: Channels;
+  name: string;
+  sdgs: SdgTopic[];
+  total_duration: number;
+  tagged_duration: number;
+  maxTotalDuration: number;
+  filteredTaggedDuration?: number;
+}
+
 export interface TableTags {
   name: String;
   sdgs: SdgTopic[];

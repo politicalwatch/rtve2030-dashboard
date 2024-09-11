@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2 class="chart-titles">Canales</h2>
+    <div class="flex justify-between items-center  h-9">
+      <h2 class="chart-titles ">Canales</h2>
+    </div>
     <div class="flex justify-start gap-2 text-2xs">
       <button
         v-for="chan in Channels"
@@ -66,15 +68,14 @@ const dataForTable = computed(() => {
 
     const result = {
       maxTotalDuration: maxTotalDuration.value,
-      basePrograms: props.baseData.find(
-        (chan2) => chan.name === chan2.name
-      )?.program_count,
-      programs: props.channelsData.find(
-        (chan2) => chan.name === chan2.name
-      )?.program_count,
-      filteredTaggedDuration: props.hasActiveFilters?props.channelsData.find(
-        (chan2) => chan.name === chan2.name
-      )?.tagged_duration:undefined,
+      basePrograms: props.baseData.find((chan2) => chan.name === chan2.name)
+        ?.program_count,
+      programs: props.channelsData.find((chan2) => chan.name === chan2.name)
+        ?.program_count,
+      filteredTaggedDuration: props.hasActiveFilters
+        ? props.channelsData.find((chan2) => chan.name === chan2.name)
+            ?.tagged_duration
+        : undefined,
       name: chan.name,
       total_duration: chan.total_duration,
       tagged_duration: chan.tagged_duration,

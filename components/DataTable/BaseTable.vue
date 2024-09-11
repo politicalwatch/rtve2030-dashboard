@@ -24,6 +24,7 @@ import type {
   ColumnDef,
   SortingState,
   ExpandedState,
+  ColumnFiltersState
 } from "@tanstack/vue-table";
 
 const columnFilters = ref<ColumnFiltersState>([]);

@@ -128,8 +128,13 @@ export interface StatsChannel {
 }
 
 // stats/programs
-export interface StatsPrograms extends StatsChannel {
+export interface StatsPrograms {
+  name: string;
+  total_duration: number;
+  tagged_duration: number;
+  channel: Channels;
   episode_count?: number;
+  topics: TopicsDuration[];
 }
 
 // stats/tags

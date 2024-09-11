@@ -4,7 +4,7 @@ import MiniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
-export const columns: ColumnDef<TableChannels>[] = [
+export const columns: ColumnDef<TablePrograms>[] = [
   // {
   //   accessorKey: "name",
   //   header: () => h("div", { class: "text-right" }, "Canal"),
@@ -14,6 +14,15 @@ export const columns: ColumnDef<TableChannels>[] = [
   //     });
   //   },
   // },
+  {
+    accessorKey: "canal",
+    header: () => h("div", { class: "text-right" }, ""),
+    cell: ({ row, getValue }) => {
+      return h(ChannelIconName, {
+        canal: getValue() as Channels,
+      });
+    },
+  },
   {
     accessorKey: "name",
     header: () => h("div", { class: "text-right" }, "Programa"),
