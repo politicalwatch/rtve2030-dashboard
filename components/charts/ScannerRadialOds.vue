@@ -68,7 +68,7 @@
               <div>{{ selectedSubtopic.data.name }}</div>
             </div>
             <div class="tag-count">
-              {{ selectedSubtopic.value }}
+              {{ format.F(msToHours(selectedSubtopic.value)) }} horas
             </div>
           </div>
         </div>
