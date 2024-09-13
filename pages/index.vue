@@ -191,6 +191,10 @@
 </template>
 
 <script lang="ts" setup>
+definePageMeta({
+  middleware: ["auth-user"],
+});
+
 import { cloneDeep } from "lodash";
 import { sum } from "d3";
 const { $api } = useNuxtApp();

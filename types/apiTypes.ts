@@ -1,6 +1,3 @@
-
-
-
 export enum SdgTopic {
   ODS1 = "ODS 1 Fin de la pobreza",
   ODS2 = "ODS 2 Hambre cero",
@@ -19,14 +16,14 @@ export enum SdgTopic {
   ODS15 = "ODS 15 Vida de ecosistemas terrestres",
   ODS16 = "ODS 16 Paz, justicia e instituciones sólidas",
   ODS17 = "ODS 17 Alianzas para lograr los objetivos",
-}   
+}
 
-export enum Channels{
-    LA1 = "La 1",
-    LA2 = "La 2",
-    CLAN = "Clan TVE",
-    C24H = "Canal 24H",    
-    PLAYZ = "PLAYZ"
+export enum Channels {
+  LA1 = "La 1",
+  LA2 = "La 2",
+  CLAN = "Clan TVE",
+  C24H = "Canal 24H",
+  PLAYZ = "PLAYZ",
 }
 // TDP = "Teledeporte",
 
@@ -45,7 +42,7 @@ export interface Stat {
 }
 
 // global stats for the endpoint /stats/global
-export  interface ByChannel {
+export interface ByChannel {
   name: string;
   episodes_count: number;
   programs_count: number;
@@ -66,20 +63,20 @@ export interface GlobalStats {
     total_duration: number;
     tagged_duration: number;
     percentage_tagged: number;
-  },
-    by_channel: ByChannel[],
-    by_sdg: SdgByChannel[]
+  };
+  by_channel: ByChannel[];
+  by_sdg: SdgByChannel[];
 }
 export interface GlobalStatsResponse {
-     date: string;
-    id: number;
-    stats: GlobalStats
+  date: string;
+  id: number;
+  stats: GlobalStats;
 }
 
 /*
-* return data form /stats/counter. Mainly used for global counters
-* @remark all durations in miliseconds   
-*/ 
+ * return data form /stats/counter. Mainly used for global counters
+ * @remark all durations in miliseconds
+ */
 export interface StatsCounter {
   total_duration: number;
   tagged_duration: number;
@@ -88,14 +85,14 @@ export interface StatsCounter {
 }
 
 export interface DateDuration {
-    date: string,
-    total_duration: number
+  date: string;
+  total_duration: number;
 }
 
 export interface StatsEvolution {
-    init: string,
-    end: string,
-    hoursPeriod: DateDuration[]
+  init: string;
+  end: string;
+  hoursPeriod: DateDuration[];
 }
 
 /** stats/sdg */
@@ -147,22 +144,22 @@ export interface StatsTags {
 
 // stats/evolution-stacked
 export interface HoursPeriodStacked {
- date: string,
- dateObj: Date,
- total_duration: number
- tagged_duration: number
- query_duration: number
+  date: string;
+  dateObj: Date;
+  total_duration: number;
+  tagged_duration: number;
+  query_duration: number;
 }
 export interface StatsEvolutionStacked {
-  init: string,
-  end: string,
-  initObj: Date,
-  endObj: Date,
- hoursPeriod: HoursPeriodStacked[]
+  init: string;
+  end: string;
+  initObj: Date;
+  endObj: Date;
+  hoursPeriod: HoursPeriodStacked[];
 }
-/** dates 
+/** dates
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/
-*/
+ */
 type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type zeroToNine = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 /**
@@ -181,3 +178,22 @@ type DD = `${0}${oneToNine}` | `${1 | 2}${zeroToNine}` | `3${0 | 1}`;
  * YYYYMMDD
  */
 export type RawDateString = `${YYYY}-${MM}-${DD}`;
+
+export interface AuthSession {
+  access_token: string;
+  expires_at: string;
+  expires_in: number;
+  refresh_expires_at: string;
+  refresh_expires_in: number;
+  refresh_token: string;
+  token_type: string;
+}
+
+export interface AuthUser {
+  email: string;
+  first_name: string;
+  is_active: boolean;
+  last_name: string;
+  role: string;
+  username: string;
+}

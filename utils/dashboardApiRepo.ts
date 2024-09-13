@@ -1,5 +1,9 @@
 import type { NitroFetchRequest, $Fetch } from "nitropack";
-import type { StatsEvolutionStacked } from "~/types/apiTypes";
+import type {
+  StatsEvolutionStacked,
+  AuthSession,
+  AuthUser,
+} from "~/types/apiTypes";
 
 // repository pattern in nuxt 3:
 //www.youtube.com/watch?v=jXH8Tr-exhI
@@ -108,7 +112,7 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     return fetch<StatsTags[]>("/stats/tags", {
       query,
     });
-  },  
+  },
   async getEvolutionStacked(
     startDate?: string,
     endDate?: string,
@@ -127,8 +131,25 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       query,
     });
   },
-
-
+  async getAuthToken(username: string, password: string): Promise<AuthSession> {
+    return fetch<AuthSession>("/auth/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        username: username,
+        password: password,
+      }).toString(),
+    });
+  },
+  async refreshAuthToken(token: string): Promise<AuthSession> {
+    return fetch<AuthSession>("/auth/token/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refresh_token: token }),
+    });
+  },
+  async getCurrentUser(): Promise<AuthUser> {
+    return fetch<AuthUser>("/user");
+  },
 });
-
-
