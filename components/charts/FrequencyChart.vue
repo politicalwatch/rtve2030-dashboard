@@ -1,51 +1,14 @@
 <template>
-  <div class="frequency-chart-wrapper u-relative" ref="chartWrapper">
-    <tipi-loader
-      class="custom-tipi-loader-styles"
-      :style="{
-        width: availableWidth + 'px',
-        height: availableHeight + 'px',
-      }"
-      v-if="loadingDynamicData"
-      title="Cargando datos"
-      subtitle=""
-    />
+  <div class="relative w-full h-full">
+    
     <svg :width="availableWidth" :height="availableHeight">
-      <g class="top-text" :transform="`translate(${margin.left}, 0)`">
-        <text
-          v-if="activeBar"
-          font-size="0.8rem"
-          font-weight="light"
-          fill="#9cb0bf"
-          :text-anchor="
-            xScale(activeBar.week) < 50
-              ? 'start'
-              : xScale(activeBar.week) > width - 30
-                ? 'end'
-                : 'middle'
-          "
-        >
-          <tspan :x="xScale(activeBar.week)" :y="margin.top / 2">
-            Semana {{ activeBar.week.split('-')[1] }} ({{
-              getMondayOfISOWeek(activeBar.week).toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: 'long',
-              })
-            }})
-          </tspan>
-          <tspan dy="1em" :x="xScale(activeBar.week)" :y="margin.top / 2">
-            Iniciativas:
-            <tspan font-weight="bold">{{ activeBar.initiatives }}</tspan>
-          </tspan>
-        </text>
-      </g>
+      
       <!--  axis -->
       <g
         class="axis yaxis"
         :transform="`translate(${margin.left - MARGIN_AXIS}, ${margin.top})`"
       >
-        <!-- vertical line for y axis-->
-        <!-- <line x1="0" x2="0" :y1="height" :y2="0" /> -->
+      
         <g
           class="tick"
           v-for="(tick, index) in yScale.nice().ticks(5)"
@@ -54,7 +17,7 @@
         >
           <line x1="-6" :x2="width" class="ticks" />
           <text x="-9" dy=".32em" text-anchor="end">
-            {{ tick }}
+            {{ format.N(msToHours(tick)) }}h
           </text>
         </g>
       </g>
@@ -69,177 +32,140 @@
           :y2="height"
           :x1="0"
           :x2="width"
-          stroke="currentColor"
+          stroke="black"
           stroke-width="1"
         ></line>
+   
         <g
           class="tick"
-          v-for="(tick, index) in xScaleTicks"
+          v-for="(tick, index) in xTicks"
           :key="index"
-          :transform="`translate(${xScaleTimeForAxis(
-            xScaleTicksPositions[index]
-          )}, ${height + 20})`"
+          :transform="`translate(${xScale(tick) + barWidth / 2}, ${
+            height + 10
+          })`"
         >
           <line x1="0" x2="0" y1="0" y2="6" />
           <text y="9" dy=".71em" text-anchor="middle">
-            {{ tick }}
+            {{
+              firstDayToTick(data.find((d) => d.index === tick).firstDay, index)
+            }}
           </text>
         </g>
       </g>
 
       <!-- bars -->
       <g class="rects" :transform="`translate(${margin.left}, ${margin.top})`">
-        <g
-          v-for="(bar, index) in bars"
-          :key="multiYearMode ? bar.week.split('-')[1] : bar.week"
-        >
+        <g v-for="(bar, index) in bars" :key="bar.index">
           <!-- a "background rect" invisible ocupying full height above each one of the previous rects useful only for interaction-->
           <rect
-            :x="xScale(bar.week)"
+            :x="xScale(bar.index)"
             :y="0"
             :width="barWidth"
             :height="height"
             class="bar-background"
-            :class="{
-              active: activeBar && activeBar.week === bar.week,
-            }"
+            :class="{ '!fill-gray-50': activeBar && activeBar.index === bar.index }"
             @mouseover="activeBar = bar"
             @mouseout="activeBar = null"
           ></rect>
           <!-- visible-->
+          <!-- first rect with the analized time total_duration-->
           <rect
-            :x="xScale(bar.week)"
+            :x="xScale(bar.index)"
             :width="barWidth"
-            v-tr3nsition:init="{
-              height: 0,
-              y: height,
-            }"
-            v-tr3nsition:to="{
-              height:
-                height - yScale(bar.initiatives) <= 0
-                  ? 0.00001
-                  : height - yScale(bar.initiatives),
-              y: yScale(bar.initiatives),
-              transition: {
-                duration: 60,
-                delay: index * 15,
-              },
-            }"
-            :class="{
-              active: activeBar && activeBar.week === bar.week,
-            }"
-            class="bar"
-            :style="{
-              fill: currentStyle.color,
-              stroke: currentStyle.color,
-            }"
+            :height="height - yScale(bar.total_duration)"
+            :y="yScale(bar.total_duration)"
+            :class="{ '!fill-red-100': activeBar && activeBar.index === bar.index }"
+            class="bar fill-gray-50"
+          />
+          <!-- seccond rect with the tagged time total_duration-->
+          <rect
+            :x="xScale(bar.index)"
+            :width="barWidth"
+            :height="afterNextTick ? height - yScale(bar.tagged_duration) : 0"
+            :y="afterNextTick ? yScale(bar.tagged_duration) : height"
+             :class="{ '!fill-red-300': activeBar && activeBar.index === bar.index }"
+            class="bar fill-gray-300"
+          />
+
+          <!-- third rect with the tagged time total_duration-->
+          <rect
+            :x="xScale(bar.index)"
+            :width="barWidth"
+            :height="afterNextTick ? height - yScale(bar.query_duration) : 0"
+            :y="afterNextTick ? yScale(bar.query_duration) : height"
+             :class="{ '!fill-red-300': activeBar && activeBar.index === bar.index }"
+            class="bar fill-gray-500"
           />
 
           <!-- a line above the rect on its top side-->
           <line
-            :x1="xScale(bar.week)"
-            :x2="xScale(bar.week) + barWidth"
-            v-tr3nsition:init="{
-              y1: height,
-              y2: height,
-            }"
-            v-tr3nsition:to="{
-              y1: yScale(bar.initiatives),
-              y2: yScale(bar.initiatives),
-              transition: {
-                duration: 600,
-                delay: index * 15,
-              },
-            }"
-            :stroke="currentStyle.color"
-            stroke-width="3"
+            :x1="xScale(bar.index)"
+            :x2="xScale(bar.index) + barWidth"
+            y1="0"
+            y2="0"
+            :transform="`translate(0, ${
+              afterNextTick ? yScale(hasActiveFilters ? bar.query_duration : bar.tagged_duration) : height
+            })`"
+            class="transition-all duration-1000 ease-in-out"
+            stroke="black"
+            stroke-width="2"
           ></line>
         </g>
-        <g v-if="isRelativeModeReady">
-          <g v-for="(bar, index) in aggregatedBars" :key="index">
-            <rect
-              :x="xScale(bar.week)"
-              :width="barWidth"
-              v-tr3nsition:init="{
-                height: 0,
-                y: height,
-              }"
-              v-tr3nsition:to="{
-                height:
-                  height - yScale(bar.initiatives) <= 0
-                    ? 0.00001
-                    : height - yScale(bar.initiatives),
-                y: yScale(bar.initiatives),
-                transition: {
-                  duration: 60,
-                  delay: index * 15,
-                },
-              }"
-              class="bar"
-              :style="{
-                fill: '#333',
-                stroke: 'transparent',
-              }"
-            />
-          </g>
-        </g>
+      </g>
+
+      <!-- top text -->
+      <g class="top-text" :transform="`translate(${margin.left},10 )`">
+        <text
+          v-if="activeBar"
+          font-size="0.8rem"
+          font-weight="light"
+          fill="#9cb0bf"
+          :text-anchor="
+            xScale(activeBar.index) < 50
+              ? 'start'
+              : xScale(activeBar.index) > width - 130
+              ? 'end'
+              : 'start'
+          "
+        >
+          <tspan :x="xScale(activeBar.index)" :y="margin.top / 2">
+            {{
+              activeBar.firstDay.toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "short",
+              })
+            }}-{{
+              activeBar.endDay.toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "short",
+              })
+            }}
+          </tspan>
+          <tspan dy="1.2em" :x="xScale(activeBar.index)" :y="margin.top / 2">Analizadas:
+            <tspan font-weight="bold">
+              {{ format.F(msToHours(activeBar.total_duration)) }} horas
+            </tspan>
+          </tspan>
+          <tspan dy="2.4em" :x="xScale(activeBar.index)" :y="margin.top / 2">
+            ODS:
+            <tspan font-weight="bold">
+              {{ format.F(msToHours(activeBar.tagged_duration)) }} horas
+            </tspan>
+          </tspan>
+        </text>
       </g>
     </svg>
-    <div class="controls-container o-grid">
-      <div class="o-grid__col u-9">
-        <div class="yearSelectors" v-if="multiYearMode">
-          <a
-            href="#"
-            class="c-button c-button--compact"
-            :class="{
-              'c-button--secondary': activeYear != year,
-              'c-button--primary': activeYear == year,
-            }"
-            v-for="year in datasetAnalytics.allYears"
-            :key="year"
-            @click.prevent="activeYear = year"
-            >{{ year }}</a
-          >
-        </div>
-      </div>
-      <div class="o-grid__col u-3">
-        <UiSwitch
-          label="Comparar con toda la actividad"
-          :checked="showComparativeMode"
-          @update:checked="showComparativeMode = $event"
-        ></UiSwitch>
-        <UiSwitch
-          v-if="availableMultiYearOptions"
-          label="Mostrar todo el periodo"
-          :checked="forceSingleYearMode"
-          @update:checked="forceSingleYearMode = $event"
-          datasetAnalytics.value.countYears
-        >
-          1 >
-        </UiSwitch>
-      </div>
+    <div class="text-sm text-gray-500">
+      Cada barra representa {{ dataset.groupingBy }} días
     </div>
+    
+    
   </div>
 </template>
 
 <script setup>
 // test at http://localhost:5173/ods/ods-2
 
-/* component functionality 
-Displays one barchart for the evolution of the topic
-The chart can be displayed in two modes:
-- All data: the chart displays the evolution of the topic for all years in the dataset
-- multi year mode: the chart displays the evolution of the topic for the selected year. Only available if there is more than one year in the dataset
-This is controled by the multiYearMode computed property and availableMultiYearOptions.
-
--- comparative mode --
-The chart can also display the evolution of the topic compared to the evolution of all topics.
-This is controled by the showComparativeMode computed property and the showComparativeMode switch
-Since the default state is false, the chart will display the evolution of the topic only.
-To avoid loading unused data, the dataset for the aggregated dataset is provided by the parent component when the user clicks on the relative mode switch
-*/
-
-import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue';
 import {
   min,
   max,
@@ -250,31 +176,20 @@ import {
   timeMonth,
   scaleLinear,
   scaleTime,
-} from 'd3';
-import vTr3nsition from './vTr3nsition.js';
-import UiSwitch from './UiSwitch.vue';
-import { TipiLoader } from '@politicalwatch/tipi-uikit';
+} from "d3";
+
 const props = defineProps({
-  defaultHeight: {
+  availableWidth: {
+    type: Number,
+    default: 800,
+  },
+  availableHeight: {
     type: Number,
     default: 400,
   },
-
   topicsStyles: {
     type: Object,
     required: true,
-  },
-  topic: {
-    type: Object,
-    default: () => ({
-      knowledgebase: 'ods',
-      name: 'ODS 2 Hambre cero',
-      shortname: 'ODS 2',
-      id: 'ods-2',
-      description: [
-        'Poner fin al hambre, lograr la seguridad alimentaria y la mejora de la nutrición y promover la agricultura sostenible',
-      ],
-    }),
   },
   /* 
   dataset is an array of objects with the format {week: '2021-01', initiatives: 10}
@@ -283,72 +198,33 @@ const props = defineProps({
   if dataset is provided as an empty array, component will generate a random dataset
   */
   dataset: {
-    type: Array,
-    default: () => [[]],
+    type: Object,
+    default: () => ({
+      initObj: new Date(),
+      endObj: new Date(),
+      groupedData: [],
+    }),
   },
-  /*
-  aggreagatedDataset is an array of objects with the format {week: '2021-01', initiatives: 10} 
-  It is the dataset for the aggregation of all topics. 
-  It can be provided later on, when the user clicks on the relative mode switch
-  */
-  aggreagatedDataset: {
-    type: [null, Array],
-    default: () => [[]],
-  },
-  loadingDynamicData: {
+
+  hasActiveFilters: {
     type: Boolean,
     default: false,
   },
 });
 
-//*** set responsive width and  heights */
-const chartWrapper = ref(null); // wrapper for the svg. Template reference
-/* svg size */
-const availableWidth = ref(800);
-const availableHeight = ref(props.defaultHeight);
-
-const margin = { top: 40, right: 60, bottom: 60, left: 50 };
+const margin = { top: 30, right: 60, bottom: 40, left: 0 };
 const MARGIN_AXIS = 10;
 
 /* chart size inside the axis*/
-const width = computed(() => availableWidth.value - margin.left - margin.right);
+const width = computed(() => props.availableWidth - margin.left - margin.right);
 const height = computed(
-  () => availableHeight.value - margin.top - margin.bottom
+  () => props.availableHeight - margin.top - margin.bottom
 );
 
-// adjust on resize
-onMounted(() => {
-  availableWidth.value = chartWrapper.value.clientWidth;
-  window.addEventListener('resize', () => {
-    availableWidth.value = chartWrapper.value.clientWidth;
-  });
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    availableWidth.value = chartWrapper.value.clientWidth;
-  });
-});
 //**** end of size block**************** ***/
 
-const currentStyle = computed(() => props.topicsStyles[props.topic.name]);
-
 const data = computed(() => {
-  if (props.dataset.length > 0) {
-    // props .dataset.weeks is a string with the format YYYY-WW where WW is the week number
-    return props.dataset;
-  } else {
-    // if dataset is empty generate data points for a full year one for each week:
-    const arr = [];
-    for (let i = 0; i < 90; i++) {
-      arr.push({
-        week: timeFormat('%Y-%W')(timeWeek.offset(new Date('2022-01-01'), i)),
-        initiatives: Math.floor(Math.random() * 100),
-      });
-    }
-
-    return arr;
-  }
+  return props.dataset.groupedData;
 });
 
 /*** blocks analyze the different datasets and compute analytics ************************/
@@ -357,74 +233,19 @@ const data = computed(() => {
 const datasetAnalytics = computed(() => {
   // data.value contais the an array of objects with the format {week: '2021-01', initiatives: 10}
   const a = {
-    initDate: min(data.value, (d) => d.week),
-    endDate: max(data.value, (d) => d.week),
-    firstYear: min(data.value, (d) => d.week).split('-')[0],
-    lastYear: max(data.value, (d) => d.week).split('-')[0],
-    maxInitiatives: max(data.value, (d) => d.initiatives),
-    minInitiatives: min(data.value, (d) => d.initiatives),
+    initDate: props.dataset.initObj,
+    endDate: props.dataset.endObj,
+    firstYear: props.dataset.initObj.getFullYear(),
+    lastYear: props.dataset.endObj.getFullYear(),
+    maxTimeTotal: max(data.value, (d) => d.total_duration),
+    maxTimeTagged: min(data.value, (d) => d.tagged_duration),
+    maxTimeQuery: min(data.value, (d) => d.query_duration),
   };
   // allyears is an array going from firstYear to lastYear (both included)
   a.countYears = parseInt(a.lastYear) - parseInt(a.firstYear);
 
   a.allYears = range(parseInt(a.firstYear), parseInt(a.lastYear) + 1);
   return a;
-});
-
-/* analytics for the aggreagated dataset ****/
-const aggreagatedDatasetAnalytics = computed(() => {
-  if (props.aggreagatedDataset == null || props.aggreagatedDataset.length == 0)
-    return null;
-  const a = {
-    initDate: min(props.aggreagatedDataset, (d) => d.week),
-    endDate: max(props.aggreagatedDataset, (d) => d.week),
-    firstYear: min(props.aggreagatedDataset, (d) => d.week).split('-')[0],
-    lastYear: max(props.aggreagatedDataset, (d) => d.week).split('-')[0],
-    maxInitiatives: max(props.aggreagatedDataset, (d) => d.initiatives),
-    minInitiatives: min(props.aggreagatedDataset, (d) => d.initiatives),
-  };
-  // allyears is an array going from firstYear to lastYear (both included)
-  a.countYears = parseInt(a.lastYear) - parseInt(a.firstYear);
-
-  a.allYears = range(parseInt(a.firstYear), parseInt(a.lastYear) + 1);
-  return a;
-});
-
-/* active data is the data for the selected year or the full dataset depenending on multiYearMode */
-const activeData = computed(() => {
-  if (multiYearMode.value === true)
-    return data.value.filter((d) => d.week.split('-')[0] == activeYear.value);
-  else return data.value;
-});
-
-const activeDataAggregated = computed(() => {
-  if (multiYearMode.value === true)
-    return props.aggreagatedDataset.filter(
-      (d) => d.week.split('-')[0] == activeYear.value
-    );
-  else return props.aggreagatedDataset;
-});
-
-/*
- * activeDataAnalytics are the analytics for the activeData: i
- if multiYearMode is true, activeDataAnalytics is the analytics for the selected year
-  if multiYearMode is false, activeDataAnalytics is the analytics for the full dataset
- */
-const activeDataAnalytics = computed(() => {
-  if (
-    multiYearMode.value === true &&
-    activeData.value != null &&
-    activeData.value.length > 0
-  ) {
-    return {
-      initDate: min(activeData.value, (d) => d.week),
-      endDate: max(activeData.value, (d) => d.week),
-      firstYear: min(activeData.value, (d) => d.week).split('-')[0],
-      lastYear: max(activeData.value, (d) => d.week).split('-')[0],
-      maxInitiatives: max(activeData.value, (d) => d.initiatives),
-      minInitiatives: min(activeData.value, (d) => d.initiatives),
-    };
-  } else return datasetAnalytics.value;
 });
 
 /*** scales for charts
@@ -433,62 +254,33 @@ const activeDataAnalytics = computed(() => {
 
 // xScale is a band scale with the weeks as domain
 const xScale = computed(() =>
-  multiYearMode.value === true
-    ? scaleBand()
-        .domain(
-          range(52).map(
-            (d) =>
-              activeDataAnalytics.value.firstYear +
-              '-' +
-              ('0' + (d + 1)).slice(-2)
-          )
-        )
-        .range([0, width.value])
-        .padding(0)
-    : scaleBand()
-        .domain(activeData.value.map((d) => d.week))
-        .range([0, width.value])
-        .padding(0)
+  scaleBand()
+    .domain(props.dataset.groupedData.map((d) => d.index))
+    .range([0, width.value])
+    .padding(0)
 );
 
-// xScaleTimeForAxis is used to plot the ticks on the x axis. We define a continuous scale based on the first and last week of the dataset
-const xScaleTimeForAxis = computed(() => {
-  const week0 = xScale.value?.domain()[0];
-  const week1 = xScale.value?.domain()[xScale.value?.domain().length - 1];
-  const scale = scaleTime()
-    .domain([getMondayOfISOWeek(week0), getSundayFromYearWeek(week1)])
-    .range([0, width.value]);
-
-  return scale;
+// ticks for xScale:
+// Generate 10 ticks for xScale using d3 functions
+const xTicks = computed(() => {
+  const allTicks = xScale.value.domain();
+  const tickCount = 10;
+  const step = Math.ceil(allTicks.length / tickCount);
+  return allTicks.filter((_, i) => i % step === 0);
 });
-// this are the actual ticks for the x axis, label and positions
-const xScaleTicks = computed(() => {
-  const format = timeFormat('%b %Y'); // short version of the date
-  return xScaleTimeForAxis.value.ticks(timeMonth.every(3)).map(format); // ticks every 3 months
-});
-
-const xScaleTicksPositions = computed(() =>
-  xScaleTimeForAxis.value.ticks(timeMonth.every(3))
-);
 
 const yScale = computed(() =>
-  isRelativeModeReady.value
-    ? scaleLinear()
-        .domain([0, aggreagatedDatasetAnalytics.value.maxInitiatives])
-        .range([height.value, 0])
-    : scaleLinear()
-        .domain([0, datasetAnalytics.value.maxInitiatives])
-        .range([height.value, 0])
+  scaleLinear()
+    .domain([0, datasetAnalytics.value.maxTimeTotal])
+    .range([height.value, 0])
 );
 
 const barWidth = computed(() => xScale.value.bandwidth());
-const bars = computed(() => activeData.value);
-const aggregatedBars = computed(() => activeDataAggregated.value);
+const bars = computed(() => data.value);
 
 //** interaction block*/
 const activeBar = ref(null);
-const activeYear = ref(null);
-const forceSingleYearMode = ref(false);
+const forceSingleYearMode = ref(true);
 
 // multiYearMode is true if there is more than one year in the dataset and forceSingleYearMode is false.
 const availableMultiYearOptions = computed(
@@ -498,22 +290,16 @@ const multiYearMode = computed(
   () => availableMultiYearOptions.value && !forceSingleYearMode.value
 );
 
-onMounted(() => {
-  // Code to fetch data and update the 'data' ref can be added here
-  nextTick(() => {
-    activeYear.value = datasetAnalytics.value.lastYear;
-  });
-});
 const theme = ref({
-  lightGray: '#9cb0bf',
+  lightGray: "#9cb0bf",
 });
 
 // relative view
-const emit = defineEmits(['update:showComparativeMode']);
+const emit = defineEmits(["update:showComparativeMode"]);
 
 const showComparativeMode = ref(false);
 watch(showComparativeMode, (newValue, oldValue) => {
-  emit('update:showComparativeMode', newValue);
+  emit("update:showComparativeMode", newValue);
 });
 
 const isRelativeModeReady = computed(
@@ -521,41 +307,55 @@ const isRelativeModeReady = computed(
     showComparativeMode.value === true && props.aggreagatedDataset?.length > 0
 );
 
-// utils for time conversion beteween yearly-weeks and dates according to the iso standard
-// https://stackoverflow.com/questions/16590500/javascript-calculate-date-from-week-number
-function getMondayOfISOWeek(yearWeek) {
-  const [year, week] = yearWeek.split('-');
-  let date = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
-  let day = date.getUTCDay();
+function firstDayToTick(date, index) {
+  if (props.dataset.groupingBy === 30) {
+    // display only month and year like 01-2021 but display year only if it's different from the previous tick
+    const previousTick = xTicks.value[index - 1];
+    const previousTickDate = data.value.find((d) => d.index === previousTick);
 
-  // If the day is not Monday (1), adjust the date
-  if (day !== 1) {
-    date.setUTCDate(date.getUTCDate() + (day <= 4 ? -(day - 1) : 8 - day));
+    if (
+      index === 0 ||
+      (previousTickDate &&
+        date.getFullYear() !== previousTickDate.firstDay.getFullYear())
+    ) {
+      return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "short",
+      });
+    } else {
+      return date.toLocaleDateString("es-ES", {
+        month: "short",
+      });
+    }
+  } else {
+    // display day, month and year numeric like 2021-01-01
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   }
-  return date;
 }
+const afterNextTick = ref(false);
+onMounted(() => {
+  setTimeout(() => {
+    afterNextTick.value = true;
+  }, 100);
+});
 
-function getSundayFromYearWeek(yearWeek) {
-  let [year, week] = yearWeek.split('-').map(Number);
-  let date = new Date(year, 0, 1 + (week - 1) * 7);
-  let day = date.getDay();
-  let diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust if the first day of the year is later than Monday
-  date = new Date(date.setDate(diff));
-  date.setDate(date.getDate() + 6); // add 6 days to get to Sunday
-  return date;
-}
+watch(height, (newValue, oldValue) => {
+  console.log("height", newValue, oldValue);
+});
 </script>
 
 <style scoped>
 .bar {
-  fill-opacity: 0.1;
   stroke-opacity: 0.05;
   pointer-events: none;
-  transition: 0.1s;
+  transition: transform 0.8s ease-in-out, fill 0.1s;
 }
 .bar:hover,
 .bar.active {
-  fill-opacity: 1;
   stroke-opacity: 1;
 }
 
@@ -570,10 +370,10 @@ function getSundayFromYearWeek(yearWeek) {
 .axis text {
   font-size: 0.8rem;
   font-weight: light;
-  fill: v-bind('theme.lightGray');
+  fill: v-bind("theme.lightGray");
 }
 .axis line {
-  stroke: v-bind('theme.lightGray');
+  stroke: v-bind("theme.lightGray");
 }
 .axis line.ticks {
   stroke-opacity: 0.2;

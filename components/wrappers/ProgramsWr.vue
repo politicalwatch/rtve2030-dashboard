@@ -61,9 +61,7 @@ const dataForTable = computed(() => {
   })
   .filter((prg) => prg !== null);
 });
-watch(() => dataForTable.value, (newValue, oldValue) => {
-  console.log('recompute', newValue);
-})
+
 </script>
 
 <style></style>

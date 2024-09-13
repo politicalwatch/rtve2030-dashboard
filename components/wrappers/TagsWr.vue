@@ -19,7 +19,7 @@
         <VueWordCloud
           :words="updatedWordCloud"
           :color="colorfn"
-          :style="{ width: width + 'px', height: height + 'px' }"
+          :style="{ width: width-padding.left-padding.right + 'px', height: height-padding.top-padding.bottom + 'px', 'margin-left': padding.left + 'px',  'margin-top': padding.top + 'px'}"
           v-if="width > 0 && height > 0"
           :fontFamily="'Roboto'"
           :font-size-ratio="4"
@@ -27,7 +27,7 @@
           :drawer="true"
           :enter-animation="enterAnimation"
           :leave-animation="leaveAnimation"
-          :animation-duration="1000"
+          :animation-duration="700"
         />
       </div>
     </div>
@@ -41,8 +41,8 @@ import VueWordCloud from "vuewordcloud";
 import { scaleSequential, interpolate } from "d3";
 import { useElementSize, useElementVisibility } from "@vueuse/core";
 import { _300 as green300, _700 as green700 } from "#twcss/theme/colors/green";
-
-const padding = { top: 10, right: 10, bottom: 10, left: 10 };
+import { _400 , _800  } from "#twcss/theme/colors/gray";
+const padding = { top: 0, right: 10, bottom: 0, left: 50 };
 interface Props {
   tagsData: Array<StatsTags>;
   baseData: Array<StatsTags>;
@@ -121,8 +121,8 @@ const topWords = computed(() => {
 
 // create a sequential color scale using d3. It must use two green colors and interpolate between them
 const colorScale = computed(() => {
-  const minColor = green300; // Light green
-  const maxColor = green700; // Dark green
+  const minColor = _400; // Light green
+  const maxColor = _800; //8Dark green
   const minValue = Math.min(...topWords.value.map((d) => d[1]));
   const maxValue = Math.max(...topWords.value.map((d) => d[1]));
 
@@ -151,11 +151,17 @@ watch(wordCloudIsVisible, (isVisible) => {
   }
 });
 
-function getRotation() {
+/*function getRotation() {
   if (Math.random() < 0.25) return 0;
   else if (Math.random() < 0.5) return 1 / 8;
   else if (Math.random() < 0.75) return 3 / 4;
   else return 7 / 8;
+}*/
+function getRotation() {
+  if (Math.random() < 0.7) return 0;
+  
+  else  return 3 / 4;
+  
 }
 
 const updatedWordCloud = ref([]);
@@ -172,7 +178,7 @@ const startWordCloudAnimation = () => {
     } else {
       clearInterval(animationInterval.value);
     }
-  }, 100);
+  }, 50);
 };
 
 watch(wordCloudHasBeenVisible, (isVisible) => {

@@ -145,6 +145,21 @@ export interface StatsTags {
   occurrences: number;
 }
 
+// stats/evolution-stacked
+export interface HoursPeriodStacked {
+ date: string,
+ dateObj: Date,
+ total_duration: number
+ tagged_duration: number
+ query_duration: number
+}
+export interface StatsEvolutionStacked {
+  init: string,
+  end: string,
+  initObj: Date,
+  endObj: Date,
+ hoursPeriod: HoursPeriodStacked[]
+}
 /** dates 
  * Reference: https://blog.logrocket.com/handling-date-strings-typescript/
 */

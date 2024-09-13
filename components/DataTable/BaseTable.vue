@@ -72,7 +72,7 @@ const table = useVueTable({
   getExpandedRowModel: getExpandedRowModel(),
   initialState: {
     pagination: {
-      pageSize: 15,
+      pageSize: 17,
     },
   },
   // getSubRows: (row) => row.getExpandedRowModel().rows,

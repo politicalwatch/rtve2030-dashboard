@@ -1,4 +1,5 @@
 import type { NitroFetchRequest, $Fetch } from "nitropack";
+import type { StatsEvolutionStacked } from "~/types/apiTypes";
 
 // repository pattern in nuxt 3:
 //www.youtube.com/watch?v=jXH8Tr-exhI
@@ -105,6 +106,24 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       ...(program && { program }),
     };
     return fetch<StatsTags[]>("/stats/tags", {
+      query,
+    });
+  },  
+  async getEvolutionStacked(
+    startDate?: string,
+    endDate?: string,
+    topic?: SdgTopic[],
+    channel?: Channels[],
+    program?: string[]
+  ): Promise<StatsEvolutionStacked> {
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(topic && { topic }),
+      ...(channel && { channel }),
+      ...(program && { program }),
+    };
+    return fetch<StatsEvolutionStacked>("/stats/evolution-stacked", {
       query,
     });
   },

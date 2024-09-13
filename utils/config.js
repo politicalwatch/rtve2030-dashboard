@@ -115,3 +115,4 @@ export const STYLES = {
   defaultColor: "#cecece",
   defaultImage: "placeholder.png",
 };
+
