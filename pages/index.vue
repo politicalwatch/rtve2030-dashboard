@@ -11,7 +11,7 @@
     </header>
     <section class="bg-gray-50 border-b border-gray-500">
       <div class="container py-4">
-        <h1 class="text-sm uppercase font-bold">
+        <h1 class="text-sm uppercase font-bold font-mono">
           vista global y selección de periodo de estudio
         </h1>
         <div class="grid grid-cols-5 gap-8 items-center my-4">
@@ -88,7 +88,7 @@
     <!--- end of global stats  -->
     <section class="mt-12">
       <div class="container mb-4">
-        <h1 class="text-sm uppercase font-bold">
+        <h1 class="text-sm uppercase font-bold font-mono">
           datos del periodo seleccionado
         </h1>
       </div>
@@ -139,6 +139,7 @@
             v-if="sdgData != null && baseDataStore.sdgData != null"
             :sdgData="sdgData"
             :baseData="baseDataStore.sdgData"
+            :baseTaggedDuration="baseTaggedDuration"
           >
           </WrappersSdgWr>
         </div>
@@ -391,6 +392,10 @@ const filteredTotalDuration = computed(() => {
   if (channelsData.value == null) return 0;
   return sum(channelsData.value, (d) => d.total_duration);
 });
+const filteredTaggedDuration = computed(() => {
+  if (channelsData.value == null) return 0;
+  return sum(channelsData.value, (d) => d.tagged_duration);
+});
 
 const filteredProgramsCount = computed(() => {
   if (programsData.value == null) return 0;
@@ -400,6 +405,11 @@ const filteredProgramsCount = computed(() => {
 const filteredEpisodesCount = computed(() => {
   if (programsData.value == null) return 0;
   return sum(programsData.value, (d) => d.episode_count);
+});
+
+const baseTaggedDuration = computed(() => {
+  if (baseDataStore.channelsData == null) return 0;
+  return sum(baseDataStore.channelsData, (d) => d.tagged_duration);
 });
 
 /** this part of the code is in charge of "updating the store with the base data"

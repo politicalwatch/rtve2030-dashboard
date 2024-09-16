@@ -2,7 +2,7 @@ import {  formatLocale } from "d3";
 
  const locale = formatLocale({
    decimal: ",",
-   thousands: "\u205F",
+   thousands: "\u2009",
    grouping: [3],
    currency: ["", "\u202F M€"],
    minus: "\u2212",
@@ -33,12 +33,19 @@ function PCT(num){
   return locale.format(",.2%")(num);
 }
 
+function msToTime(ms) {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  return `${N(hours)}:${N(minutes)}`;
+}
+
 const format = {
   localES_money,
   localES,
   locale,
   F,
   N,
-  PCT
+  PCT,
+  msToTime
 };
 export default format;

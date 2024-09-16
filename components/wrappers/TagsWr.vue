@@ -160,7 +160,7 @@ watch(wordCloudIsVisible, (isVisible) => {
 function getRotation() {
   if (Math.random() < 0.7) return 0;
   
-  else  return 3 / 4;
+  else  return 0
   
 }
 

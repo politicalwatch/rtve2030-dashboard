@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   },
   googleFonts: {
     families: {
-      "Roboto+Slab": [400, 600],
+      "Roboto+Slab": [200,300,400,500, 600],
     },
   },
 

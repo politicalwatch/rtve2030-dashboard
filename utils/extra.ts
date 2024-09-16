@@ -19,3 +19,7 @@ export function valueUpdater<T extends Updater<any>>(
       ? updaterOrValue(ref.value)
       : updaterOrValue;
 }
+
+export function getSdgNumberFromName(name: string) {
+  return name.split(" ")[1];
+}

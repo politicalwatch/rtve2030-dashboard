@@ -151,8 +151,11 @@ function getVisiblePages() {
         <TableRow
           v-for="headerGroup in table.getHeaderGroups()"
           :key="headerGroup.id"
+          
         >
-          <TableHead v-for="header in headerGroup.headers" :key="header.id">
+          <TableHead v-for="header in headerGroup.headers" :key="header.id"
+          :style="header.getSize()&&header.getSize()!=150?{width:header.getSize()+'px'}:{}"
+          >
             <FlexRender
               v-if="!header.isPlaceholder"
               :render="header.column.columnDef.header"
@@ -176,7 +179,7 @@ function getVisiblePages() {
             </TableRow>
             <TableRow v-if="row.getIsExpanded()">
               <TableCell :colspan="columns.length">
-                <GoalSub :data="row.original.goals"> </GoalSub>
+                <GoalSub :data="row.original.goals" :sdgTotalTaggedDuration="row.original.duration" :maxParentWidth="row.original.allSdgDuration" > </GoalSub>
               </TableCell>
             </TableRow>
           </template>

@@ -4,42 +4,27 @@ import MiniBarSdg from "./MiniBarSdg.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
-export const columns: ColumnDef<TableSdg>[] = [
+export const goalColumns: ColumnDef<TableGoals>[] = [
   {
-    id: "toggle",
-    size:20,
-    enableResizing:false,
-    cell: ({ row }) => {
-      return h(
-        "button",
-        {
-          onClick: () => row.toggleExpanded(),
-        },
-        [
-          h(Icon, {
-            name: row.getIsExpanded()
-              ? "lucide:chevron-down"
-              : "lucide:chevron-right",
-          }),
-        ]
-      );
-      return;
-    },
-  },
-  {
-    accessorKey: "sdg",
+    accessorKey: "goal",
     header: ({ column }) => {
       return "";
     },
     size:40,
     
     cell: ({ row, getValue }) => {
-      const style = STYLES.topics[getValue()];
-      return h("img", {
-        class: "text-left h-6 w-6",
-        style: "background-color: " + style?.color,
-        src: "/img/topics/" + style?.image,
-      });
+      const style = STYLES.topics[row.original.parentSdg];
+      const code = getValue().split(" ")[0]
+      return h(
+        "div",
+        {
+          class: "flex gap-2 justify-end items-center text-xs",
+        },
+        [h("span", {}, code), h("span", {
+          class: 'w-2 h-2',
+          style: 'background-color: ' + style?.color,
+        }, )]
+      );
     },
   },
   {
@@ -56,15 +41,15 @@ export const columns: ColumnDef<TableSdg>[] = [
     },
     cell: ({ row }) => {
       return h(MiniBarSdg, {
-        total_duration: row.original.allSdgDuration,
+        total_duration: row.original.parentSdgDuration,
         tagged_duration: row.original.duration,
-        maxTotalDuration: row.original.allSdgDuration,
-        name: row.original.sdg,
+        maxTotalDuration: row.original.maxParentSdgDuration,
+        name: row.original.goal,
       });
     },
   },
   {
-    accessorKey: "sdg",
+    accessorKey: "goal",
     header: ({ column }) => {
       return h(
         "button",
@@ -75,14 +60,13 @@ export const columns: ColumnDef<TableSdg>[] = [
       );
     },
     cell: ({ row, getValue }) => {
-      const onlyName = getValue().split(" ").slice(2).join(" ");
-      const onlyNumber = getValue().split(" ")[1];
+      const onlyName = getValue().split(" ").slice(1).join(" ");
       return h(
         "div",
         {
           class: "flex gap-4 justify-end ",
         },
-        [h("span", {}, onlyName), h("span", {}, onlyNumber)]
+        [h("span", {class: 'text-xs'}, onlyName)]
       );
     },
   },

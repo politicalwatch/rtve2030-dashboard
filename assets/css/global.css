@@ -1,3 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .chart-titles{
-    @apply font-heads font-semibold text-xs mb-2
+    @apply font-sans font-semibold text-xs mb-2
+}
+
+@layer base {
+body{
+    @apply font-sans font-light
+}
+
 }

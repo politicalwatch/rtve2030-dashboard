@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
         <slot></slot>
       </h2>
       <div class="number-counter border-l border-r border-black/30 text-right px-1">
-        <span class="number-counter__value text-5xl font-bold ">
+        <span class="number-counter__value text-5xl font-bold font-mono">
           {{ formatter(props.varValue) }}
         </span>
       </div>
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
       <div class="w-full flex justify-between text-2xs px-1">
         <span>0</span>
         
-        <span class="border-l block mb-2 border-black/30 "></span>
+        <span class="border-l block mb-2 border-black/30 font-mono"></span>
         <span>{{ formatter(props.maxValue) }} </span>
       </div>
     </div>

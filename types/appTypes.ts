@@ -28,3 +28,21 @@ export interface TableTags {
   hasActiveFilters: boolean;
 
 }
+
+export interface TableSdg {
+  sdg: SdgTopic;
+  duration: number;
+  occurrences: number;
+  goals: StatsGoal[];
+  allSdgDuration: number;
+}
+
+
+export interface TableGoals {
+  goal: string;
+  parentSdg: SdgTopic;
+  duration: number;
+  occurrences: number;
+  parentSdgDuration: number;
+  maxParentSdgDuration: number;
+}
