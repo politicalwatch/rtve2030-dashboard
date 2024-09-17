@@ -41,7 +41,6 @@ onMounted(async () => {
 });
 const filters = useFiltersStore();
 
-
 interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -50,8 +49,8 @@ interface Props<TData, TValue> {
   placeholder?: string;
   rowId?: string;
   syncWithFilters?: boolean;
-  filterField?: 'channels' | 'programs';
-  filterFlagField?: 'channelRemovedFlag' | 'programRemovedFlag';
+  filterField?: "channels" | "programs";
+  filterFlagField?: "channelRemovedFlag" | "programRemovedFlag";
 }
 
 const props = withDefaults(defineProps<Props<TData, TValue>>(), {
@@ -60,6 +59,8 @@ const props = withDefaults(defineProps<Props<TData, TValue>>(), {
   placeholder: "Filtrar términos...",
   rowId: undefined,
   syncWithFilters: false,
+  filterField: "channels",
+  filterFlagField: "channelRemovedFlag",
 });
 
 const sorting = ref<SortingState>([]);
@@ -69,8 +70,15 @@ const selectedRows = ref([]);
 const doNotUpdate = ref(false);
 
 watch(rowSelection, (newValue, oldValue) => {
-  if (!props.syncWithFilters) return;
-  if (doNotUpdate.value === false) filters[props.filterField] = Object.keys(newValue);
+  if (!props.syncWithFilters || props.filterField === undefined) return;
+  if (doNotUpdate.value === false) {
+    if (props.filterField === "channels") {
+      filters[props.filterField] = Object.keys(newValue) as Channels[];
+    }
+    if (props.filterField === "programs") {
+      filters[props.filterField] = Object.keys(newValue);
+    }
+  }
   doNotUpdate.value = false;
 });
 
@@ -78,9 +86,9 @@ watch(rowSelection, (newValue, oldValue) => {
 watch(
   () => filters[props.filterFlagField],
   (newValue, oldValue) => {
-    console.log(props.filterFlagField)
+    console.log(props.filterFlagField);
 
-    if (!props.syncWithFilters) return;
+    if (!props.syncWithFilters || props.filterField === undefined) return;
     if (newValue === true) {
       table.resetRowSelection();
       table.resetRowPinning();
@@ -187,7 +195,8 @@ function getVisiblePages() {
       v-if="
         teleportTarget !== 'body' &&
         searchColumnName != undefined &&
-        afterNextTick"
+        afterNextTick
+      "
     >
       <Teleport defer :to="teleportTarget">
         <div class="relative w-full max-w-md items-center">

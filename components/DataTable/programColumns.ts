@@ -98,6 +98,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
         total_duration: row.original.total_duration,
         tagged_duration: row.original.tagged_duration,
         maxTotalDuration: row.original.maxTotalDuration,
+        filteredTaggedDuration:row.original.filteredTaggedDuration
       });
     },
   },
