@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="flex justify-between items-center  h-9">
-      <h2 class="chart-titles ">Canales</h2>
+    <div class="flex justify-between items-center h-9">
+      <h2 class="chart-titles">Canales</h2>
     </div>
-    <div class="flex justify-start gap-2 text-2xs">
+    <!-- <div class="flex justify-start gap-2 text-2xs">
       <button
         v-for="chan in Channels"
         class="w-6 text-center hover:brightness-150 hover:shadow-md"
@@ -16,9 +16,17 @@
       >
         <img :src="`/img/channels/${chan}.png`" :alt="'channel-icon' + chan" />
       </button>
-    </div>
+    </div> -->
 
-    <DataTableBaseTable :columns="columns" :data="dataForTable" />
+    <DataTableBaseTable
+      :columns="columns"
+      :data="dataForTable"
+      rowId="name"
+
+      :syncWithFilters="true"
+      filterField="channels"
+      filterFlagField="channelRemovedFlag"
+    />
   </div>
 </template>
 

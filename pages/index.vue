@@ -146,13 +146,13 @@
 
         <div class="mt-8 grid grid-cols-5 gap-8 border-t border-black pt-2">
           <div class="col-span-2">
-            <WrappersChannels
+            <WrappersChannelsWr
               v-if="channelsData != null && baseDataStore.channelsData != null"
               :channelsData="channelsData"
               :baseData="baseDataStore.channelsData"
               :hasActiveFilters="filters.hasActiveFilters"
             >
-            </WrappersChannels>
+            </WrappersChannelsWr>
           </div>
           <div class="col-span-3">
             <WrappersProgramsWr
@@ -176,18 +176,6 @@
         </div>
       </div>
     </section>
-    <!-- frequency chart
-     <FrequencyChart
-          :topicsStyles="STYLES"
-          :topic="topic"
-          :dataset="topicsByWeek"
-          :aggreagatedDataset="allTopicsByWeek"
-          :loadingDynamicData="loadingDynamicData"
-          @update:showComparativeMode="getAllTopicsByWeek()"
-          v-if="topicsByWeek != null"
-        />
-
-        -->
   </div>
 </template>
 

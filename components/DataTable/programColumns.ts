@@ -1,9 +1,15 @@
 import { h } from "vue";
-import type { ColumnDef } from "@tanstack/vue-table";
+import {
+  RowPinning,
+  type ColumnDef,
+  type RowPinningPosition,
+} from "@tanstack/vue-table";
 import MiniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
+import { Checkbox } from "@/components/ui/checkbox";
+
 export const columns: ColumnDef<TablePrograms>[] = [
   // {
   //   accessorKey: "name",
@@ -15,11 +21,29 @@ export const columns: ColumnDef<TablePrograms>[] = [
   //   },
   // },
   {
+    id: "select",
+    header: ({ column }) => {
+      return h('div', {}
+      );
+      width: 20
+    },
+    cell: ({ table, row, column }) =>
+      h(Checkbox, {
+        checked: row.getIsSelected(),
+        "onUpdate:checked": (value: boolean) => {
+          row.toggleSelected(!!value);
+          row.pin(row.getIsPinned() ? false : "top");   
+        },
+        ariaLabel: "Select row",
+      }),
+  },
+  {
     accessorKey: "canal",
     header: () => h("div", { class: "text-right" }, ""),
     cell: ({ row, getValue }) => {
       return h(ChannelIconName, {
         canal: getValue() as Channels,
+        showName: false,
       });
     },
   },

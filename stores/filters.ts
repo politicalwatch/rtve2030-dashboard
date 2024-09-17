@@ -8,6 +8,8 @@ export const useFiltersStore = defineStore("filters", () => {
   const sdgActive = ref<SdgTopic[]>([]);
   const channels = ref<Channels[]>([]);
   const programs = ref<string[]>([]);
+  const programRemovedFlag = ref(false)
+  const channelRemovedFlag = ref(false)
   // New getter
   const hasActiveFilters = computed(() => {
     return sdgActive.value.length > 0 || channels.value.length > 0;
@@ -18,12 +20,16 @@ export const useFiltersStore = defineStore("filters", () => {
   }
 
   function removeChannelFilter(value: Channels) {
+    channelRemovedFlag.value = true
     channels.value = channels.value.filter((channel) => channel !== value);
   }
 
   function removeProgramFilter(value: string) {
+    programRemovedFlag.value = true
     programs.value = programs.value.filter((program) => program !== value);
   }
+
+  
 
   return {
     timespan: readonly(timespan),
@@ -35,5 +41,7 @@ export const useFiltersStore = defineStore("filters", () => {
     removeSdgFilter,
     removeChannelFilter,
     removeProgramFilter,
+    programRemovedFlag,
+    channelRemovedFlag
   };
 });

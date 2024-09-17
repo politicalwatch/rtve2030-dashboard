@@ -1,4 +1,13 @@
 <script setup lang="ts" generic="TData, TValue">
+import type {
+  ColumnDef,
+  SortingState,
+  ExpandedState,
+  ColumnFiltersState,
+  RowPinningState,
+  Row,
+} from "@tanstack/vue-table";
+
 import {
   FlexRender,
   getCoreRowModel,
@@ -20,37 +29,73 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import type {
-  ColumnDef,
-  SortingState,
-  ExpandedState,
-  ColumnFiltersState
-} from "@tanstack/vue-table";
+import GoalSub from "./GoalSub.vue";
 
 const columnFilters = ref<ColumnFiltersState>([]);
-
-import GoalSub from "./GoalSub.vue";
+const rowSelection = ref({});
+const rowPinning = ref<RowPinningState>({});
 const afterNextTick = ref(false);
 onMounted(async () => {
   await nextTick();
   afterNextTick.value = true;
 });
+const filters = useFiltersStore();
+
+
 interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchColumnName?: keyof TData;
   teleportTarget?: string;
   placeholder?: string;
+  rowId?: string;
+  syncWithFilters?: boolean;
+  filterField?: 'channels' | 'programs';
+  filterFlagField?: 'channelRemovedFlag' | 'programRemovedFlag';
 }
 
 const props = withDefaults(defineProps<Props<TData, TValue>>(), {
   searchColumnName: undefined,
   teleportTarget: "body",
   placeholder: "Filtrar términos...",
+  rowId: undefined,
+  syncWithFilters: false,
 });
 
 const sorting = ref<SortingState>([]);
 const expanded = ref<ExpandedState>({});
+const selectedRows = ref([]);
+
+const doNotUpdate = ref(false);
+
+watch(rowSelection, (newValue, oldValue) => {
+  if (!props.syncWithFilters) return;
+  if (doNotUpdate.value === false) filters[props.filterField] = Object.keys(newValue);
+  doNotUpdate.value = false;
+});
+
+// when the filter changes, in the store ( filter removal) we need to update the table
+watch(
+  () => filters[props.filterFlagField],
+  (newValue, oldValue) => {
+    console.log(props.filterFlagField)
+
+    if (!props.syncWithFilters) return;
+    if (newValue === true) {
+      table.resetRowSelection();
+      table.resetRowPinning();
+      filters[props.filterField].forEach((itemId) => {
+        const row = table.getRow(itemId);
+        if (row) {
+          row.toggleSelected(true);
+          row.pin("top");
+        }
+      });
+      doNotUpdate.value = true;
+      filters[props.filterFlagField] = false;
+    }
+  }
+);
 
 const table = useVueTable({
   get data() {
@@ -59,6 +104,15 @@ const table = useVueTable({
   get columns() {
     return props.columns;
   },
+  getRowId: (originalRow: TData, index: number) => {
+    if (props.rowId === undefined) {
+      return index + "";
+    }
+    const id = originalRow[props.rowId as keyof TData];
+    return id === undefined ? index + "" : String(id); // Ensure id is a string
+  },
+  enableRowPinning: true,
+  keepPinnedRows: true,
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
@@ -68,6 +122,11 @@ const table = useVueTable({
   onColumnFiltersChange: (updaterOrValue) =>
     valueUpdater(updaterOrValue, columnFilters),
   getFilteredRowModel: getFilteredRowModel(),
+  onRowSelectionChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, rowSelection),
+  onRowPinningChange: (updaterOrValue) => {
+    valueUpdater(updaterOrValue, rowPinning);
+  },
 
   getExpandedRowModel: getExpandedRowModel(),
   initialState: {
@@ -85,6 +144,12 @@ const table = useVueTable({
     },
     get columnFilters() {
       return columnFilters.value;
+    },
+    get rowSelection() {
+      return rowSelection.value;
+    },
+    get rowPinning() {
+      return rowPinning.value;
     },
   },
 });
@@ -117,12 +182,12 @@ function getVisiblePages() {
 
 <template>
   <div class="border rounded-md">
+    <!-- {{  rowSelection}} -->
     <template
       v-if="
         teleportTarget !== 'body' &&
         searchColumnName != undefined &&
-        afterNextTick
-      "
+        afterNextTick"
     >
       <Teleport defer :to="teleportTarget">
         <div class="relative w-full max-w-md items-center">
@@ -141,7 +206,7 @@ function getVisiblePages() {
           <span
             class="absolute end-0 inset-y-0 flex items-center justify-center px-2"
           >
-            <Icon name="lucide:search" class="size-4 text-gray-200 " />
+            <Icon name="lucide:search" class="size-4 text-gray-200" />
           </span>
         </div>
       </Teleport>
@@ -151,10 +216,15 @@ function getVisiblePages() {
         <TableRow
           v-for="headerGroup in table.getHeaderGroups()"
           :key="headerGroup.id"
-          
         >
-          <TableHead v-for="header in headerGroup.headers" :key="header.id"
-          :style="header.getSize()&&header.getSize()!=150?{width:header.getSize()+'px'}:{}"
+          <TableHead
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            :style="
+              header.getSize() && header.getSize() != 150
+                ? { width: header.getSize() + 'px' }
+                : {}
+            "
           >
             <FlexRender
               v-if="!header.isPlaceholder"
@@ -166,7 +236,7 @@ function getVisiblePages() {
       </TableHeader>
       <TableBody>
         <template v-if="table.getRowModel().rows?.length">
-          <template v-for="row in table.getRowModel().rows" :key="row.id">
+          <template v-for="row in table.getTopRows()" :key="row.id">
             <TableRow
               :data-state="row.getIsSelected() ? 'selected' : undefined"
             >
@@ -177,9 +247,32 @@ function getVisiblePages() {
                 />
               </TableCell>
             </TableRow>
+          </template>
+
+          <template v-for="row in table.getCenterRows()" :key="row.id">
+            <TableRow
+              :data-state="row.getIsSelected() ? 'selected' : undefined"
+              :class="
+                !row.getIsSelected() && table.getIsSomeRowsSelected()
+                  ? 'opacity-30'
+                  : ''
+              "
+            >
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                <FlexRender
+                  :render="cell.column.columnDef.cell"
+                  :props="cell.getContext()"
+                />
+              </TableCell>
+            </TableRow>
             <TableRow v-if="row.getIsExpanded()">
               <TableCell :colspan="columns.length">
-                <GoalSub :data="row.original.goals" :sdgTotalTaggedDuration="row.original.duration" :maxParentWidth="row.original.allSdgDuration" > </GoalSub>
+                <GoalSub
+                  :data="row.original.goals"
+                  :sdgTotalTaggedDuration="row.original.duration"
+                  :maxParentWidth="row.original.allSdgDuration"
+                >
+                </GoalSub>
               </TableCell>
             </TableRow>
           </template>

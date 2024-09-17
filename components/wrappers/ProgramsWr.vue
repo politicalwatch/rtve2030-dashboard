@@ -9,6 +9,10 @@
       :data="dataForTable"
       :searchColumnName="'name'"
       teleportTarget="#programs-search-input"
+      rowId="name"
+      :syncWithFilters="true"
+      filterField="programs"
+      filterFlagField="programRemovedFlag"
     />
   </div>
 </template>

@@ -4,7 +4,24 @@ import MiniBarChart from "./MiniBarChart.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
+import { Checkbox } from "@/components/ui/checkbox";
 export const columns: ColumnDef<TableChannels>[] = [
+  {
+    id: "select",
+    header: ({ column }) => {
+      return h("div", {});
+      width: 20;
+    },
+    cell: ({ table, row, column }) =>
+      h(Checkbox, {
+        checked: row.getIsSelected(),
+        "onUpdate:checked": (value: boolean) => {
+          row.toggleSelected(!!value);
+          row.pin(row.getIsPinned() ? false : "top");
+        },
+        ariaLabel: "Select row",
+      }),
+  },
   {
     accessorKey: "name",
     header: () => h("div", { class: "text-right" }, "Canal"),
@@ -74,15 +91,11 @@ export const columns: ColumnDef<TableChannels>[] = [
     cell: ({ row, getValue }) => {
       const basePrograms = row.original.basePrograms ?? 0;
       const programs = row.original.programs ?? 0;
-      return h(
-        "div",
-        { class: "text-right font-medium" },
-        [
-          h("span", { class: "font-black" }, programs),
-          "/",
-          basePrograms
-        ]
-      );
+      return h("div", { class: "text-right font-medium" }, [
+        h("span", { class: "font-black" }, programs),
+        "/",
+        basePrograms,
+      ]);
     },
   },
 ];
