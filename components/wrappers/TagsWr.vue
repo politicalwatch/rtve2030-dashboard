@@ -17,7 +17,7 @@
 
       <div class="col-span-2" ref="wordcloudContainer">
         <VueWordCloud
-          :words="updatedWordCloud"
+          :words="topWords"
           :color="colorfn"
           :style="{ width: width-padding.left-padding.right + 'px', height: height-padding.top-padding.bottom + 'px', 'margin-left': padding.left + 'px',  'margin-top': padding.top + 'px'}"
           v-if="width > 0 && height > 0"
@@ -138,18 +138,18 @@ const colorfn = (
   return colorScale.value(weight);
 };
 
+
 const wordcloudContainer = ref(null);
 
 const { width, height } = useElementSize(wordcloudContainer);
 const wordCloudIsVisible = useElementVisibility(wordcloudContainer);
 const wordCloudHasBeenVisible = ref(false);
 
-watch(wordCloudIsVisible, (isVisible) => {
-  if (isVisible) {
-    console.log("wordCloudIsVisible", isVisible);
-    wordCloudHasBeenVisible.value = true;
-  }
-});
+// watch(wordCloudIsVisible, (isVisible) => {
+//   if (isVisible) {
+//     wordCloudHasBeenVisible.value = true;
+//   }
+// });
 
 /*function getRotation() {
   if (Math.random() < 0.25) return 0;
@@ -164,7 +164,7 @@ function getRotation() {
   
 }
 
-const updatedWordCloud = ref([]);
+const updatedWordCloud = ref<[string, number][]>([]);
 const animationInterval = ref<any>(null);
 
 const startWordCloudAnimation = () => {
@@ -172,7 +172,7 @@ const startWordCloudAnimation = () => {
   updatedWordCloud.value = [];
 
   animationInterval.value = setInterval(() => {
-    if (index < topWords.value.length) {
+    if (index < topWords.value.length) {      
       updatedWordCloud.value.push(topWords.value[index]);
       index++;
     } else {
@@ -181,13 +181,23 @@ const startWordCloudAnimation = () => {
   }, 50);
 };
 
-watch(wordCloudHasBeenVisible, (isVisible) => {
-  if (isVisible) {
-    nextTick(() => {
-      startWordCloudAnimation();
-    });
-  }
-});
+// this is trigger on visilibty of the wordcloud container
+// watch(wordCloudHasBeenVisible, (isVisible) => {
+//   if (isVisible) {
+//     nextTick(() => {
+//       startWordCloudAnimation();
+//     });
+//   }
+// });
+
+// this is trigger on the topWords array change: required when the filters change 
+// watch(topWords, (words) => {
+//   clearInterval(animationInterval.value);
+//   console.log("topWords", words);
+//   updatedWordCloud.value = topWords.value.map((word) => [word[0], word[1]]);
+// },
+// {deep:true}
+// );
 
 onBeforeUnmount(() => {
   if (animationInterval.value) {

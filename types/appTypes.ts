@@ -24,7 +24,7 @@ export interface TableTags {
   sdgs: SdgTopic[];
   total_occurrences: number;
   maxTotalOccurrences: number;
-  filtered_occurrences?: number;
+  filtered_occurrences: number;
   hasActiveFilters: boolean;
 
 }
