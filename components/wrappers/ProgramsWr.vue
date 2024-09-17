@@ -24,7 +24,6 @@ import { columns } from "../DataTable/programColumns";
 import { rollups, sum } from "d3";
 
 const filtersStore = useFiltersStore();
-const { channels: filterChannels } = storeToRefs(filtersStore);
 interface Props {
   programsData: Array<StatsPrograms>;
   baseData: Array<StatsPrograms>;
@@ -39,26 +38,27 @@ const maxTotalDuration = computed(() => {
 
 
 const dataForTable = computed(() => {
-  return props.baseData.map((prg) => {
-    const filteredEquivalent= props.programsData.find((prg2) => prg.name === prg2.name)
+  return props.baseData.map((prgBase) => {
+    const filteredEquivalent= props.programsData.find((prg2) => prgBase.name === prg2.name)
     if (!filteredEquivalent) return null;
+
     const aggrData = rollups(
-      prg.topics,
+      prgBase.topics,
       (v) => sum(v, (d) => d.duration),
       (d) => d.topic
     );
     // get top 5 topics
     const topTopics = aggrData.sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const filteredTaggedDuration = props.hasActiveFilters
+      ? sum(filteredEquivalent.topics, (d) => d.duration)
+      : undefined;
     return {
-      canal: prg.channel,
-      name: prg.name,
-      filteredTaggedDuration: props.hasActiveFilters
-        ? filteredEquivalent
-            ?.tagged_duration
-        : undefined,
-      total_duration: prg.total_duration,
-      tagged_duration: prg.tagged_duration,
-      episode_count: prg.episode_count,
+      canal: prgBase.channel,
+      name: prgBase.name,
+      filteredTaggedDuration: filteredTaggedDuration,
+      total_duration: prgBase.total_duration,
+      tagged_duration: prgBase.tagged_duration,
+      episode_count: prgBase.episode_count,
       sdgs: topTopics.map((topic) => topic[0] as SdgTopic),
       maxTotalDuration: maxTotalDuration.value,
     };
