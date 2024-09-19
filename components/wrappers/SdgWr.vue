@@ -64,6 +64,7 @@ interface Props {
   baseData: Array<StatsSdg>;
   timeSpan?: [Date, Date];
   baseTaggedDuration: number;
+  hasActiveFilters: boolean;
 }
 
 function sdgClickHandler(sdgId: SdgTopic) {
@@ -92,9 +93,11 @@ const dataForTables = computed<TableSdg[]>(() => {
     return {
       goals: sdg.goals,
       sdg: sdg.sdg,
-      duration: sdg.duration,
+      query_duration: props.hasActiveFilters?sdg.duration:0,
+      base_duration: props.baseData.find((d) => d.sdg === sdg.sdg)?.duration,
       occurrences: sdg.occurrences,
-      allSdgDuration: props.baseTaggedDuration,
+      maxTotalDuration: props.baseTaggedDuration,
+
     };
   });
 });
@@ -106,6 +109,7 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
     sdgActive.value.includes(sdg.sdg)
   );
 
+  const maxTotalDurationQuerySdg = Math.max(...sdgDataFiltered.map((sdg) => sdg.duration));
   // get the targets
   // For each target we need:
   // - goal // name
@@ -117,7 +121,7 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
 
   sdgDataFiltered.forEach((sdg) => {
     const parentSdgDuration = sdg.duration;
-    const maxParentSdgDuration = maxTotalDuration.value;
+    const maxParentSdgDuration = maxTotalDurationQuerySdg
 
     sdg.goals.forEach((goal) => {
       goalsData.push({

@@ -278,8 +278,8 @@ function getVisiblePages() {
               <TableCell :colspan="columns.length">
                 <GoalSub
                   :data="row.original.goals"
-                  :sdgTotalTaggedDuration="row.original.duration"
-                  :maxParentWidth="row.original.allSdgDuration"
+                  :parentDuration="row.original.hasActiveFilters ? row.original.query_duration : row.original.base_duration"
+                  :maxTotalDuration="row.original.maxTotalDuration"
                 >
                 </GoalSub>
               </TableCell>

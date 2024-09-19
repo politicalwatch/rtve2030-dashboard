@@ -56,9 +56,9 @@ export const columns: ColumnDef<TableSdg>[] = [
     },
     cell: ({ row }) => {
       return h(MiniBarSdg, {
-        total_duration: row.original.allSdgDuration,
-        tagged_duration: row.original.duration,
-        maxTotalDuration: row.original.allSdgDuration,
+        base_duration: row.original.base_duration,
+        query_duration: row.original.query_duration,
+        maxTotalDuration: row.original.maxTotalDuration,
         name: row.original.sdg,
       });
     },

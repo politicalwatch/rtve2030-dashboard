@@ -41,8 +41,8 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
     },
     cell: ({ row }) => {
       return h(MiniBarSdg, {
-        total_duration: row.original.parentSdgDuration,
-        tagged_duration: row.original.duration,
+        base_duration: row.original.duration,
+        query_duration: 0,
         maxTotalDuration: row.original.maxParentSdgDuration,
         name: row.original.goal,
       });

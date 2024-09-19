@@ -92,7 +92,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
   {
     accessorKey: "total_duration",
     header: ({ column }) => {
-      return h("", { class: "text-right" }, "");
+      return h("div", { class: "text-right" }, "");
     },
     size: 240,
     cell: ({ row }) => {

@@ -1,36 +1,26 @@
 <script setup lang="ts">
 interface MiniBarSdgProps {
-  total_duration: number;
-  tagged_duration: number;
-  queryDuration?: number;
+  base_duration: number;
+  query_duration: number;
   maxTotalDuration: number;
   isSubTopic?: boolean;
   name: string;
 }
 
 const props = withDefaults(defineProps<MiniBarSdgProps>(), {
-  queryDuration: undefined,
+  query_duration: undefined,
   isSubTopic: false
 });
 
-const totalTimePercentage = computed(() => {
-  return (props.total_duration / props.maxTotalDuration) * 100;
+const baseTimePercentage = computed(() => {
+  return (props.base_duration / props.maxTotalDuration) * 100;
 });
 
-const taggedTimePercentage = computed(() => {
-  return (props.tagged_duration / props.maxTotalDuration) * 100;
+const queryTagPercentage = computed(() => {
+  return (props.query_duration / props.maxTotalDuration) * 100;
 });
 
-const filteredTaggedTimePercentage = computed(() => {
-  if (props.queryDuration) {
-    return (
-      (props.queryDuration / props.maxTotalDuration) *
-      100
-    ).toFixed(2);
-  } else {
-    return 0;
-  }
-});
+
 </script>
 
 <template>
@@ -56,13 +46,13 @@ const filteredTaggedTimePercentage = computed(() => {
       <Tooltip>
         <TooltipTrigger as-child>
           <div
-            class="h-full absolute bg-gray-200"
-            :style="{ width: totalTimePercentage + '%' }"
+            class="h-full absolute bg-gray-50 w-full"
+            
           ></div>
         </TooltipTrigger>
         <TooltipContent>
           <p>
-            Horas con ODS detectadas: {{ format.N(msToHours(total_duration)) }} horas
+            Horas con ODS detectadas: {{ format.msToTime(maxTotalDuration) }} horas
           </p>
         </TooltipContent>
       </Tooltip>
@@ -71,32 +61,32 @@ const filteredTaggedTimePercentage = computed(() => {
         <TooltipTrigger as-child>
           <div
             class="h-full absolute bg-gray-400 z-10"
-            :style="{ width: Math.min(taggedTimePercentage, 100) + '%' }"
+            :style="{ width: Math.min(baseTimePercentage, 100) + '%' }"
           ></div>
           <div
             class="absolute text-left text-xs font-normal "
-            :style="{ left: Math.min(taggedTimePercentage  + 5,90) + '%', top: '2px' }"
+            :style="{ left: Math.min(baseTimePercentage  + 5,90) + '%', top: '2px' }"
           >
-            {{ format.msToTime(tagged_duration) }}
+            {{ format.msToTime(base_duration) }}
           </div>
         </TooltipTrigger>
         <TooltipContent>
           <p>
             ODS {{ getSdgNumberFromName(name) }}: 
-            {{ format.N(msToHours(tagged_duration)) }} horas
+            {{ format.N(msToHours(base_duration)) }} horas
           </p>
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip v-if="queryDuration">
+      <Tooltip v-if="query_duration">
         <TooltipTrigger as-child>
           <div
             class="h-full absolute bg-gray-800 z-20"
-            :style="{ width: filteredTaggedTimePercentage + '%' }"
+            :style="{ width: queryTagPercentage + '%' }"
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.N(msToHours(queryDuration)) }} horas</p>
+          <p>{{ format.N(msToHours(query_duration)) }} horas</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

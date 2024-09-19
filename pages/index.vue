@@ -141,6 +141,8 @@
             :sdgData="sdgData"
             :baseData="baseDataStore.sdgData"
             :baseTaggedDuration="baseTaggedDuration"
+            :hasActiveFilters="filters.hasActiveFilters"
+
           >
           </WrappersSdgWr>
         </div>

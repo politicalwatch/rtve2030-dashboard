@@ -32,8 +32,10 @@ export interface TableTags {
 }
 
 export interface TableSdg {
-  sdg: SdgTopic;
-  duration: number;
+  sdg: SdgTopic;  
+  base_duration: number;
+  query_duration: number;
+  maxTotalDuration: number;
   occurrences: number;
   goals: StatsGoal[];
   allSdgDuration: number;
