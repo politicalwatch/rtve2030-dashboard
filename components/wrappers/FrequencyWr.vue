@@ -52,7 +52,6 @@ label:string (this is the label of the week, month or day)
 */
 const evoDataGrouped = computed(() => {
   if (daysBetweenInitAndEnd.value < 100) {
-    console.log("grouping by day");
     return {
       initObj: props.evoData.initObj,
       endObj: props.evoData.endObj,

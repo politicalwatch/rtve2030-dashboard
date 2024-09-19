@@ -72,14 +72,12 @@ watch(initDate, (newValue, oldValue) => {
 watch(
   () => filtersStore.timespan,
   (value) => {
-    console.log('watch timespan dateselector', value)
     if (isProgrammaticChange.value) {
       isProgrammaticChange.value = false;
       return;
     }
     if (value) {
       isProgrammaticChange.value = true;
-      console.log(value[0].toString())
       initDate.value = new CalendarDate(value[0].getFullYear(), value[0].getMonth()+1, value[0].getDate())
       endDate.value = new CalendarDate(value[1].getFullYear(), value[1].getMonth()+1, value[1].getDate())
     }

@@ -242,7 +242,6 @@ function onWordMouseleave(event: MouseEvent) {
 }
 
 function getColorForWord(word: string) {
-  console.log("word", word[0]);
   const tagObject = dataForTable.value.find((tag) => tag.name === word[0]);
   if (tagObject && tagObject.sdgs.length > 0) {
     const sdg = tagObject.sdgs[0];
