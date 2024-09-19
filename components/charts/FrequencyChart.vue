@@ -33,7 +33,7 @@
           :x1="0"
           :x2="width"
           stroke="black"
-          stroke-width="1"
+          stroke-width="1"f
         ></line>
    
         <g
@@ -47,7 +47,7 @@
           <line x1="0" x2="0" y1="0" y2="6" />
           <text y="9" dy=".71em" text-anchor="middle">
             {{
-              firstDayToTick(data.find((d) => d.index === tick).firstDay, index)
+              firstDayToTick(tick, index)
             }}
           </text>
         </g>
@@ -307,7 +307,8 @@ const isRelativeModeReady = computed(
     showComparativeMode.value === true && props.aggreagatedDataset?.length > 0
 );
 
-function firstDayToTick(date, index) {
+function firstDayToTick(tick, index) {
+  const date = data.value.find((d) => d.index === tick).firstDay 
   if (props.dataset.groupingBy === 30) {
     // display only month and year like 01-2021 but display year only if it's different from the previous tick
     const previousTick = xTicks.value[index - 1];

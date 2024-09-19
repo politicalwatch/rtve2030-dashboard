@@ -23,16 +23,15 @@ export const columns: ColumnDef<TablePrograms>[] = [
   {
     id: "select",
     header: ({ column }) => {
-      return h('div', {}
-      );
-      width: 20
+      return h("div", {});
+      width: 20;
     },
     cell: ({ table, row, column }) =>
       h(Checkbox, {
         checked: row.getIsSelected(),
         "onUpdate:checked": (value: boolean) => {
           row.toggleSelected(!!value);
-          row.pin(row.getIsPinned() ? false : "top");   
+          row.pin(row.getIsPinned() ? false : "top");
         },
         ariaLabel: "Select row",
       }),
@@ -66,45 +65,56 @@ export const columns: ColumnDef<TablePrograms>[] = [
   },
 
   {
-    accessorKey: "tagged_duration",
+    accessorFn: (row) =>
+      `${row.hasActiveFilters ? row.queryDuration : row.tagged_duration}`,
+    id: "tagged_duration",
     header: ({ column }) => {
       return h(
         "button",
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Detectadas ", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["tagged ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
-      const amount = msToHours(row.original.tagged_duration);
+      const amount = row.original.hasActiveFilters
+        ? row.original.queryDuration
+        : row.original.tagged_duration;
 
-      return h("div", { class: "text-right font-medium" }, format.N(amount));
+      return h(
+        "div",
+        { class: "text-right font-medium" },
+        format.msToTime(amount)
+      );
     },
   },
   {
     accessorKey: "total_duration",
     header: ({ column }) => {
-      return h(
-        "button",
-        {
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        ["\u2001 \u2001 \u2001", h(Icon, { name: "lucide:arrow-up-down" })]
-      );
+      return h("", { class: "text-right" }, "");
     },
+    size: 240,
     cell: ({ row }) => {
       return h(MiniBarChart, {
         total_duration: row.original.total_duration,
         tagged_duration: row.original.tagged_duration,
         maxTotalDuration: row.original.maxTotalDuration,
-        filteredTaggedDuration:row.original.filteredTaggedDuration
+        queryDuration: row.original.queryDuration,
       });
     },
   },
   {
     accessorKey: "episode_count",
-    header: () => h("div", { class: "text-right" }, "Episodios"),
+       header: ({ column }) => {
+      return h(
+        "button",
+        {
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        ["Episodios", h(Icon, { name: "lucide:arrow-up-down" })]
+      );
+    },
     cell: ({ row, getValue }) => {
       const count = Number.parseInt(getValue());
 

@@ -8,10 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 export const columns: ColumnDef<TableChannels>[] = [
   {
     id: "select",
+    size: 20,
     header: ({ column }) => {
       return h("div", {});
-      width: 20;
     },
+
     cell: ({ table, row, column }) =>
       h(Checkbox, {
         checked: row.getIsSelected(),
@@ -24,6 +25,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
   {
     accessorKey: "name",
+
     header: () => h("div", { class: "text-right" }, "Canal"),
     cell: ({ row }) => {
       return h(ChannelIconName, {
@@ -33,6 +35,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
   {
     accessorKey: "sdgs",
+    size: 80,
     header: () => h("div", { class: "text-right" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
@@ -43,17 +46,22 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
 
   {
-    accessorKey: "tagged_duration",
-    header: () => h("div", { class: "text-right" }, ""),
+    accessorFn: (row) =>
+      `${row.hasActiveFilters ? row.queryDuration : row.tagged_duration}`,
+    id: "tagged_duration",
+    header: () => h("div", { class: "text-right" }, "tagged"),
     cell: ({ row }) => {
-      const amount = row.original.tagged_duration;
+      const amount = row.original.hasActiveFilters
+        ? row.original.queryDuration
+        : row.original.tagged_duration;
       const formatted = format.N(msToHours(amount));
       return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
 
   {
-    accessorFn: (row) => `${row.total_duration / row.maxTotalDuration}`,
+    accessorFn: (row) =>
+      `${row.hasActiveFilters ? row.tagged_duration : row.queryDuration}`,
     id: "duration",
     header: ({ column }) => {
       return h(
@@ -68,26 +76,27 @@ export const columns: ColumnDef<TableChannels>[] = [
       const totalDuration = row.original.total_duration;
       const taggedDuration = row.original.tagged_duration;
       const maxTotalDuration = row.original.maxTotalDuration;
-      const filteredTaggedDuration = row.original.filteredTaggedDuration;
+      const queryDuration = row.original.queryDuration;
       const miniBarProps: {
         total_duration: number;
         tagged_duration: number;
         maxTotalDuration: number;
-        filteredTaggedDuration?: number;
+        queryDuration?: number;
       } = {
         total_duration: totalDuration,
         tagged_duration: taggedDuration,
         maxTotalDuration: maxTotalDuration,
       };
-      if (filteredTaggedDuration !== undefined) {
-        miniBarProps.filteredTaggedDuration = filteredTaggedDuration;
+      if (queryDuration !== undefined) {
+        miniBarProps.queryDuration = queryDuration;
       }
       return h(MiniBarChart, miniBarProps);
     },
   },
   {
     accessorKey: "programs",
-    header: () => h("div", { class: "text-right" }, "Programas"),
+    size: 40,
+    header: () => h("div", { class: "text-right !text-xs" }, "Programas"),
     cell: ({ row, getValue }) => {
       const basePrograms = row.original.basePrograms ?? 0;
       const programs = row.original.programs ?? 0;

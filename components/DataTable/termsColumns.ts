@@ -16,6 +16,7 @@ export const columns: ColumnDef<TableTags>[] = [
   {
     accessorKey: "sdgs",
     header: () => h("div", { class: "text-right" }, "ods"),
+    size:40,
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -26,17 +27,26 @@ export const columns: ColumnDef<TableTags>[] = [
 
   {
     accessorKey: "filtered_occurrences",
-    header: () => h("div", { class: "text-right" }, ""),
+    header: ({ column }) => {
+      return h(
+        "button",
+        {
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        ["", h(Icon, { name: "lucide:arrow-up-down" })]
+      );
+    },
     cell: ({ row }) => {
-      const amount = row.original.filtered_occurrences ?? -1 ;
+      const amount = row.original.filtered_occurrences ?? -1;
       const formatted = format.N(amount);
       return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
 
   {
-    accessorKey: "total_occurrences",
-    id: "duration",
+    accessorFn: (row) => `${row.filtered_occurrences / row.total_occurrences}`,
+    id: "tagged_duration",
+    size: 240,
     header: ({ column }) => {
       return h(
         "button",

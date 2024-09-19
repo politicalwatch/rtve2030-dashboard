@@ -64,34 +64,38 @@ const maxTotalDuration = computed(() => {
 
 const dataForTable = computed(() => {
   return props.baseData.map((chan) => {
+    const latestChanData= props.channelsData.find((chan2) => chan.name === chan2.name);
+
     // lets sum all the durations of the topics in chan.topics grouped by chan.topics.topic
-    const aggrData = rollups(
-      chan.topics,
-      (v) => sum(v, (d) => d.duration),
-      (d) => d.topic
-    );
+    // const aggrData = rollups(
+    //   latestChanData==undefined?chan.topics:latestChanData.topics,
+    //   (v) => sum(v, (d) => d.duration),
+    //   (d) => d.topic
+    // );
     // get top 5 topics
+    const alltopics=latestChanData==undefined?chan.topics:latestChanData.topics;
+    const topTopics = alltopics.sort((a, b) => b.duration-a.duration).slice(0, 5);
 
-    const topTopics = aggrData.sort((a, b) => b[1] - a[1]).slice(0, 5);
-
+    // get latest value, not base value
+    // compute the sum for all topics
+    let queryDuration = 0;
+    if(latestChanData !== undefined && props.hasActiveFilters){
+     queryDuration = sum(latestChanData?.topics, (d) => d.duration);
+    }
+    
     const result = {
+      hasActiveFilters: props.hasActiveFilters,
       maxTotalDuration: maxTotalDuration.value,
       basePrograms: props.baseData.find((chan2) => chan.name === chan2.name)
         ?.program_count,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
         ?.program_count,
-      filteredTaggedDuration: props.hasActiveFilters
-        ? props.channelsData.find((chan2) => chan.name === chan2.name)
-            ?.tagged_duration
-        : undefined,
+      queryDuration: queryDuration, // 0 if no filters to avoid painting the bar
       name: chan.name,
       total_duration: chan.total_duration,
       tagged_duration: chan.tagged_duration,
-      sdgs: topTopics.map((topic) => topic[0] as SdgTopic),
+      sdgs: topTopics.map((topic) => topic.topic),
     };
-    if (result.filteredTaggedDuration === undefined) {
-      delete result.filteredTaggedDuration;
-    }
 
     return result;
   });

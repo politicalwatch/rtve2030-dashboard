@@ -45,7 +45,7 @@
               :varValue="msToHours(timeSpanCounterData.tagged_duration)"
               :maxValue="msToHours(globalCounterData.tagged_duration)"
             >
-              horas Agenda 2030
+              Horas Agenda 2030
             </chartsNumberCounter>
           </div>
 
@@ -132,6 +132,7 @@
           v-if="evolutionStackedData != null"
           :evoData="evolutionStackedData"
           :hasActiveFilters="filters.hasActiveFilters"
+          
         />
 
         <div class="mt-16">
@@ -203,7 +204,7 @@ const mustLoadBase = ref({
 });
 
 /** following data depends only on timespan***/
-const { timespan, channels, sdgActive } = storeToRefs(filters);
+const { timespan, channels, sdgActive, programs } = storeToRefs(filters);
 
 const { data: globalCounterData } = await useAsyncData(() =>
   apiRepo.getStatsCounter()
@@ -250,6 +251,9 @@ const { data: evolutionStackedData } = await useAsyncData(
   {
     immediate: true,
     watch: [evolutionStackedQueryString],
+    getCachedData: (key) => {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
     transform: (data) => {
       // let's transform all dates into javascript date objects considering that the date format in the api is YYYY-MM-DD
       data.hoursPeriod.forEach((item) => {
@@ -276,7 +280,8 @@ const { data: sdgData } = await useAsyncData(
     apiRepo.getOdsAndGoals(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
-      filters.channels
+      filters.channels,
+      filters.programs
     ),
   {
     immediate: true,
@@ -346,7 +351,8 @@ const tagsQueryString = computed(() => {
   return `stats/tags${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
     timespan.value[1]
   )}-channels-${filters.channels.join("-")}
-  -sdg${sdgActive.value.join("-")}`;
+  -sdg${sdgActive.value.join("-")}
+  -programs${filters.programs.join("-")}`;
 });
 
 const { data: tagsData } = await useAsyncData(
@@ -356,7 +362,8 @@ const { data: tagsData } = await useAsyncData(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       filters.sdgActive,
-      filters.channels
+      filters.channels,
+      filters.programs
     ),
   {
     immediate: true,
@@ -377,22 +384,29 @@ const isDataReady = computed(
 
 /* computed data for the counters depending on filters */
 const filteredTotalDuration = computed(() => {
-  if (channelsData.value == null) return 0;
-  return sum(channelsData.value, (d) => d.total_duration);
+  if (evolutionStackedData.value?.hoursPeriod == null) return 0;
+  return sum(evolutionStackedData.value.hoursPeriod, (d) => filters.hasActiveFilters?d.query_duration:d.total_duration);
 });
-const filteredTaggedDuration = computed(() => {
-  if (channelsData.value == null) return 0;
-  return sum(channelsData.value, (d) => d.tagged_duration);
+
+const queryDuration = computed(() => {
+  if (evolutionStackedData.value?.hoursPeriod == null) return 0;
+  return sum(evolutionStackedData.value.hoursPeriod, (d) => d.tagged_duration);
 });
 
 const filteredProgramsCount = computed(() => {
   if (programsData.value == null) return 0;
-  else return programsData.value.length;
+  else if(filters.programs.length===0) return programsData.value.length;
+  else return filters.programs.length
 });
 
 const filteredEpisodesCount = computed(() => {
   if (programsData.value == null) return 0;
-  return sum(programsData.value, (d) => d.episode_count);
+  else if(filters.programs.length===0) return sum(programsData.value, (d) => d.episode_count);
+  // return the episodes of the programs that are in the filters
+  else return sum(programsData.value, (d) => {
+    if(filters.programs.includes(d.name)) return d.episode_count;
+    else return 0;
+  }); 
 });
 
 const baseTaggedDuration = computed(() => {

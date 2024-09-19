@@ -29,7 +29,7 @@ interface Props {
   baseData: Array<StatsPrograms>;
   hasActiveFilters: boolean;
 }
-
+ 
 const props = withDefaults(defineProps<Props>(), {});
 
 const maxTotalDuration = computed(() => {
@@ -42,24 +42,24 @@ const dataForTable = computed(() => {
     const filteredEquivalent= props.programsData.find((prg2) => prgBase.name === prg2.name)
     if (!filteredEquivalent) return null;
 
-    const aggrData = rollups(
-      prgBase.topics,
-      (v) => sum(v, (d) => d.duration),
-      (d) => d.topic
-    );
+    const alltopics=filteredEquivalent==undefined?prgBase.topics:filteredEquivalent.topics;
+
+
     // get top 5 topics
-    const topTopics = aggrData.sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const filteredTaggedDuration = props.hasActiveFilters
+    const topTopics = alltopics.sort((a, b) => b.duration-a.duration).slice(0, 5);
+    const queryDuration = props.hasActiveFilters
       ? sum(filteredEquivalent.topics, (d) => d.duration)
-      : undefined;
+      : 0;
+      
     return {
+      hasActiveFilters: props.hasActiveFilters,
       canal: prgBase.channel,
       name: prgBase.name,
-      filteredTaggedDuration: filteredTaggedDuration,
+      queryDuration: queryDuration,
       total_duration: prgBase.total_duration,
       tagged_duration: prgBase.tagged_duration,
       episode_count: prgBase.episode_count,
-      sdgs: topTopics.map((topic) => topic[0] as SdgTopic),
+      sdgs: topTopics.map((topic) => topic.topic),
       maxTotalDuration: maxTotalDuration.value,
     };
   })

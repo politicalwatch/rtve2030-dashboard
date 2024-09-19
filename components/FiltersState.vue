@@ -59,7 +59,7 @@
             {{ program }}
           </div>
           <button
-            @click="removeProgramFilter(program)"
+            @click="removeProgramFilter(program); mouseoverText = ''"
             @mouseover="mouseoverText = program"
             @mouseleave="mouseoverText = ''"
             class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-md"

@@ -12,7 +12,7 @@ export const useFiltersStore = defineStore("filters", () => {
   const channelRemovedFlag = ref(false)
   // New getter
   const hasActiveFilters = computed(() => {
-    return sdgActive.value.length > 0 || channels.value.length > 0;
+    return sdgActive.value.length > 0 || channels.value.length > 0 || programs.value.length>0;
   });
 
   function removeSdgFilter(value: SdgTopic) {

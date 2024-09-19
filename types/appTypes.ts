@@ -4,9 +4,10 @@ export interface TableChannels {
   total_duration: number;
   tagged_duration: number;
   maxTotalDuration: number;
-  filteredTaggedDuration?: number;
-  programs?: number;
+  queryDuration: number;
+  programs: number;
   basePrograms?: number; // tbd check
+  hasActiveFilters:boolean;
 }
 
 export interface TablePrograms {
@@ -16,7 +17,8 @@ export interface TablePrograms {
   total_duration: number;
   tagged_duration: number;
   maxTotalDuration: number;
-  filteredTaggedDuration?: number;
+  queryDuration?: number;
+  hasActiveFilters:boolean;
 }
 
 export interface TableTags {

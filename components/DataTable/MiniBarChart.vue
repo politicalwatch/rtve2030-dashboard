@@ -2,7 +2,7 @@
 const props = defineProps<{
   total_duration: number;
   tagged_duration: number;
-  filteredTaggedDuration?: number;
+  queryDuration?: number;
   maxTotalDuration: number;
 }>();
 
@@ -15,9 +15,9 @@ const taggedTimePercentage = computed(() => {
 });
 
 const filteredTaggedTimePercentage = computed(() => {
-  if (props.filteredTaggedDuration) {
+  if (props.queryDuration) {
     return (
-      (props.filteredTaggedDuration / props.maxTotalDuration) *
+      (props.queryDuration / props.maxTotalDuration) *
       100
     ).toFixed(2);
   }
@@ -70,7 +70,7 @@ const filteredTaggedTimePercentage = computed(() => {
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip v-if="filteredTaggedDuration">
+      <Tooltip v-if="queryDuration">
         <TooltipTrigger as-child>
           <div
             class="h-full absolute bg-gray-800 z-20"
@@ -78,7 +78,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.N(msToHours(filteredTaggedDuration)) }} horas</p>
+          <p>{{ format.N(msToHours(queryDuration)) }} horas de contenido con los filtros aplicados</p>
         </TooltipContent>
       </Tooltip>
         </TooltipProvider>

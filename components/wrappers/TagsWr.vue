@@ -1,15 +1,14 @@
 <template>
   <div class="border-t border-black">
     <div class="grid grid-cols-5 gap-8">
-      <div    class="col-span-3">
-        <div class="flex justify-between my-4" >
+      <div class="col-span-3">
+        <div class="flex justify-between my-4">
           <h2 class="chart-titles">términos</h2>
           <div id="terms-search-input"></div>
         </div>
         <DataTableBaseTable
           :columns="columns"
           :data="dataForTable"
-       
           :searchColumnName="'name'"
           teleportTarget="#terms-search-input"
         />
@@ -19,16 +18,30 @@
         <VueWordCloud
           :words="topWords"
           :color="colorfn"
-          :style="{ width: width-padding.left-padding.right + 'px', height: height-padding.top-padding.bottom + 'px', 'margin-left': padding.left + 'px',  'margin-top': padding.top + 'px'}"
+          :style="{
+            width: width - padding.left - padding.right + 'px',
+            height: height - padding.top - padding.bottom + 'px',
+            'margin-left': padding.left + 'px',
+            'margin-top': padding.top + 'px',
+          }"
           v-if="width > 0 && height > 0"
           :fontFamily="'Roboto'"
           :font-size-ratio="4"
-          :rotation="getRotation"
-          :drawer="true"
           :enter-animation="enterAnimation"
           :leave-animation="leaveAnimation"
           :animation-duration="700"
-        />
+        >
+          <template #default="{ text, weight, word }">
+            <div
+              :title="weight"
+              class="cursor-pointer hover:font-bold pointer-events-auto"
+              @mouseover="onWordMouseover($event, word)"
+              @mouseleave="onWordMouseleave($event)"
+            >
+              {{ text }}
+            </div>
+          </template>
+        </VueWordCloud>
       </div>
     </div>
   </div>
@@ -41,7 +54,7 @@ import VueWordCloud from "vuewordcloud";
 import { scaleSequential, interpolate } from "d3";
 import { useElementSize, useElementVisibility } from "@vueuse/core";
 import { _300 as green300, _700 as green700 } from "#twcss/theme/colors/green";
-import { _400 , _800  } from "#twcss/theme/colors/gray";
+import { _400, _800 } from "#twcss/theme/colors/gray";
 const padding = { top: 0, right: 10, bottom: 0, left: 50 };
 interface Props {
   tagsData: Array<StatsTags>;
@@ -52,7 +65,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const maxTotalCountTags = computed(() => {
-  return Math.max(...props.baseData.map((tag) => tag.occurrences));
+  return Math.max(...basetagsDataAggregatedByTag.value.map((tag) => tag.occurrences));
 });
 
 // return type is like statTags but contains also tagCount and subtopic is an array of subtopics
@@ -88,18 +101,19 @@ const tagsDataAggregatedByTag = computed(() => {
 });
 
 const dataForTable = computed<TableTags[]>(() => {
-  return tagsDataAggregatedByTag.value.map((tag) => ({
-    name: tag.tag,
-    total_occurrences:
-      basetagsDataAggregatedByTag.value.find((tag2) => tag2.tag === tag.tag)
-        ?.occurrences ?? 0,
-    filtered_occurrences: tag.occurrences,
-    maxTotalOccurrences: maxTotalCountTags.value,
-    sdgs: tag.subtopics
-      .map((subtopic) => subtopicToTopic(subtopic))
-      .filter((topic): topic is SdgTopic => topic !== null),
-    hasActiveFilters: props.hasActiveFilters,
-  }));
+  return tagsDataAggregatedByTag.value.map((tag) => {
+     const equivalentBase=basetagsDataAggregatedByTag.value.find((tag2) => tag2.tag === tag.tag)
+    return {
+      name: tag.tag,
+      total_occurrences: equivalentBase?.occurrences ?? 0,
+      filtered_occurrences: tag.occurrences,
+      maxTotalOccurrences: maxTotalCountTags.value, // max total occurrences in base data
+      sdgs: tag.subtopics
+        .map((subtopic) => subtopicToTopic(subtopic))
+        .filter((topic): topic is SdgTopic => topic !== null),
+      hasActiveFilters: props.hasActiveFilters,
+    };
+  });
 });
 
 /* this function takes a subtopic with the format "X.Y  name" and returns the SdgTopic with number X */
@@ -138,7 +152,6 @@ const colorfn = (
   return colorScale.value(weight);
 };
 
-
 const wordcloudContainer = ref(null);
 
 const { width, height } = useElementSize(wordcloudContainer);
@@ -159,27 +172,25 @@ const wordCloudHasBeenVisible = ref(false);
 }*/
 function getRotation() {
   if (Math.random() < 0.7) return 0;
-  
-  else  return 0
-  
+  else return 0;
 }
 
 const updatedWordCloud = ref<[string, number][]>([]);
 const animationInterval = ref<any>(null);
 
-const startWordCloudAnimation = () => {
-  let index = 0;
-  updatedWordCloud.value = [];
+// const startWordCloudAnimation = () => {
+//   let index = 0;
+//   updatedWordCloud.value = [];
 
-  animationInterval.value = setInterval(() => {
-    if (index < topWords.value.length) {      
-      updatedWordCloud.value.push(topWords.value[index]);
-      index++;
-    } else {
-      clearInterval(animationInterval.value);
-    }
-  }, 50);
-};
+//   animationInterval.value = setInterval(() => {
+//     if (index < topWords.value.length) {
+//       updatedWordCloud.value.push(topWords.value[index]);
+//       index++;
+//     } else {
+//       clearInterval(animationInterval.value);
+//     }
+//   }, 50);
+// };
 
 // this is trigger on visilibty of the wordcloud container
 // watch(wordCloudHasBeenVisible, (isVisible) => {
@@ -190,7 +201,7 @@ const startWordCloudAnimation = () => {
 //   }
 // });
 
-// this is trigger on the topWords array change: required when the filters change 
+// this is trigger on the topWords array change: required when the filters change
 // watch(topWords, (words) => {
 //   clearInterval(animationInterval.value);
 //   console.log("topWords", words);
@@ -207,6 +218,32 @@ onBeforeUnmount(() => {
 
 let enterAnimation = { opacity: 0 };
 let leaveAnimation = { opacity: 0 };
+
+/*** interaction */
+
+function onWordMouseover(event: MouseEvent, word: string) {
+  const element = event.target as HTMLElement;
+  const color = getColorForWord(word);
+  element.style.color = color;
+}
+
+function onWordMouseleave(event: MouseEvent) {
+  const element = event.target as HTMLElement;
+  element.style.color = "";
+}
+
+function getColorForWord(word: string) {
+  console.log("word", word[0]);
+  const tagObject = dataForTable.value.find((tag) => tag.name === word[0]);
+  if (tagObject && tagObject.sdgs.length > 0) {
+    const sdg = tagObject.sdgs[0];
+    return STYLES.topics[sdg].color;
+  }
+  return "#000";
+}
+
+// Remove the hoveredWord ref as it's no longer needed
+// const hoveredWord = ref<string | null>(null);
 </script>
 
 <style></style>

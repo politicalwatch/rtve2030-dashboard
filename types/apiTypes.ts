@@ -130,7 +130,7 @@ export interface StatsPrograms {
   total_duration: number;
   tagged_duration: number;
   channel: Channels;
-  episode_count?: number;
+  episode_count: number;
   topics: TopicsDuration[];
 }
 
