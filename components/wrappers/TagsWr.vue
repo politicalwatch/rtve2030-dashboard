@@ -64,9 +64,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {});
 
-const maxTotalCountTags = computed(() => {
-  return Math.max(...basetagsDataAggregatedByTag.value.map((tag) => tag.occurrences));
-});
+
 
 // return type is like statTags but contains also tagCount and subtopic is an array of subtopics
 const basetagsDataAggregatedByTag = computed(() => {
@@ -81,7 +79,6 @@ const basetagsDataAggregatedByTag = computed(() => {
     }),
     (d) => d.tag
   );
-
   return tags.map((tag) => tag[1]); // returns t
 });
 
@@ -98,6 +95,18 @@ const tagsDataAggregatedByTag = computed(() => {
     (d) => d.tag
   );
   return tags.map((tag) => tag[1]);
+});
+
+const maxTotalCountTags = computed(() => {
+  // get baseTagsData but only if the tag is in the tagsData
+  let baseTagsDataExistingTags = basetagsDataAggregatedByTag.value
+  if(tagsDataAggregatedByTag){
+    baseTagsDataExistingTags = basetagsDataAggregatedByTag.value.filter((tag) =>
+      tagsDataAggregatedByTag.value.some((tag2) => tag2.tag === tag.tag)
+    );
+  }
+  
+  return Math.max(...baseTagsDataExistingTags.map((tag) => tag.occurrences));
 });
 
 const dataForTable = computed<TableTags[]>(() => {

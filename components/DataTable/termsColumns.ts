@@ -70,9 +70,9 @@ export const columns: ColumnDef<TableTags>[] = [
         total: totalDuration,
         maxTotal: maxTotalOccurrences,
         hasActiveFilters: hasActiveFilters,
+        filtered : filteredTaggedOcc
       };
       if (filteredTaggedOcc !== undefined) {
-        miniBarProps.filtered = filteredTaggedOcc;
       }
       return h(MiniBarChartDos, miniBarProps);
     },

@@ -40,7 +40,7 @@ const filteredTaggedTimePercentage = computed(() => {
       <Tooltip>
         <TooltipTrigger as-child>
           <div
-            class="h-full absolute bg-gray-400"
+            class="h-full absolute bg-gray-200"
             :style="{ width: totalTimePercentage + '%' }"
           ></div>
         </TooltipTrigger>
@@ -52,7 +52,7 @@ const filteredTaggedTimePercentage = computed(() => {
       <Tooltip v-if="filtered && hasActiveFilters">
         <TooltipTrigger as-child>
           <div
-            class="h-full absolute bg-gray-800 z-20"
+            class="h-full absolute bg-gray-600 z-20"
             :style="{ width: filteredTaggedTimePercentage + '%' }"
           ></div>
         </TooltipTrigger>
