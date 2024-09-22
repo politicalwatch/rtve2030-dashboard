@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { sum } from "d3";
+import { sum,max } from "d3";
 const filtersStore = useFiltersStore();
 const { sdgActive } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
@@ -59,10 +59,10 @@ import { columns } from "../DataTable/sdgColumns";
 import { goalColumns } from "../DataTable/goalColumns";
 import { parseDuration } from "@internationalized/date";
 
+
 interface Props {
   sdgData: Array<StatsSdg>;
   baseData: Array<StatsSdg>;
-  timeSpan?: [Date, Date];
   baseTaggedDuration: number;
   hasActiveFilters: boolean;
 }
@@ -81,7 +81,7 @@ function sdgClickHandler(sdgId: SdgTopic) {
 
 const props = withDefaults(defineProps<Props>(), {});
 const maxTotalDuration = computed(() => {
-  return Math.max(...props.sdgData.map((sdg) => sdg.duration));
+  return Math.max(...props.baseData.map((sdg) => sdg.duration));
 });
 
 const globalDuration = computed(() => {
@@ -91,13 +91,14 @@ const globalDuration = computed(() => {
 const dataForTables = computed<TableSdg[]>(() => {
   return props.sdgData.map((sdg) => {
     return {
-      goals: sdg.goals,
       sdg: sdg.sdg,
-      query_duration: props.hasActiveFilters?sdg.duration:0,
       base_duration: props.baseData.find((d) => d.sdg === sdg.sdg)?.duration,
+      query_duration: props.hasActiveFilters ? sdg.duration : 0,
+      maxBaseDuration: maxTotalDuration.value,
       occurrences: sdg.occurrences,
-      maxTotalDuration: props.baseTaggedDuration,
-
+      queryGoals: sdg.goals,
+      baseGoals: props.baseData.find((d) => d.sdg === sdg.sdg)?.goals,
+      hasActiveFilters: props.hasActiveFilters,
     };
   });
 });
@@ -109,7 +110,14 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
     sdgActive.value.includes(sdg.sdg)
   );
 
-  const maxTotalDurationQuerySdg = Math.max(...sdgDataFiltered.map((sdg) => sdg.duration));
+  const sdgBaseDataFiltered = props.baseData.filter((sdg) =>
+    sdgActive.value.includes(sdg.sdg)
+  );
+  const filteredGoals = sdgDataFiltered.flatMap((sdg) => sdg.goals);
+
+  const filteredBaseGoals = sdgBaseDataFiltered.flatMap((sdg) => sdg.goals);
+
+  const maxfilteredBaseGoals = max(filteredBaseGoals, (d) => d.duration) ?? 0;
   // get the targets
   // For each target we need:
   // - goal // name
@@ -119,21 +127,37 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
   // maxParent Sdg duration
   const goalsData: TableGoals[] = [];
 
-  sdgDataFiltered.forEach((sdg) => {
-    const parentSdgDuration = sdg.duration;
-    const maxParentSdgDuration = maxTotalDurationQuerySdg
 
-    sdg.goals.forEach((goal) => {
-      goalsData.push({
-        goal: goal.goal,
-        duration: goal.duration,
-        occurrences: goal.occurrences,
-        parentSdgDuration: parentSdgDuration,
-        maxParentSdgDuration: maxParentSdgDuration,
-        parentSdg: sdg.sdg,
-      });
-    });
+  function findParentFromGoal(goal: string) {
+    return sdgDataFiltered.find((sdg) => sdg.goals.find((g) => g.goal === goal));
+  }
+  return filteredGoals.map((goal) => {
+    return {
+      goal: goal.goal,
+      base_duration: filteredBaseGoals.find((d) => d.goal === goal.goal)
+        ?.duration,
+      query_duration: goal.duration,
+      maxGoalDuration: maxfilteredBaseGoals,
+      parentSdg: findParentFromGoal(goal.goal)?.sdg,
+      hasActiveFilters: props.hasActiveFilters,
+    };
   });
+  
+  // sdgDataFiltered.forEach((sdg) => {k
+  //   const parentSdgDuration = sdg.duration;
+  //   const maxParentSdgDuration = maxTotalDurationQuerySdg;
+
+  //   sdg.goals.forEach((goal) => {
+  //     goalsData.push({
+  //       goal: goal.goal,
+  //       duration: goal.duration,
+  //       occurrences: goal.occurrences,
+  //       parentSdgDuration: parentSdgDuration,
+  //       maxParentSdgDuration: maxParentSdgDuration,
+  //       parentSdg: sdg.sdg,
+  //     });
+  //   });
+  // });
 
   return goalsData;
 });

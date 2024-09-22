@@ -1,24 +1,29 @@
 <template>
   <div class="ml-8 text-xs">
-    <div class="flex" v-for="goal in sortedGoals">
+    <div class="flex" v-for="baseGoal in sortedGoals">
       <div class="w-10">
         <div class="">
-          {{ spliceGoalName(goal.goal)[0] }}
+          {{ spliceGoalName(baseGoal.goal)[0] }}
         </div>
       </div>
-      <div class="w-[230px]">
-        <div class="flex-grow-0" :style="{ width: maxWidthScaled*100 + '%' }">
+      <div
+        :style="{
+          width: MAX_WIDTH_SDG_BAR + 'px',
+        }"
+      >
+        <div class="flex-grow-0 w-full">
           <MiniBarSdg
-            :base_duration="goal.duration"
-            :maxTotalDuration="parentDuration"
-            :query_duration="0"
+            :base_duration="baseGoal.duration"
+            :maxTotalDuration="maxSdgDuration"
+            :query_duration="goalMap.get(baseGoal)?.duration"
             :isSubTopic="true"
-            :name="goal.goal"
+            :name="baseGoal.goal"
+            :showQueryDuration="hasActiveFilters"
           />
         </div>
       </div>
       <div class="w-auto flex-grow text-gray-500 text-right">
-        {{ spliceGoalName(goal.goal)[1] }}
+        {{ spliceGoalName(baseGoal.goal)[1] }}
       </div>
     </div>
   </div>
@@ -26,12 +31,17 @@
 
 <script setup lang="ts">
 import MiniBarSdg from "./MiniBarSdg.vue";
-
+import { max } from "d3";
 interface Props {
-  data: StatsGoal[];
+  baseGoals: StatsGoal[];
+  queryGoals: StatsGoal[];
   maxTotalDuration: number;
-  parentDuration: number;
+  hasActiveFilters: boolean;
 }
+
+const maxSdgDuration = computed(() => {
+  return max(props.baseGoals, (d) => d.duration) ?? 0;
+});
 
 function spliceGoalName(goal: string) {
   let byword = goal.split(" ");
@@ -39,7 +49,18 @@ function spliceGoalName(goal: string) {
 }
 
 const sortedGoals = computed(() => {
-  return props.data.sort((a, b) => b.duration - a.duration);
+  return props.baseGoals.sort((a, b) => b.duration - a.duration);
+});
+
+const goalMap = computed(() => {
+  const map = new WeakMap();
+  props.baseGoals.forEach((baseGoal) => {
+    const queryGoal = props.queryGoals.find((qg) => qg.goal === baseGoal.goal);
+    if (queryGoal) {
+      map.set(baseGoal, queryGoal);
+    }
+  });
+  return map;
 });
 
 // available width for the mini bar is the width of the parent base_duration

@@ -41,6 +41,7 @@ onMounted(async () => {
 });
 const filters = useFiltersStore();
 
+
 interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -66,6 +67,11 @@ const props = withDefaults(defineProps<Props<TData, TValue>>(), {
 const sorting = ref<SortingState>([]);
 const expanded = ref<ExpandedState>({});
 const selectedRows = ref([]);
+
+// this is a typeGuard
+function isSpecificType(data: any): data is TableSdg {
+  return 'queryGoals' in data && 'maxBaseDuration' in data && 'baseGoals' in data;
+}
 
 const doNotUpdate = ref(false);
 
@@ -189,7 +195,7 @@ function getVisiblePages() {
 </script>
 
 <template>
-  <div class="border rounded-md">
+  <div class="">
     <!-- {{  rowSelection}} -->
     <template
       v-if="
@@ -200,11 +206,11 @@ function getVisiblePages() {
     >
       <Teleport defer :to="teleportTarget">
         <div class="relative w-full max-w-md items-center">
-          <Input
+          <Input v-if="searchColumnName != undefined && typeof searchColumnName === 'string' "
             class="pr-10 placeholder:text-gray-300"
             :placeholder="placeholder"
             :model-value="
-              table.getColumn(searchColumnName)?.getFilterValue() ?? ''
+              table.getColumn(searchColumnName)?.getFilterValue() as string ?? ''
             "
             @update:model-value="
               table
@@ -277,9 +283,11 @@ function getVisiblePages() {
             <TableRow v-if="row.getIsExpanded()">
               <TableCell :colspan="columns.length">
                 <GoalSub
-                  :data="row.original.goals"
-                  :parentDuration="row.original.hasActiveFilters ? row.original.query_duration : row.original.base_duration"
-                  :maxTotalDuration="row.original.maxTotalDuration"
+                  v-if="isSpecificType(row.original)"
+                  :baseGoals="row.original.baseGoals"
+                  :queryGoals="row.original.queryGoals"
+                  :hasActiveFilters="row.original.hasActiveFilters"
+                  :maxTotalDuration="row.original.maxBaseDuration"
                 >
                 </GoalSub>
               </TableCell>

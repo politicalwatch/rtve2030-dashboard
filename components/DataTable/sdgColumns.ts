@@ -4,11 +4,12 @@ import MiniBarSdg from "./MiniBarSdg.vue";
 import sdgSquares from "./sdgSquares.vue";
 import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
+
 export const columns: ColumnDef<TableSdg>[] = [
   {
     id: "toggle",
-    size:20,
-    enableResizing:false,
+    size: 20,
+    enableResizing: false,
     cell: ({ row }) => {
       return h(
         "button",
@@ -31,8 +32,8 @@ export const columns: ColumnDef<TableSdg>[] = [
     header: ({ column }) => {
       return "";
     },
-    size:40,
-    
+    size: 40,
+
     cell: ({ row, getValue }) => {
       const style = STYLES.topics[getValue()];
       return h("img", {
@@ -43,8 +44,9 @@ export const columns: ColumnDef<TableSdg>[] = [
     },
   },
   {
-    accessorKey: "duration",
-    size:240,
+    accessorFn: (row) => row.hasActiveFilters?row.query_duration:row.base_duration,
+    id:"barchart",
+    size: MAX_WIDTH_SDG_BAR,
     header: ({ column }) => {
       return h(
         "button",
@@ -55,12 +57,15 @@ export const columns: ColumnDef<TableSdg>[] = [
       );
     },
     cell: ({ row }) => {
-      return h(MiniBarSdg, {
-        base_duration: row.original.base_duration,
-        query_duration: row.original.query_duration,
-        maxTotalDuration: row.original.maxTotalDuration,
-        name: row.original.sdg,
-      });
+      if (!row.getIsExpanded()) {
+        return h(MiniBarSdg, {
+          base_duration: row.original.base_duration,
+          query_duration: row.original.query_duration,
+          maxTotalDuration: row.original.maxBaseDuration,
+          name: row.original.sdg,
+          showQueryDuration: row.original.hasActiveFilters,
+        });
+      } else return h("div", { });
     },
   },
   {

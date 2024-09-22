@@ -116,4 +116,4 @@ export const STYLES = {
   defaultImage: "placeholder.png",
 };
 
-export const SDG_BAR_WIDTH = 240;
+export const MAX_WIDTH_SDG_BAR = 320;

@@ -32,21 +32,22 @@ export interface TableTags {
 }
 
 export interface TableSdg {
-  sdg: SdgTopic;  
+  sdg: SdgTopic;
   base_duration: number;
   query_duration: number;
-  maxTotalDuration: number;
+  maxBaseDuration: number;
   occurrences: number;
-  goals: StatsGoal[];
-  allSdgDuration: number;
+  queryGoals: StatsGoal[];
+  baseGoals: StatsGoal[];
+  hasActiveFilters: boolean;
 }
 
 
 export interface TableGoals {
   goal: string;
   parentSdg: SdgTopic;
-  duration: number;
-  occurrences: number;
-  parentSdgDuration: number;
-  maxParentSdgDuration: number;
+  base_duration: number;
+  query_duration: number;
+  maxGoalDuration: number;
+  hasActiveFilters: boolean;
 }

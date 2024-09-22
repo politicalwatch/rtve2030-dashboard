@@ -36,7 +36,7 @@ function PCT(num){
 function msToTime(ms) {
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);
-  return `${N(hours)}:${N(minutes)}`;
+  return `${N(hours)}:${N(minutes)}'`;
 }
 
 const format = {

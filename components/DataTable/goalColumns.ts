@@ -10,26 +10,29 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
     header: ({ column }) => {
       return "";
     },
-    size:40,
-    
+    size: 40,
+
     cell: ({ row, getValue }) => {
       const style = STYLES.topics[row.original.parentSdg];
-      const code = getValue().split(" ")[0]
+      const code = getValue().split(" ")[0];
       return h(
         "div",
         {
           class: "flex gap-2 justify-end items-center text-xs",
         },
-        [h("span", {}, code), h("span", {
-          class: 'w-2 h-2',
-          style: 'background-color: ' + style?.color,
-        }, )]
+        [
+          h("span", {}, code),
+          h("span", {
+            class: "w-2 h-2",
+            style: "background-color: " + style?.color,
+          }),
+        ]
       );
     },
   },
   {
-    accessorKey: "duration",
-    size:240,
+    accessorKey: "query_duration",
+    size: MAX_WIDTH_SDG_BAR,
     header: ({ column }) => {
       return h(
         "button",
@@ -41,10 +44,11 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
     },
     cell: ({ row }) => {
       return h(MiniBarSdg, {
-        base_duration: row.original.duration,
-        query_duration: 0,
-        maxTotalDuration: row.original.maxParentSdgDuration,
+        base_duration: row.original.base_duration,
+        query_duration: row.original.query_duration,
+        maxTotalDuration: row.original.maxGoalDuration,
         name: row.original.goal,
+        showQueryDuration: row.original.hasActiveFilters,
       });
     },
   },
@@ -66,7 +70,7 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
         {
           class: "flex gap-4 justify-end ",
         },
-        [h("span", {class: 'text-xs'}, onlyName)]
+        [h("span", { class: "text-xs" }, onlyName)]
       );
     },
   },

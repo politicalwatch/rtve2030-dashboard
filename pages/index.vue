@@ -100,10 +100,10 @@
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
-              :varValue="msToHours(filteredTotalDuration)"
-              :maxValue="msToHours(timeSpanCounterData.total_duration)"
+              :varValue="msToHours(queryDuration)"
+              :maxValue="msToHours(filteredTotalDuration)"
             >
-              horas analizadas
+              Horas tageadas
             </chartsNumberCounter>
           </div>
           <div>
@@ -131,8 +131,7 @@
         <WrappersFrequencyWr
           v-if="evolutionStackedData != null"
           :evoData="evolutionStackedData"
-          :hasActiveFilters="filters.hasActiveFilters"
-          
+          :hasActiveFilters="filters.hasActiveFilters"          
         />
 
         <div class="mt-16">
@@ -141,8 +140,7 @@
             :sdgData="sdgData"
             :baseData="baseDataStore.sdgData"
             :baseTaggedDuration="baseTaggedDuration"
-            :hasActiveFilters="filters.hasActiveFilters"
-
+            :hasActiveFilters="filters.channels.length > 0 || filters.programs.length>0"
           >
           </WrappersSdgWr>
         </div>
