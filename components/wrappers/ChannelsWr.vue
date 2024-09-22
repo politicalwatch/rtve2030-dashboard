@@ -2,6 +2,7 @@
   <div>
     <div class="flex justify-between items-center h-9">
       <h2 class="chart-titles">Canales</h2>
+      <div class="flex gap-1 items-center text-2xs font-mono"> <Switch v-model:checked="relativeMode"/> relativo</div>
     </div>
     <!-- <div class="flex justify-start gap-2 text-2xs">
       <button
@@ -22,7 +23,6 @@
       :columns="columns"
       :data="dataForTable"
       rowId="name"
-
       :syncWithFilters="true"
       filterField="channels"
       filterFlagField="channelRemovedFlag"
@@ -34,6 +34,7 @@
 import { _grayscale } from "#twcss/theme";
 import { columns } from "../DataTable/channelColumns";
 import { rollups, sum } from "d3";
+import {Switch} from "@/components/ui/switch"
 
 const filtersStore = useFiltersStore();
 const { channels: filterChannels } = storeToRefs(filtersStore);
@@ -47,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {});
 
 const noChannelSelection = computed(() => filterChannels.value.length === 0);
 
+const relativeMode = ref(false);
 function channelClickHandler(channel: Channels) {
   if (filterChannels.value.length === 0) {
     filterChannels.value = [channel];
@@ -85,11 +87,11 @@ const dataForTable = computed(() => {
     
     const result = {
       hasActiveFilters: props.hasActiveFilters,
-      maxTotalDuration: maxTotalDuration.value,
+      maxTotalDuration: relativeMode.value?chan.total_duration:maxTotalDuration.value,
       basePrograms: props.baseData.find((chan2) => chan.name === chan2.name)
-        ?.program_count,
+        ?.program_count as number,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
-        ?.program_count,
+        ?.program_count as number,
       queryDuration: queryDuration, // 0 if no filters to avoid painting the bar
       name: chan.name,
       total_duration: chan.total_duration,

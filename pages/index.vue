@@ -167,13 +167,13 @@
         </div>
 
         <div class="mt-8">
-          <WrappersTagsWr
+          <WrappersTermsWr
             v-if="tagsData != null && baseDataStore.tagsData != null"
             :tagsData="tagsData"
             :baseData="baseDataStore.tagsData"
             :hasActiveFilters="filters.hasActiveFilters"
           >
-          </WrappersTagsWr>
+          </WrappersTermsWr>
         </div>
       </div>
     </section>
