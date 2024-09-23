@@ -115,8 +115,8 @@ const dataForTable = computed(() => {
 
     const baseTaggedDuration = sum(chan.topics, (d) => d.duration);
 
+    
     const result = {
-      hasActiveFilters: props.hasActiveFilters,
       maxTotalDuration: relativeMode.value
         ? chan.total_duration
         : maxTotalDuration.value,
@@ -124,11 +124,13 @@ const dataForTable = computed(() => {
         ?.program_count as number,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
         ?.program_count as number,
-      queryDuration: queryDurationTopics, // same as tagged_duration when no filters
+      queryDuration: filtersStore.sdgActive.length>0?queryDurationTopics:chan.tagged_duration, 
       name: chan.name,
       total_duration: chan.total_duration,
-      tagged_duration: baseTaggedDuration,
+      tagged_duration: chan.tagged_duration,
       sdgs: topTopics.map((topic) => topic.topic),
+      showQueryDuration: filtersStore.sdgActive.length>0,
+
     };
 
     return result;

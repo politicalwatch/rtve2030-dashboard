@@ -65,25 +65,13 @@ export const columns: ColumnDef<TableChannels>[] = [
     accessorFn: (row) => `${row.queryDuration}`,
     id: "duration",
     cell: ({ row }) => {
-      const totalDuration = row.original.total_duration;
-      const taggedDuration = row.original.tagged_duration;
-      const maxTotalDuration = row.original.maxTotalDuration;
-      const queryDuration = row.original.queryDuration;
-      const miniBarProps: {
-        total_duration: number;
-        tagged_duration: number;
-        maxTotalDuration: number;
-        queryDuration?: number;
-        showQueryDuration?: boolean;
-      } = {
-        total_duration: totalDuration,
-        tagged_duration: taggedDuration,
-        maxTotalDuration: maxTotalDuration,
-        showQueryDuration: row.original.hasActiveFilters,
-      };
-      if (queryDuration !== undefined) {
-        miniBarProps.queryDuration = queryDuration;
-      }
+      const miniBarProps = {
+        total_duration: row.original.total_duration,
+        tagged_duration: row.original.tagged_duration,
+        queryDuration: row.original.queryDuration,
+        maxTotalDuration: row.original.maxTotalDuration,
+        showQueryDuration: row.original.showQueryDuration,
+      };      
       return h(MiniBarChart, miniBarProps);
     },
   },

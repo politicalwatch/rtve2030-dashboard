@@ -8,6 +8,7 @@ export interface TableChannels {
   programs: number;
   basePrograms?: number; // tbd check
   hasActiveFilters:boolean;
+  showQueryDuration?: boolean;
 }
 
 export interface TablePrograms {
