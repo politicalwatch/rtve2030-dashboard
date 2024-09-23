@@ -1,8 +1,31 @@
 <template>
   <div>
     <div class="flex justify-between items-center h-9">
-      <h2 class="chart-titles">Canales</h2>
-      <div class="flex gap-1 items-center text-2xs font-mono"> <Switch v-model:checked="relativeMode"/> relativo</div>
+      <TooltipProvider :delayDuration="100">
+        <Tooltip>
+          <TooltipTrigger>
+            <div class="flex gap-0.5">
+              <h2 class="chart-titles">Canales</h2>
+              <Icon
+                name="heroicons:information-circle"
+                class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
+              >
+              </Icon>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+          >
+            <slot name="description">
+              Metodología: Aquí podemos contar qué valores se están mostrando
+            </slot>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      <div class="flex gap-1 items-center text-2xs font-mono">
+        <Switch v-model:checked="relativeMode" /> relativo
+      </div>
     </div>
     <!-- <div class="flex justify-start gap-2 text-2xs">
       <button
@@ -34,7 +57,7 @@
 import { _grayscale } from "#twcss/theme";
 import { columns } from "../DataTable/channelColumns";
 import { rollups, sum } from "d3";
-import {Switch} from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch";
 
 const filtersStore = useFiltersStore();
 const { channels: filterChannels } = storeToRefs(filtersStore);
@@ -66,7 +89,9 @@ const maxTotalDuration = computed(() => {
 
 const dataForTable = computed(() => {
   return props.baseData.map((chan) => {
-    const latestChanData= props.channelsData.find((chan2) => chan.name === chan2.name);
+    const latestChanData = props.channelsData.find(
+      (chan2) => chan.name === chan2.name
+    );
 
     // lets sum all the durations of the topics in chan.topics grouped by chan.topics.topic
     // const aggrData = rollups(
@@ -75,21 +100,26 @@ const dataForTable = computed(() => {
     //   (d) => d.topic
     // );
     // get top 5 topics
-    const alltopics=latestChanData==undefined?chan.topics:latestChanData.topics;
-    const topTopics = alltopics.sort((a, b) => b.duration-a.duration).slice(0, 5);
+    const alltopics =
+      latestChanData == undefined ? chan.topics : latestChanData.topics;
+    const topTopics = alltopics
+      .sort((a, b) => b.duration - a.duration)
+      .slice(0, 5);
 
     // get latest value, not base value
     // compute the sum for all topics
     let queryDurationTopics = 0;
-    if(latestChanData !== undefined     ){
-     queryDurationTopics = sum(latestChanData?.topics, (d) => d.duration);
+    if (latestChanData !== undefined) {
+      queryDurationTopics = sum(latestChanData?.topics, (d) => d.duration);
     }
 
     const baseTaggedDuration = sum(chan.topics, (d) => d.duration);
-    
+
     const result = {
       hasActiveFilters: props.hasActiveFilters,
-      maxTotalDuration: relativeMode.value?chan.total_duration:maxTotalDuration.value,
+      maxTotalDuration: relativeMode.value
+        ? chan.total_duration
+        : maxTotalDuration.value,
       basePrograms: props.baseData.find((chan2) => chan.name === chan2.name)
         ?.program_count as number,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
