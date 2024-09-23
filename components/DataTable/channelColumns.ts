@@ -44,34 +44,26 @@ export const columns: ColumnDef<TableChannels>[] = [
       });
     },
   },
-
   {
-    accessorFn: (row) =>
-      `${row.hasActiveFilters ? row.queryDuration : row.tagged_duration}`,
-    id: "tagged_duration",
-    header: () => h("div", { class: "text-right" }, "tagged"),
-    cell: ({ row }) => {
-      const amount = row.original.hasActiveFilters
-        ? row.original.queryDuration
-        : row.original.tagged_duration;
-      const formatted = format.N(msToHours(amount));
-      return h("div", { class: "text-right font-medium" }, formatted);
-    },
-  },
-
-  {
-    accessorFn: (row) =>
-      `${row.hasActiveFilters ? row.tagged_duration : row.queryDuration}`,
-    id: "duration",
+    accessorKey: "queryDuration",
     header: ({ column }) => {
       return h(
         "button",
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Duración", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["tagged", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
+    cell: ({ row }) => {
+      const amount = row.original.queryDuration;
+      const formatted = format.N(msToHours(amount));
+      return h("div", { class: "text-right font-medium" }, formatted);
+    },
+  },
+  {
+    accessorFn: (row) => `${row.queryDuration}`,
+    id: "duration",
     cell: ({ row }) => {
       const totalDuration = row.original.total_duration;
       const taggedDuration = row.original.tagged_duration;
@@ -82,10 +74,12 @@ export const columns: ColumnDef<TableChannels>[] = [
         tagged_duration: number;
         maxTotalDuration: number;
         queryDuration?: number;
+        showQueryDuration?: boolean;
       } = {
         total_duration: totalDuration,
         tagged_duration: taggedDuration,
         maxTotalDuration: maxTotalDuration,
+        showQueryDuration: row.original.hasActiveFilters,
       };
       if (queryDuration !== undefined) {
         miniBarProps.queryDuration = queryDuration;

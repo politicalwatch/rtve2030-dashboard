@@ -80,10 +80,12 @@ const dataForTable = computed(() => {
 
     // get latest value, not base value
     // compute the sum for all topics
-    let queryDuration = 0;
-    if(latestChanData !== undefined && props.hasActiveFilters){
-     queryDuration = sum(latestChanData?.topics, (d) => d.duration);
+    let queryDurationTopics = 0;
+    if(latestChanData !== undefined     ){
+     queryDurationTopics = sum(latestChanData?.topics, (d) => d.duration);
     }
+
+    const baseTaggedDuration = sum(chan.topics, (d) => d.duration);
     
     const result = {
       hasActiveFilters: props.hasActiveFilters,
@@ -92,10 +94,10 @@ const dataForTable = computed(() => {
         ?.program_count as number,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
         ?.program_count as number,
-      queryDuration: queryDuration, // 0 if no filters to avoid painting the bar
+      queryDuration: queryDurationTopics, // same as tagged_duration when no filters
       name: chan.name,
       total_duration: chan.total_duration,
-      tagged_duration: chan.tagged_duration,
+      tagged_duration: baseTaggedDuration,
       sdgs: topTopics.map((topic) => topic.topic),
     };
 

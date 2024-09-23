@@ -101,7 +101,7 @@
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
               :varValue="msToHours(queryDuration)"
-              :maxValue="msToHours(filteredTotalDuration)"
+              :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
             >
               Horas tageadas
             </chartsNumberCounter>
@@ -390,7 +390,8 @@ const filteredTotalDuration = computed(() => {
 
 const queryDuration = computed(() => {
   if (evolutionStackedData.value?.hoursPeriod == null) return 0;
-  return sum(evolutionStackedData.value.hoursPeriod, (d) => d.tagged_duration);
+  if(filters.hasActiveFilters) return sum(evolutionStackedData.value.hoursPeriod, (d) => d.query_duration)
+  else return sum(evolutionStackedData.value.hoursPeriod, (d) => d.tagged_duration);
 });
 
 const filteredProgramsCount = computed(() => {

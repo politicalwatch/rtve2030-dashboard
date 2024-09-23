@@ -4,6 +4,7 @@ const props = defineProps<{
   tagged_duration: number;
   queryDuration?: number;
   maxTotalDuration: number;
+  showQueryDuration: boolean;
 }>();
 
 const totalTimePercentage = computed(() => {
@@ -70,7 +71,7 @@ const filteredTaggedTimePercentage = computed(() => {
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip v-if="queryDuration">
+      <Tooltip v-if="queryDuration && showQueryDuration">
         <TooltipTrigger as-child>
           <div
             class="h-full absolute bg-gray-800 z-20"
