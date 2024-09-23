@@ -4,7 +4,17 @@
       <div class="col-span-3">
         <div class="flex justify-between my-4">
           <h2 class="chart-titles">términos</h2>
-          <div id="terms-search-input"></div>
+          <div class="flex flex-col gap-2 items-end">
+            <div
+              class="flex gap-1 items-center text-2xs font-mono"
+              :class="[
+                !hasActiveFilters ? 'opacity-30 pointer-events-none' : '',
+              ]"
+            >
+              <Switch v-model:checked="relativeMode" /> maximo según filtros
+            </div>
+            <div id="terms-search-input"></div>
+          </div>
         </div>
         <DataTableBaseTable
           :columns="columns"
@@ -49,7 +59,7 @@
 
 <script lang="ts" setup>
 import { columns } from "../DataTable/termsColumns";
-import { groups, rollups, rollup, sum } from "d3";
+import { groups, rollups, rollup, sum, max } from "d3";
 import VueWordCloud from "vuewordcloud";
 import { scaleSequential, interpolate } from "d3";
 import { useElementSize, useElementVisibility } from "@vueuse/core";
@@ -64,8 +74,11 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+const relativeMode = ref(true);
 
-
+const showMaxAccordingToFilters = computed(() => {
+  return relativeMode.value && props.hasActiveFilters
+});
 // return type is like statTags but contains also tagCount and subtopic is an array of subtopics
 const basetagsDataAggregatedByTag = computed(() => {
   const tags = rollups(
@@ -99,24 +112,27 @@ const tagsDataAggregatedByTag = computed(() => {
 
 const maxTotalCountTags = computed(() => {
   // get baseTagsData but only if the tag is in the tagsData
-  let baseTagsDataExistingTags = basetagsDataAggregatedByTag.value
-  if(tagsDataAggregatedByTag){
+  let baseTagsDataExistingTags = basetagsDataAggregatedByTag.value;
+
+  if (tagsDataAggregatedByTag) {
     baseTagsDataExistingTags = basetagsDataAggregatedByTag.value.filter((tag) =>
       tagsDataAggregatedByTag.value.some((tag2) => tag2.tag === tag.tag)
     );
   }
-  
-  return Math.max(...baseTagsDataExistingTags.map((tag) => tag.occurrences));
+
+  return {baseMax: max(baseTagsDataExistingTags, d=>d.occurrences), queryMax: max(tagsDataAggregatedByTag.value, (d) => d.occurrences)}
 });
 
 const dataForTable = computed<TableTags[]>(() => {
   return tagsDataAggregatedByTag.value.map((tag) => {
-     const equivalentBase=basetagsDataAggregatedByTag.value.find((tag2) => tag2.tag === tag.tag)
+    const equivalentBase = basetagsDataAggregatedByTag.value.find(
+      (tag2) => tag2.tag === tag.tag
+    );
     return {
       name: tag.tag,
-      total_occurrences: equivalentBase?.occurrences ?? 0,
+      total_occurrences: showMaxAccordingToFilters.value?0:equivalentBase?.occurrences ?? 0,
       filtered_occurrences: tag.occurrences,
-      maxTotalOccurrences: maxTotalCountTags.value, // max total occurrences in base data
+      maxTotalOccurrences: showMaxAccordingToFilters.value?maxTotalCountTags.value.queryMax:maxTotalCountTags.value.baseMax, // max total occurrences in base data
       sdgs: tag.subtopics
         .map((subtopic) => subtopicToTopic(subtopic))
         .filter((topic): topic is SdgTopic => topic !== null),
