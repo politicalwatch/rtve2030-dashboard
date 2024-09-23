@@ -132,7 +132,10 @@ const dataForTable = computed<TableTags[]>(() => {
       name: tag.tag,
       total_occurrences: showMaxAccordingToFilters.value?0:equivalentBase?.occurrences ?? 0,
       filtered_occurrences: tag.occurrences,
-      maxTotalOccurrences: showMaxAccordingToFilters.value?maxTotalCountTags.value.queryMax:maxTotalCountTags.value.baseMax, // max total occurrences in base data
+      // max can take 3 values: when showMaxAccordingToFilters is true it takes the max
+      // of the base data, when showMaxAccordingToFilters is false it takes its own basedata but only if there is any filter active
+      maxTotalOccurrences: showMaxAccordingToFilters.value?maxTotalCountTags.value.queryMax:
+                          props.hasActiveFilters?equivalentBase?.occurrences:maxTotalCountTags.value.baseMax,// max total occurrences in base data
       sdgs: tag.subtopics
         .map((subtopic) => subtopicToTopic(subtopic))
         .filter((topic): topic is SdgTopic => topic !== null),
