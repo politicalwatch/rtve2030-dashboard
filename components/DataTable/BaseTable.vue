@@ -41,7 +41,6 @@ onMounted(async () => {
 });
 const filters = useFiltersStore();
 
-
 interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -64,13 +63,15 @@ const props = withDefaults(defineProps<Props<TData, TValue>>(), {
   filterFlagField: "channelRemovedFlag",
 });
 
-const sorting = ref<SortingState>([]);
+const sorting = ref<SortingState>([{ "id": "mainSorting", "desc": false } ]);
 const expanded = ref<ExpandedState>({});
 const selectedRows = ref([]);
 
 // this is a typeGuard
 function isSpecificType(data: any): data is TableSdg {
-  return 'queryGoals' in data && 'maxBaseDuration' in data && 'baseGoals' in data;
+  return (
+    "queryGoals" in data && "maxBaseDuration" in data && "baseGoals" in data
+  );
 }
 
 const doNotUpdate = ref(false);
@@ -146,7 +147,7 @@ const table = useVueTable({
   initialState: {
     pagination: {
       pageSize: 17,
-    },
+    }
   },
   // getSubRows: (row) => row.getExpandedRowModel().rows,
   state: {
@@ -196,6 +197,7 @@ function getVisiblePages() {
 
 <template>
   <div class="">
+    
     <!-- {{  rowSelection}} -->
     <template
       v-if="
@@ -206,7 +208,11 @@ function getVisiblePages() {
     >
       <Teleport defer :to="teleportTarget">
         <div class="relative w-full max-w-md items-center">
-          <Input v-if="searchColumnName != undefined && typeof searchColumnName === 'string' "
+          <Input
+            v-if="
+              searchColumnName != undefined &&
+              typeof searchColumnName === 'string'
+            "
             class="pr-10 placeholder:text-gray-300"
             :placeholder="placeholder"
             :model-value="

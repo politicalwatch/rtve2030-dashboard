@@ -16,7 +16,7 @@ export const columns: ColumnDef<TableTags>[] = [
   {
     accessorKey: "sdgs",
     header: () => h("div", { class: "text-right" }, "ods"),
-    size:40,
+    size: 40,
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -27,6 +27,8 @@ export const columns: ColumnDef<TableTags>[] = [
 
   {
     accessorKey: "filtered_occurrences",
+    id: "mainSorting",
+    invertSorting: true,
     header: ({ column }) => {
       return h(
         "button",
@@ -70,7 +72,7 @@ export const columns: ColumnDef<TableTags>[] = [
         total: totalDuration,
         maxTotal: maxTotalOccurrences,
         hasActiveFilters: hasActiveFilters,
-        filtered : filteredTaggedOcc
+        filtered: filteredTaggedOcc,
       };
       if (filteredTaggedOcc !== undefined) {
       }

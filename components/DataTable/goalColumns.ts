@@ -1,8 +1,6 @@
 import { h } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
 import MiniBarSdg from "./MiniBarSdg.vue";
-import sdgSquares from "./sdgSquares.vue";
-import ChannelIconName from "./ChannelIconName.vue";
 import { Icon } from "#components";
 export const goalColumns: ColumnDef<TableGoals>[] = [
   {
@@ -54,6 +52,7 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
   },
   {
     accessorKey: "goal",
+    id: "mainSorting",
     header: ({ column }) => {
       return h(
         "button",

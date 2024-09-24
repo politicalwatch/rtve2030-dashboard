@@ -65,9 +65,10 @@ export const columns: ColumnDef<TablePrograms>[] = [
   },
 
   {
+    id:"mainSorting",
+    invertSorting: true,
     accessorFn: (row) =>
       `${row.hasActiveFilters ? row.queryDuration : row.tagged_duration}`,
-    id: "tagged_duration",
     header: ({ column }) => {
       return h(
         "button",
@@ -101,6 +102,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
         tagged_duration: row.original.tagged_duration,
         maxTotalDuration: row.original.maxTotalDuration,
         queryDuration: row.original.queryDuration,
+        showQueryDuration: row.original.hasActiveFilters,
       });
     },
   },

@@ -46,6 +46,8 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
   {
     accessorKey: "queryDuration",
+    id:"mainSorting",
+    invertSorting: true,
     header: ({ column }) => {
       return h(
         "button",

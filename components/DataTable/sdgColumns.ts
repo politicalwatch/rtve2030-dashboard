@@ -70,6 +70,7 @@ export const columns: ColumnDef<TableSdg>[] = [
   },
   {
     accessorKey: "sdg",
+    id: "mainSorting",
     header: ({ column }) => {
       return h(
         "button",

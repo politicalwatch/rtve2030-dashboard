@@ -49,7 +49,7 @@ function spliceGoalName(goal: string) {
 }
 
 const sortedGoals = computed(() => {
-  return props.baseGoals.sort((a, b) => b.duration - a.duration);
+  return props.baseGoals.sort((a, b) => a.goal.localeCompare(b.goal));
 });
 
 const goalMap = computed(() => {
