@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "shadcn-nuxt",
     "@pinia/nuxt",
+    "@nuxt/content",
   ],
   css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
   alias: {

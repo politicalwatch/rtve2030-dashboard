@@ -2,7 +2,30 @@
   <div>
     <div class="grid grid-cols-5 gap-8">
       <div class="col-span-2">
-        <h2 class="chart-titles">Objetivos y metas</h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div class="flex gap-0.5">
+                <h2 class="chart-titles">Objetivos y metas</h2>
+                <Icon
+                  name="heroicons:information-circle"
+                  class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
+                >
+                </Icon>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+            >
+              <slot name="description">
+                <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                  <ContentRenderer :value="data" class="prose prose-sm" />
+                </ContentQuery>
+              </slot>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <div class="flex justify-start gap-2 text-2xs">
           <button
             v-for="(longname, code, i) in SdgTopic"
@@ -51,14 +74,13 @@
 </template>
 
 <script setup lang="ts">
-import { sum,max } from "d3";
+import { sum, max } from "d3";
 const filtersStore = useFiltersStore();
 const { sdgActive } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
 import { columns } from "../DataTable/sdgColumns";
 import { goalColumns } from "../DataTable/goalColumns";
 import { parseDuration } from "@internationalized/date";
-
 
 interface Props {
   sdgData: Array<StatsSdg>;
@@ -127,9 +149,10 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
   // maxParent Sdg duration
   const goalsData: TableGoals[] = [];
 
-
   function findParentFromGoal(goal: string) {
-    return sdgDataFiltered.find((sdg) => sdg.goals.find((g) => g.goal === goal));
+    return sdgDataFiltered.find((sdg) =>
+      sdg.goals.find((g) => g.goal === goal)
+    );
   }
   return filteredGoals.map((goal) => {
     return {
@@ -142,7 +165,7 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
       hasActiveFilters: props.hasActiveFilters,
     };
   });
-  
+
   // sdgDataFiltered.forEach((sdg) => {k
   //   const parentSdgDuration = sdg.duration;
   //   const maxParentSdgDuration = maxTotalDurationQuerySdg;

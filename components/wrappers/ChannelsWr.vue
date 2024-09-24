@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center h-9">
-      <TooltipProvider :delayDuration="100">
+      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
             <div class="flex gap-0.5">
@@ -17,7 +17,9 @@
             class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
           >
             <slot name="description">
-              Metodología: Aquí podemos contar qué valores se están mostrando
+              <ContentQuery path="help/channels" find="one" v-slot="{ data }">
+                <ContentRenderer :value="data" class="prose prose-sm" />
+              </ContentQuery>
             </slot>
           </TooltipContent>
         </Tooltip>
@@ -115,7 +117,6 @@ const dataForTable = computed(() => {
 
     const baseTaggedDuration = sum(chan.topics, (d) => d.duration);
 
-    
     const result = {
       maxTotalDuration: relativeMode.value
         ? chan.total_duration
@@ -124,13 +125,15 @@ const dataForTable = computed(() => {
         ?.program_count as number,
       programs: props.channelsData.find((chan2) => chan.name === chan2.name)
         ?.program_count as number,
-      queryDuration: filtersStore.sdgActive.length>0?queryDurationTopics:chan.tagged_duration, 
+      queryDuration:
+        filtersStore.sdgActive.length > 0
+          ? queryDurationTopics
+          : chan.tagged_duration,
       name: chan.name,
       total_duration: chan.total_duration,
       tagged_duration: chan.tagged_duration,
       sdgs: topTopics.map((topic) => topic.topic),
-      showQueryDuration: filtersStore.sdgActive.length>0,
-
+      showQueryDuration: filtersStore.sdgActive.length > 0,
     };
 
     return result;

@@ -3,7 +3,30 @@
     <div class="grid grid-cols-5 gap-8">
       <div class="col-span-3">
         <div class="flex justify-between my-4">
-          <h2 class="chart-titles">términos</h2>
+           <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div class="flex gap-0.5">
+                <h2 class="chart-titles">términos</h2>
+                <Icon
+                  name="heroicons:information-circle"
+                  class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
+                >
+                </Icon>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+            >
+              <slot name="description">
+                <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                  <ContentRenderer :value="data" class="prose prose-sm" />
+                </ContentQuery>
+              </slot>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+          
           <div class="flex flex-col gap-2 items-end">
             <div
               class="flex gap-1 items-center text-2xs font-mono"
