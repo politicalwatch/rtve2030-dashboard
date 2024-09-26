@@ -45,7 +45,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Ocurrencias totales: {{ total }}</p>
+          <p>duración total: {{ format.msToTime(total) }}</p>
         </TooltipContent>
       </Tooltip>
 
@@ -57,7 +57,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ filtered }} ocurrencias</p>
+          <p>{{ format.msToTime(filtered) }} según filtros</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

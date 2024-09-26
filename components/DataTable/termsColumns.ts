@@ -26,7 +26,7 @@ export const columns: ColumnDef<TableTags>[] = [
   },
 
   {
-    accessorKey: "filtered_occurrences",
+    accessorKey: "filtered_duration",
     id: "mainSorting",
     invertSorting: true,
     header: ({ column }) => {
@@ -39,14 +39,14 @@ export const columns: ColumnDef<TableTags>[] = [
       );
     },
     cell: ({ row }) => {
-      const amount = row.original.filtered_occurrences ?? -1;
-      const formatted = format.N(amount);
+      const amount = row.original.filtered_duration ?? -1;
+      const formatted = format.msToTime(amount);
       return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
 
   {
-    accessorFn: (row) => `${row.filtered_occurrences / row.total_occurrences}`,
+    accessorFn: (row) => `${row.filtered_duration / row.total_duration}`,
     id: "tagged_duration",
     size: 240,
     header: ({ column }) => {
@@ -59,9 +59,9 @@ export const columns: ColumnDef<TableTags>[] = [
       );
     },
     cell: ({ row }) => {
-      const totalDuration = row.original.total_occurrences;
-      const maxTotalOccurrences = row.original.maxTotalOccurrences;
-      const filteredTaggedOcc = row.original.filtered_occurrences;
+      const totalDuration = row.original.total_duration;
+      const maxTotalDuration = row.original.maxTotalDuration;
+      const filteredTaggedOcc = row.original.filtered_duration;
       const hasActiveFilters = row.original.hasActiveFilters;
       const miniBarProps: {
         total: number;
@@ -70,7 +70,7 @@ export const columns: ColumnDef<TableTags>[] = [
         hasActiveFilters: boolean;
       } = {
         total: totalDuration,
-        maxTotal: maxTotalOccurrences,
+        maxTotal: maxTotalDuration,
         hasActiveFilters: hasActiveFilters,
         filtered: filteredTaggedOcc,
       };

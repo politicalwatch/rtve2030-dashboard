@@ -3,30 +3,30 @@
     <div class="grid grid-cols-5 gap-8">
       <div class="col-span-3">
         <div class="flex justify-between my-4">
-           <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <div class="flex gap-0.5">
-                <h2 class="chart-titles">términos</h2>
-                <Icon
-                  name="heroicons:information-circle"
-                  class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
-                >
-                </Icon>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
-            >
-              <slot name="description">
-                <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
-                  <ContentRenderer :value="data" class="prose prose-sm" />
-                </ContentQuery>
-              </slot>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div class="flex gap-0.5">
+                  <h2 class="chart-titles">términos</h2>
+                  <Icon
+                    name="heroicons:information-circle"
+                    class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
+                  >
+                  </Icon>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent
+                class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+              >
+                <slot name="description">
+                  <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                    <ContentRenderer :value="data" class="prose prose-sm" />
+                  </ContentQuery>
+                </slot>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <div class="flex flex-col gap-2 items-end">
             <div
               class="flex gap-1 items-center text-2xs font-mono"
@@ -47,34 +47,39 @@
         />
       </div>
 
-      <div class="col-span-2" ref="wordcloudContainer">
-        <VueWordCloud
-          :words="topWords"
-          :color="colorfn"
-          :style="{
-            width: width - padding.left - padding.right + 'px',
-            height: height - padding.top - padding.bottom + 'px',
-            'margin-left': padding.left + 'px',
-            'margin-top': padding.top + 'px',
-          }"
-          v-if="width > 0 && height > 0"
-          :fontFamily="'Roboto'"
-          :font-size-ratio="4"
-          :enter-animation="enterAnimation"
-          :leave-animation="leaveAnimation"
-          :animation-duration="700"
-        >
-          <template #default="{ text, weight, word }">
-            <div
-              :title="weight"
-              class="cursor-pointer hover:font-bold pointer-events-auto"
-              @mouseover="onWordMouseover($event, word)"
-              @mouseleave="onWordMouseleave($event)"
-            >
-              {{ text }}
-            </div>
-          </template>
-        </VueWordCloud>
+      <div class="col-span-2 flex flex-col h-full">
+        <div class="flex gap-1 items-center text-2xs font-mono mt-4 justify-end">
+          <Switch v-model:checked="colorBySdg" /> color por ODS
+        </div>
+        <div ref="wordcloudContainer" class="w-full h-full">
+          <VueWordCloud
+            :words="topWords"
+            :color="colorfn"
+            :style="{
+              width: width - padding.left - padding.right + 'px',
+              height: height - padding.top - padding.bottom + 'px',
+              'margin-left': padding.left + 'px',
+              'margin-top': padding.top + 'px',
+            }"
+            v-if="width > 0 && height > 0"
+            :fontFamily="'Roboto'"
+            :font-size-ratio="4"
+            :enter-animation="enterAnimation"
+            :leave-animation="leaveAnimation"
+            :animation-duration="700"
+          >
+            <template #default="{ text, weight, word }">
+              <div
+                :title="weight"
+                class="cursor-pointer hover:font-bold pointer-events-auto"
+                @mouseover="onWordMouseover($event, word)"
+                @mouseleave="onWordMouseleave($event)"
+              >
+                {{ text }}
+              </div>
+            </template>
+          </VueWordCloud>
+        </div>
       </div>
     </div>
   </div>
@@ -88,6 +93,7 @@ import { scaleSequential, interpolate } from "d3";
 import { useElementSize, useElementVisibility } from "@vueuse/core";
 import { _300 as green300, _700 as green700 } from "#twcss/theme/colors/green";
 import { _400, _800 } from "#twcss/theme/colors/gray";
+
 const padding = { top: 0, right: 10, bottom: 0, left: 50 };
 interface Props {
   tagsData: Array<StatsTags>;
@@ -98,9 +104,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const relativeMode = ref(true);
+const colorBySdg = ref(false);
 
 const showMaxAccordingToFilters = computed(() => {
-  return relativeMode.value && props.hasActiveFilters
+  return relativeMode.value && props.hasActiveFilters;
 });
 // return type is like statTags but contains also tagCount and subtopic is an array of subtopics
 const basetagsDataAggregatedByTag = computed(() => {
@@ -143,7 +150,10 @@ const maxTotalCountTags = computed(() => {
     );
   }
 
-  return {baseMax: max(baseTagsDataExistingTags, d=>d.occurrences), queryMax: max(tagsDataAggregatedByTag.value, (d) => d.occurrences)}
+  return {
+    baseMax: max(baseTagsDataExistingTags, (d) => d.duration),
+    queryMax: max(tagsDataAggregatedByTag.value, (d) => d.duration),
+  };
 });
 
 const dataForTable = computed<TableTags[]>(() => {
@@ -153,12 +163,17 @@ const dataForTable = computed<TableTags[]>(() => {
     );
     return {
       name: tag.tag,
-      total_occurrences: showMaxAccordingToFilters.value?0:equivalentBase?.occurrences ?? 0,
-      filtered_occurrences: tag.occurrences,
+      total_duration: showMaxAccordingToFilters.value
+        ? 0
+        : equivalentBase?.duration ?? 0,
+      filtered_duration: tag.duration,
       // max can take 3 values: when showMaxAccordingToFilters is true it takes the max
       // of the base data, when showMaxAccordingToFilters is false it takes its own basedata but only if there is any filter active
-      maxTotalOccurrences: showMaxAccordingToFilters.value?maxTotalCountTags.value.queryMax:
-                          props.hasActiveFilters?equivalentBase?.occurrences:maxTotalCountTags.value.baseMax,// max total occurrences in base data
+      maxTotalDuration: showMaxAccordingToFilters.value
+        ? maxTotalCountTags.value.queryMax
+        : props.hasActiveFilters
+        ? equivalentBase?.duration
+        : maxTotalCountTags.value.baseMax, // max total occurrences in base data
       sdgs: tag.subtopics
         .map((subtopic) => subtopicToTopic(subtopic))
         .filter((topic): topic is SdgTopic => topic !== null),
@@ -179,9 +194,9 @@ function subtopicToTopic(subtopic: string) {
 // get top words for wordcloud. top 50
 const topWords = computed(() => {
   return dataForTable.value
-    .sort((a, b) => b.filtered_occurrences - a.filtered_occurrences)
+    .sort((a, b) => b.filtered_duration - a.filtered_duration)
     .slice(0, 40)
-    .map((tag) => [tag.name, tag.filtered_occurrences]);
+    .map((tag) => [tag.name, tag.filtered_duration]);
 });
 
 // create a sequential color scale using d3. It must use two green colors and interpolate between them
@@ -200,7 +215,8 @@ const colorfn = (
   fontSize: number,
   colorPalette: string[]
 ) => {
-  return colorScale.value(weight);
+  if (colorBySdg.value) return getColorForWord(word);
+  else return colorScale.value(weight);
 };
 
 const wordcloudContainer = ref(null);
@@ -272,9 +288,9 @@ let leaveAnimation = { opacity: 0 };
 
 /*** interaction */
 
-function onWordMouseover(event: MouseEvent, word: string) {
+function onWordMouseover(event: MouseEvent, word: [string, number]) {
   const element = event.target as HTMLElement;
-  const color = getColorForWord(word);
+  const color = getColorForWord(word[0]);
   element.style.color = color;
 }
 
@@ -284,7 +300,7 @@ function onWordMouseleave(event: MouseEvent) {
 }
 
 function getColorForWord(word: string) {
-  const tagObject = dataForTable.value.find((tag) => tag.name === word[0]);
+  const tagObject = dataForTable.value.find((tag) => tag.name === word);
   if (tagObject && tagObject.sdgs.length > 0) {
     const sdg = tagObject.sdgs[0];
     return STYLES.topics[sdg].color;

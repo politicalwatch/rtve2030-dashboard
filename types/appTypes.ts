@@ -25,9 +25,9 @@ export interface TablePrograms {
 export interface TableTags {
   name: String;
   sdgs: SdgTopic[];
-  total_occurrences: number;
-  maxTotalOccurrences: number;
-  filtered_occurrences: number;
+  total_duration: number;
+  maxTotalDuration: number;
+  filtered_duration: number;
   hasActiveFilters: boolean;
 
 }
