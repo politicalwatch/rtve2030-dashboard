@@ -131,6 +131,20 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       query,
     });
   },
+  async getReportData(
+    reportType: string,
+    startDate?: string,
+    endDate?: string
+  ): Promise<any> {
+    const query = {
+      report_type: reportType,
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+    };
+    return fetch<any>("/reports", {
+      query,
+    });
+  },
   async getAuthToken(username: string, password: string): Promise<AuthSession> {
     return fetch<AuthSession>("/auth/token", {
       method: "POST",

@@ -8,11 +8,15 @@ export const useFiltersStore = defineStore("filters", () => {
   const sdgActive = ref<SdgTopic[]>([]);
   const channels = ref<Channels[]>([]);
   const programs = ref<string[]>([]);
-  const programRemovedFlag = ref(false)
-  const channelRemovedFlag = ref(false)
+  const programRemovedFlag = ref(false);
+  const channelRemovedFlag = ref(false);
   // New getter
   const hasActiveFilters = computed(() => {
-    return sdgActive.value.length > 0 || channels.value.length > 0 || programs.value.length>0;
+    return (
+      sdgActive.value.length > 0 ||
+      channels.value.length > 0 ||
+      programs.value.length > 0
+    );
   });
 
   function removeSdgFilter(value: SdgTopic) {
@@ -20,16 +24,20 @@ export const useFiltersStore = defineStore("filters", () => {
   }
 
   function removeChannelFilter(value: Channels) {
-    channelRemovedFlag.value = true
+    channelRemovedFlag.value = true;
     channels.value = channels.value.filter((channel) => channel !== value);
   }
 
   function removeProgramFilter(value: string) {
-    programRemovedFlag.value = true
+    programRemovedFlag.value = true;
     programs.value = programs.value.filter((program) => program !== value);
   }
 
-  
+  const reportType = ref<string>("einf");
+
+  function updateReportType(newReportType: string) {
+    reportType.value = newReportType;
+  }
 
   return {
     timespan: readonly(timespan),
@@ -42,6 +50,8 @@ export const useFiltersStore = defineStore("filters", () => {
     removeChannelFilter,
     removeProgramFilter,
     programRemovedFlag,
-    channelRemovedFlag
+    channelRemovedFlag,
+    reportType: readonly(reportType),
+    updateReportType,
   };
 });

@@ -1,12 +1,20 @@
 <template>
   <div class="dashboard-content">
-    <header class="container bg-white mb-2">
+    <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
         <div class="flex gap-4">
           <img src="/img/tve.svg" alt="logo" class="h-6" />
           <img src="/img/rne.svg" alt="logo" class="h-6" />
         </div>
+      </div>
+      <div class="flex items-center">
+        <NuxtLink
+          to="/reports"
+          class="flex items-center font-bold hover:text-gray-600 uppercase"
+        >
+          <FileSpreadsheet :size="16" class="mr-2" /> Ver informes
+        </NuxtLink>
       </div>
     </header>
     <section class="bg-gray-50 border-b border-gray-500">
@@ -131,7 +139,7 @@
         <WrappersFrequencyWr
           v-if="evolutionStackedData != null"
           :evoData="evolutionStackedData"
-          :hasActiveFilters="filters.hasActiveFilters"          
+          :hasActiveFilters="filters.hasActiveFilters"
         />
 
         <div class="mt-16">
@@ -140,7 +148,9 @@
             :sdgData="sdgData"
             :baseData="baseDataStore.sdgData"
             :baseTaggedDuration="baseTaggedDuration"
-            :hasActiveFilters="filters.channels.length > 0 || filters.programs.length>0"
+            :hasActiveFilters="
+              filters.channels.length > 0 || filters.programs.length > 0
+            "
           >
           </WrappersSdgWr>
         </div>
@@ -184,6 +194,7 @@
 definePageMeta({
   middleware: ["auth-user"],
 });
+import { FileSpreadsheet } from "lucide-vue-next";
 
 import { cloneDeep } from "lodash";
 import { sum } from "d3";
@@ -385,29 +396,38 @@ const isDataReady = computed(
 /* computed data for the counters depending on filters */
 const filteredTotalDuration = computed(() => {
   if (evolutionStackedData.value?.hoursPeriod == null) return 0;
-  return sum(evolutionStackedData.value.hoursPeriod, (d) => filters.hasActiveFilters?d.query_duration:d.total_duration);
+  return sum(evolutionStackedData.value.hoursPeriod, (d) =>
+    filters.hasActiveFilters ? d.query_duration : d.total_duration
+  );
 });
 
 const queryDuration = computed(() => {
   if (evolutionStackedData.value?.hoursPeriod == null) return 0;
-  if(filters.hasActiveFilters) return sum(evolutionStackedData.value.hoursPeriod, (d) => d.query_duration)
-  else return sum(evolutionStackedData.value.hoursPeriod, (d) => d.tagged_duration);
+  if (filters.hasActiveFilters)
+    return sum(evolutionStackedData.value.hoursPeriod, (d) => d.query_duration);
+  else
+    return sum(
+      evolutionStackedData.value.hoursPeriod,
+      (d) => d.tagged_duration
+    );
 });
 
 const filteredProgramsCount = computed(() => {
   if (programsData.value == null) return 0;
-  else if(filters.programs.length===0) return programsData.value.length;
-  else return filters.programs.length
+  else if (filters.programs.length === 0) return programsData.value.length;
+  else return filters.programs.length;
 });
 
 const filteredEpisodesCount = computed(() => {
   if (programsData.value == null) return 0;
-  else if(filters.programs.length===0) return sum(programsData.value, (d) => d.episode_count);
+  else if (filters.programs.length === 0)
+    return sum(programsData.value, (d) => d.episode_count);
   // return the episodes of the programs that are in the filters
-  else return sum(programsData.value, (d) => {
-    if(filters.programs.includes(d.name)) return d.episode_count;
-    else return 0;
-  }); 
+  else
+    return sum(programsData.value, (d) => {
+      if (filters.programs.includes(d.name)) return d.episode_count;
+      else return 0;
+    });
 });
 
 const baseTaggedDuration = computed(() => {
