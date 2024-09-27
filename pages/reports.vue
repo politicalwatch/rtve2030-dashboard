@@ -93,7 +93,7 @@
             Número de horas dedicadas a cada ODS
           </h2>
           <ul>
-            <li v-for="(data, sdg) in reportData.sdg_summary" :key="channel">
+            <li v-for="(data, sdg) in reportData.sdg_summary" :key="sdg">
               <strong>{{ sdg }}:</strong>
               {{ msToHours(data.duration).toFixed(2) }} horas.
             </li>
