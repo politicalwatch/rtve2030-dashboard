@@ -6,6 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { filter } from "d3";
+
+const filtersStore = useFiltersStore();
 
 const reportTypeOptions = [
   {
@@ -30,9 +33,8 @@ const reportTypeOptions = [
   },
 ];
 
-const selectedPeriod = ref("einf");
+const selectedPeriod = ref(filtersStore.reportType);
 
-const filtersStore = useFiltersStore();
 watch(selectedPeriod, (newValue, oldValue) => {
   filtersStore.updateReportType(newValue);
 });
