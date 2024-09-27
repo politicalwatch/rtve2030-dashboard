@@ -98,8 +98,8 @@ function datesToPeriod(initDate: Date, endDate: Date): string {
   const lastQuarter = new Date(today);
   lastQuarter.setMonth(today.getMonth() - 3);
 
-  const lastHalfYear = new Date(today);
-  lastHalfYear.setMonth(today.getMonth() - 6);
+  const lastSemester = new Date(today);
+  lastSemester.setMonth(today.getMonth() - 6);
 
   const lastYear = new Date(today);
   lastYear.setFullYear(today.getFullYear() - 1);
@@ -123,7 +123,7 @@ function datesToPeriod(initDate: Date, endDate: Date): string {
     return "lastquarter";
   }
   if (
-    initDate.toDateString() === lastHalfYear.toDateString() &&
+    initDate.toDateString() === lastSemester.toDateString() &&
     endDate.toDateString() === today.toDateString()
   ) {
     return "lastsemester";
