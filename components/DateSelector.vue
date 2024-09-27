@@ -59,7 +59,7 @@ const isProgrammaticChange = ref(false);
 //   filters.timespan=[initDate.value.toDate(getLocalTimeZone()), endDate.value.toDate(getLocalTimeZone())]
 // }
 
-watch(initDate, (newValue, oldValue) => {
+watch([initDate, endDate], (newValue, oldValue) => {
   if (isProgrammaticChange.value) {
     isProgrammaticChange.value = false;
     return;
@@ -83,7 +83,6 @@ watch(
     }
   }
 );
-
 </script>
 
 <style scoped></style>
