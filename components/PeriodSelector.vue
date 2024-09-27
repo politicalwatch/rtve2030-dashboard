@@ -126,7 +126,7 @@ function datesToPeriod(initDate: Date, endDate: Date): string {
     initDate.toDateString() === lastHalfYear.toDateString() &&
     endDate.toDateString() === today.toDateString()
   ) {
-    return "lasthalfyear";
+    return "lastsemester";
   }
   if (
     initDate.toDateString() === lastYear.toDateString() &&
