@@ -48,10 +48,12 @@
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { toDate } from "radix-vue/date";
 import { Calendar } from "@/components/ui/calendar";
-const placeholder = ref('')
-const initDate = ref(parseDate(initDateString))
-const endDate = ref(today(getLocalTimeZone()))
+
 const filtersStore = useFiltersStore();
+
+const placeholder = ref('')
+const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
+const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
 
 // function updateModelValue(){
@@ -78,8 +80,8 @@ watch(
     }
     if (value) {
       isProgrammaticChange.value = true;
-      initDate.value = new CalendarDate(value[0].getFullYear(), value[0].getMonth()+1, value[0].getDate())
-      endDate.value = new CalendarDate(value[1].getFullYear(), value[1].getMonth()+1, value[1].getDate())
+      initDate.value = jsDateToCalendarDate(filtersStore.timespan[0])
+      endDate.value = jsDateToCalendarDate(filtersStore.timespan[1])
     }
   }
 );

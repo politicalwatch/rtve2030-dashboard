@@ -36,10 +36,13 @@ const periods = [
   },
 ];
 
-const selectedPeriod = ref("custom");
+const filtersStore = useFiltersStore();
+
+const selectedPeriod = ref(
+  datesToPeriod(filtersStore.timespan[0], filtersStore.timespan[1])
+);
 const isProgrammaticChange = ref(false);
 
-const filtersStore = useFiltersStore();
 watch(selectedPeriod, (newValue, oldValue) => {
   if (isProgrammaticChange.value) {
     isProgrammaticChange.value = false;
@@ -82,6 +85,56 @@ function periodToDates(period: string): [Date, Date] {
   }
   // custom:
   return [new Date(), new Date()];
+}
+
+function datesToPeriod(initDate: Date, endDate: Date): string {
+  const today = new Date();
+  const lastWeek = new Date(today);
+  lastWeek.setDate(today.getDate() - 7);
+
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(today.getMonth() - 1);
+
+  const lastQuarter = new Date(today);
+  lastQuarter.setMonth(today.getMonth() - 3);
+
+  const lastHalfYear = new Date(today);
+  lastHalfYear.setMonth(today.getMonth() - 6);
+
+  const lastYear = new Date(today);
+  lastYear.setFullYear(today.getFullYear() - 1);
+
+  if (
+    initDate.toDateString() === lastWeek.toDateString() &&
+    endDate.toDateString() === today.toDateString()
+  ) {
+    return "lastweek";
+  }
+  if (
+    initDate.toDateString() === lastMonth.toDateString() &&
+    endDate.toDateString() === today.toDateString()
+  ) {
+    return "lastmonth";
+  }
+  if (
+    initDate.toDateString() === lastQuarter.toDateString() &&
+    endDate.toDateString() === today.toDateString()
+  ) {
+    return "lastquarter";
+  }
+  if (
+    initDate.toDateString() === lastHalfYear.toDateString() &&
+    endDate.toDateString() === today.toDateString()
+  ) {
+    return "lasthalfyear";
+  }
+  if (
+    initDate.toDateString() === lastYear.toDateString() &&
+    endDate.toDateString() === today.toDateString()
+  ) {
+    return "lastyear";
+  }
+  return "custom";
 }
 </script>
 
