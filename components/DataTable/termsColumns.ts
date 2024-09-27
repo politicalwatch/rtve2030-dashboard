@@ -55,7 +55,7 @@ export const columns: ColumnDef<TableTags>[] = [
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Ocurrencias", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["Duración", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
