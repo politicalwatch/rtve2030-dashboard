@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { filter } from "d3";
 
 const filtersStore = useFiltersStore();
 
@@ -33,17 +32,17 @@ const reportTypeOptions = [
   },
 ];
 
-const selectedPeriod = ref(filtersStore.reportType);
+const reportType = ref(filtersStore.reportType);
 
-watch(selectedPeriod, (newValue, oldValue) => {
+watch(reportType, (newValue, oldValue) => {
   filtersStore.updateReportType(newValue);
 });
 </script>
 
 <template>
-  <Select v-model:modelValue="selectedPeriod">
+  <Select v-model:modelValue="reportType">
     <SelectTrigger>
-      <SelectValue placeholder="Select a fruit" />
+      <SelectValue placeholder="Selecciona un tipo de informe" />
     </SelectTrigger>
     <SelectContent>
       <SelectItem
