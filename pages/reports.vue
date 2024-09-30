@@ -167,28 +167,27 @@ definePageMeta({
 });
 
 const { $api } = useNuxtApp();
-const filters = useFiltersStore();
+const filtersStore = useFiltersStore();
 const apiRepo = dashboardApiRepo($api);
 
-const { timespan, reportType } = storeToRefs(filters);
+const { timespan, reportType } = storeToRefs(filtersStore);
 
 const {
   data: reportData,
   status: reportDataStatus,
   error: reportDataError,
 } = await useLazyAsyncData(
-  `reports-${reportType}-${jsDatetoApiString(
-    timespan.value[0]
-  )}-${jsDatetoApiString(timespan.value[1])}`,
+  `reports-${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
+    timespan.value[1]
+  )}`,
   () =>
     apiRepo.getReportData(
-      reportType.value,
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1])
     ),
   {
     immediate: true,
-    watch: [timespan, reportType],
+    watch: [timespan],
   }
 );
 
