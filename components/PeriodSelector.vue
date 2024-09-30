@@ -37,10 +37,9 @@ const periods = [
 ];
 
 const filtersStore = useFiltersStore();
+const { timespan } = storeToRefs(filtersStore);
 
-const selectedPeriod = ref(
-  datesToPeriod(filtersStore.timespan[0], filtersStore.timespan[1])
-);
+const selectedPeriod = ref(datesToPeriod(timespan.value[0], timespan.value[1]));
 const isProgrammaticChange = ref(false);
 
 watch(selectedPeriod, (newValue, oldValue) => {
@@ -55,7 +54,7 @@ watch(selectedPeriod, (newValue, oldValue) => {
 });
 
 watch(
-  () => filtersStore.timespan,
+  () => timespan,
   (value) => {
     if (isProgrammaticChange.value) {
       isProgrammaticChange.value = false;
