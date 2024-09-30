@@ -33,79 +33,129 @@
         </div>
       </div>
     </section>
-    <section>
-      <div class="container py-4">
-        <div
-          class="mb-4"
-          v-if="
-            ['einf', 'sprsc', 'sostenibilidad', 'sepi'].includes(reportType)
-          "
-        >
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Porcentaje de acierto del análisis
-          </h2>
-          <p>{{ reportData.accuracy }}</p>
-        </div>
-        <div class="mb-4">
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Número de programas incluidos en en análisis
-          </h2>
-          <p>{{ reportData.programs_count }} programas</p>
-        </div>
-        <div class="mb-4">
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Número de horas analizadas
-          </h2>
-          <p>{{ msToHours(reportData.total_duration).toFixed(0) }} horas</p>
-        </div>
-        <div class="mb-4">
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Porcentaje de horas dedicadas a la Agenda 2030
-          </h2>
-          <p>
-            {{
-              (
-                (reportData.tagged_duration / reportData.total_duration) *
-                100
-              ).toFixed(2)
-            }}
-            %
-          </p>
-        </div>
-        <div
-          class="mb-4"
-          v-if="['einf', 'sprsc', 'sostenibilidad'].includes(reportType)"
-        >
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Nombre de los programas (por canales) que se analizan
-          </h2>
-          <ul>
-            <li
-              v-for="(programs, channel) in reportData.programs_per_channel"
-              :key="channel"
-            >
-              <strong>{{ channel }}:</strong> {{ programs.sort().join(", ") }}.
-            </li>
-          </ul>
-        </div>
-        <div class="mb-4" v-if="['einf', 'sepi'].includes(reportType)">
-          <h2 class="text-sm uppercase font-bold font-mono">
-            Número de horas dedicadas a cada ODS
-          </h2>
-          <ul>
-            <li v-for="(data, sdg) in reportData.sdg_summary" :key="sdg">
-              <strong>{{ sdg }}:</strong>
-              {{ msToHours(data.duration).toFixed(2) }} horas.
-            </li>
-          </ul>
-        </div>
+    <div v-if="reportDataStatus === 'pending'">
+      <div class="container py-4 flex flex-col justify-center items-center">
+        <h2 class="text-xl uppercase font-bold font-mono my-4">
+          Generando el informe
+        </h2>
+        <Spinner :size="64" />
       </div>
-    </section>
+    </div>
+    <div v-else-if="reportDataStatus === 'success'">
+      <section>
+        <div class="container py-4">
+          <div
+            class="mb-4"
+            v-if="
+              ['einf', 'sprsc', 'sostenibilidad', 'sepi'].includes(reportType)
+            "
+          >
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Porcentaje de acierto del análisis
+            </h2>
+            <p>{{ reportData.accuracy }}</p>
+          </div>
+          <div class="mb-4">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Número de programas incluidos en en análisis
+            </h2>
+            <p>{{ reportData.programs_count }} programas</p>
+          </div>
+          <div class="mb-4">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Número de horas analizadas
+            </h2>
+            <p>{{ msToHours(reportData.total_duration).toFixed(0) }} horas</p>
+          </div>
+          <div class="mb-4">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Porcentaje de horas dedicadas a la Agenda 2030
+            </h2>
+            <p>
+              {{
+                (
+                  (reportData.tagged_duration / reportData.total_duration) *
+                  100
+                ).toFixed(2)
+              }}
+              %
+            </p>
+          </div>
+          <div
+            class="mb-4"
+            v-if="['einf', 'sprsc', 'sostenibilidad'].includes(reportType)"
+          >
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Nombre de los programas (por canales) que se analizan
+            </h2>
+            <ul>
+              <li
+                v-for="(programs, channel) in reportData.programs_per_channel"
+                :key="channel"
+              >
+                <strong>{{ channel }}:</strong>
+                {{ programs.sort().join(", ") }}.
+              </li>
+            </ul>
+          </div>
+          <div class="mb-4" v-if="['einf', 'sepi'].includes(reportType)">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Número de horas dedicadas a cada ODS
+            </h2>
+            <ul>
+              <li v-for="(data, sdg) in reportData.sdg_summary" :key="sdg">
+                <strong>{{ sdg }}:</strong>
+                {{ msToHours(data.duration).toFixed(2) }} horas.
+              </li>
+            </ul>
+          </div>
+          <div class="mb-4" v-if="['aenor'].includes(reportType)">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Tabla con número de horas dedicadas a cada ODS y su % respecto del
+              total
+            </h2>
+          </div>
+          <div class="mb-4" v-if="['aenor'].includes(reportType)">
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Tabla comparativa: evolución del porcentaje del tiempo dedicado a
+              cada ODS en dos años consecutivos
+            </h2>
+          </div>
+          <div
+            class="mb-4"
+            v-if="
+              ['einf', 'sprsc', 'sostenibilidad', 'aenor'].includes(reportType)
+            "
+          >
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Gráfica % dedicado a cada ODS
+            </h2>
+          </div>
+          <div
+            class="mb-4"
+            v-if="['einf', 'sostenibilidad', 'aenor'].includes(reportType)"
+          >
+            <h2 class="text-sm uppercase font-bold font-mono">
+              Nube de palabras con principales temáticas
+            </h2>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div v-if="reportDataStatus === 'error'">
+      <section class="container py-4">
+        <h2 class="text-sm uppercase font-bold font-mono">
+          Error cargando los datos
+        </h2>
+        <pre class="whitespace-pre-wrap">{{ reportDataError }}</pre>
+      </section>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { LayoutDashboard } from "lucide-vue-next";
+import { Spinner } from "@/components/ui/spinner";
 // import { Button } from "@/components/ui/button";
 // import PizZip from "pizzip";
 // import PizZipUtils from "pizzip/utils/index.js";
@@ -122,7 +172,11 @@ const apiRepo = dashboardApiRepo($api);
 
 const { timespan, reportType } = storeToRefs(filters);
 
-const { data: reportData } = await useAsyncData(
+const {
+  data: reportData,
+  status: reportDataStatus,
+  error: reportDataError,
+} = await useLazyAsyncData(
   `reports-${reportType}-${jsDatetoApiString(
     timespan.value[0]
   )}-${jsDatetoApiString(timespan.value[1])}`,
@@ -137,16 +191,6 @@ const { data: reportData } = await useAsyncData(
     watch: [timespan, reportType],
   }
 );
-
-/* loading  */
-const loading = ref(false);
-useNuxtApp().hook("page:start", () => {
-  loading.value = true;
-});
-
-useNuxtApp().hook("page:finish", () => {
-  loading.value = false;
-});
 
 // const loadFile = (
 //   url: string,
