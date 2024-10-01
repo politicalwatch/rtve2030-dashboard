@@ -104,11 +104,11 @@
         class="container sticky top-0 z-40 bg-white border-b border-gray-500 pb-4"
       >
         <div class="pt-4 grid grid-cols-5 gap-8">
-          <div>
+          <div class="col-span-2">
             
            <div class="text-2xs pb-2 flex justify-end items-center gap-2"> <Switch v-model:checked="showPercentage" /> mostrar porcentajes</div>
 
-            <FiltersState class="col-span-2" />
+            <FiltersState  />
           </div>
           <div>
             <chartsNumberCounter
@@ -440,6 +440,7 @@ const baseTaggedDuration = computed(() => {
  *  */
 watch(timespan, () => {
   console.log("timestamp updated");
+  filters.resetFilters();
   mustLoadBase.value.globalCounterData = true;
   mustLoadBase.value.evolutionData = true;
   mustLoadBase.value.timeSpanCounterData = true;
