@@ -33,6 +33,8 @@ export const useFiltersStore = defineStore("filters", () => {
     programs.value = programs.value.filter((program) => program !== value);
   }
 
+  const showPercentage = ref(false);
+
   const reportType = ref<string>("einf");
 
   function updateReportType(newReportType: string) {
@@ -53,5 +55,6 @@ export const useFiltersStore = defineStore("filters", () => {
     channelRemovedFlag,
     reportType: readonly(reportType),
     updateReportType,
+    showPercentage,
   };
 });

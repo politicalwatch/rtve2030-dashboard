@@ -95,7 +95,7 @@
     </section>
     <!--- end of global stats  -->
     <section class="mt-12">
-      <div class="container mb-4">
+      <div class="container mb-1">
         <h1 class="text-sm uppercase font-bold font-mono">
           datos del periodo seleccionado
         </h1>
@@ -104,7 +104,12 @@
         class="container sticky top-0 z-40 bg-white border-b border-gray-500 pb-4"
       >
         <div class="pt-4 grid grid-cols-5 gap-8">
-          <FiltersState class="col-span-2" />
+          <div>
+            
+           <div class="text-2xs pb-2 flex justify-end items-center gap-2"> <Switch v-model:checked="showPercentage" /> mostrar porcentajes</div>
+
+            <FiltersState class="col-span-2" />
+          </div>
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
@@ -215,7 +220,7 @@ const mustLoadBase = ref({
 });
 
 /** following data depends only on timespan***/
-const { timespan, channels, sdgActive, programs } = storeToRefs(filters);
+const { timespan, channels, sdgActive, programs, showPercentage } = storeToRefs(filters);
 
 const { data: globalCounterData } = await useAsyncData(() =>
   apiRepo.getStatsCounter()
@@ -393,13 +398,7 @@ const isDataReady = computed(
     sdgData != null
 );
 
-/* computed data for the counters depending on filters */
-const filteredTotalDuration = computed(() => {
-  if (evolutionStackedData.value?.hoursPeriod == null) return 0;
-  return sum(evolutionStackedData.value.hoursPeriod, (d) =>
-    filters.hasActiveFilters ? d.query_duration : d.total_duration
-  );
-});
+
 
 const queryDuration = computed(() => {
   if (evolutionStackedData.value?.hoursPeriod == null) return 0;
@@ -495,6 +494,11 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+
+// --- inject data to children ---
+provide("queryDuration", queryDuration);
+provide("showPercentage", showPercentage);
 
 /* loading  */
 const loading = ref(false);

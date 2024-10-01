@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import { sum, max } from "d3";
 const filtersStore = useFiltersStore();
-const { sdgActive } = storeToRefs(filtersStore);
+const { sdgActive  } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
 import { columns } from "../DataTable/sdgColumns";
 import { goalColumns } from "../DataTable/goalColumns";
@@ -87,6 +87,7 @@ interface Props {
   baseData: Array<StatsSdg>;
   baseTaggedDuration: number;
   hasActiveFilters: boolean;
+  
 }
 
 function sdgClickHandler(sdgId: SdgTopic) {
@@ -106,9 +107,6 @@ const maxTotalDuration = computed(() => {
   return Math.max(...props.baseData.map((sdg) => sdg.duration));
 });
 
-const globalDuration = computed(() => {
-  return sum(props.sdgData, (d) => d.duration);
-});
 
 const dataForTables = computed<TableSdg[]>(() => {
   return props.sdgData.map((sdg) => {

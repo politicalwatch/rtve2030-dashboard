@@ -13,6 +13,10 @@ const props = withDefaults(defineProps<MiniBarSdgProps>(), {
   isSubTopic: false,
 });
 
+
+const INshowPercentage = inject("showPercentage") as Ref<boolean>;
+const INqueryDuration = inject("queryDuration") as Ref<number>;
+
 const baseTimePercentage = computed(() => {
   return (props.base_duration / props.maxTotalDuration) * 100;
 });
@@ -55,6 +59,7 @@ const textQueryColorClass = computed(() => {
 </script>
 
 <template>
+  
   <div
     class="w-full relative"
     :class="!isSubTopic ? '-mt-1 -mb-1 h-8' : 'mb-0.5 h-5 '"
@@ -94,7 +99,10 @@ const textQueryColorClass = computed(() => {
               top: isSubTopic ? '2px' : '6px',
             }"
           >
-            {{ format.msToTime(base_duration) }}
+          <template v-if="INshowPercentage">
+            {{ format.PCT(base_duration/INqueryDuration) }}  
+          </template>  
+          <template v-else>  {{ format.msToTime(base_duration) }}</template>
           </div>
         </TooltipTrigger>
         <TooltipContent>
@@ -121,11 +129,19 @@ const textQueryColorClass = computed(() => {
               top: isSubTopic ? '2px' : '6px',
             }"
           >
-            {{ format.msToTime(query_duration) }}
+          <template v-if="INshowPercentage">
+            {{ format.PCT(base_duration/INqueryDuration) }}  
+          </template>  
+          <template v-else>  {{ format.msToTime(query_duration) }}</template>
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.N(msToHours(query_duration)) }} horas</p>
+          <p>
+            <template v-if="INshowPercentage">
+              {{ format.PCT(base_duration/INqueryDuration) }}  
+            </template>
+            <template v-else>  {{ format.msToTime(query_duration) }} horas</template>
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

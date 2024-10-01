@@ -26,7 +26,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   {
     accessorKey: "name",
 
-    header: () => h("div", { class: "text-right" }, "Canal"),
+    header: () => h("div", { class: "text-right text-xs" }, "Canal"),
     cell: ({ row }) => {
       return h(ChannelIconName, {
         canal: row.getValue("name") as Channels,
@@ -36,7 +36,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   {
     accessorKey: "sdgs",
     size: 80,
-    header: () => h("div", { class: "text-right" }, "ods"),
+    header: () => h("div", { class: "text-right text-xs" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -52,20 +52,25 @@ export const columns: ColumnDef<TableChannels>[] = [
       return h(
         "button",
         {
+          class: "text-xs flex gap-1 justify-end",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
         ["tagged", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
+      const INshowPercentage = inject("showPercentage") as Ref<boolean>;
+
       const amount = row.original.queryDuration;
-      const formatted = format.N(msToHours(amount));
+      const formatted = INshowPercentage.value?format.PCT(row.original.queryDuration/row.original.total_duration):format.msToTime(amount);
       return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
   {
     accessorFn: (row) => `${row.queryDuration}`,
     id: "duration",
+    size: 100,
+    header: () => h("div", { class: "text-right" }, ""),
     cell: ({ row }) => {
       const miniBarProps = {
         total_duration: row.original.total_duration,
@@ -79,7 +84,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   },
   {
     accessorKey: "programs",
-    size: 40,
+    size: 50,
     header: () => h("div", { class: "text-right !text-xs" }, "Programas"),
     cell: ({ row, getValue }) => {
       const basePrograms = row.original.basePrograms ?? 0;

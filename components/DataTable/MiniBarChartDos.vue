@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// mini bar chart used only for terms
 const props = defineProps<{
   total: number;
   filtered?: number;
@@ -57,7 +58,11 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.msToTime(filtered) }} según filtros</p>
+          <p>{{ format.msToTime(filtered) }} según filtros
+            ({{ format.PCT(filtered / total) }})
+
+          </p>
+
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

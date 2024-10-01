@@ -3,7 +3,9 @@
     <svg class="radialView" :width="width" :height="canvasHeight">
       <g :transform="`translate(${width / 2}, ${canvasHeight / 2})`">
         <path
-          v-for="d in dataHierarchy.descendants().filter((d) => d.depth > 0 && d.depth <= maxLevel)"
+          v-for="d in dataHierarchy
+            .descendants()
+            .filter((d) => d.depth > 0 && d.depth <= maxLevel)"
           :key="d.name"
           :d="arcGenerator(d)"
           :fill="d.data.color"
@@ -17,7 +19,10 @@
           v-for="d in dataHierarchy
             .descendants()
             .filter(
-              (d) => d.depth < maxLevel && showText(d) && !isNaN(arcGenerator.centroid(d)[0])
+              (d) =>
+                d.depth < maxLevel &&
+                showText(d) &&
+                !isNaN(arcGenerator.centroid(d)[0])
             )"
           :key="d.name"
           :transform="`translate(${arcGenerator.centroid(d)})`"
@@ -68,7 +73,12 @@
               <div>{{ selectedSubtopic.data.name }}</div>
             </div>
             <div class="tag-count">
-              {{ format.F(msToHours(selectedSubtopic.value)) }} horas
+              <template v-if="showPercentage">
+                  {{ format.PCT (selectedSubtopic.value/queryDuration) }}
+              </template>
+              <template v-else>
+                {{ format.msToTime(selectedSubtopic.value) }} horas
+              </template>
             </div>
           </div>
         </div>
@@ -79,7 +89,7 @@
 
 <script setup>
 // d3 functions coming from : https://observablehq.com/@yieldtactics/radial-stacked-bar-chart
-import {hsl, hierarchy, partition,scaleRadial, scaleLinear, arc  } from "d3";
+import { hsl, hierarchy, partition, scaleRadial, scaleLinear, arc } from "d3";
 
 const props = defineProps({
   result: {
@@ -104,16 +114,17 @@ const props = defineProps({
     type: Object || null,
     default: null,
   },
-  sdgActive:{
+  sdgActive: {
     type: Array,
     default: () => [],
   }
-
 });
+
+const showPercentage = inject("showPercentage");
+const queryDuration = inject("queryDuration");
 
 
 const noSdgSelection = computed(() => props.sdgActive.length === 0);
-
 
 const emits = defineEmits(["update:mouseOverElement", "update:clickedElement"]);
 
@@ -130,7 +141,7 @@ const maxLevel = computed(() => {
 function getBaseOdsList() {
   const odsList = [];
   Object.keys(props.styles.topics).forEach((ods) => {
-   if(noSdgSelection.value==false && !props.sdgActive.includes(ods)) return;
+    if (noSdgSelection.value == false && !props.sdgActive.includes(ods)) return;
 
     if (ods == "no-topic") {
       return;
@@ -155,7 +166,7 @@ const dataHierarchy = computed(() => {
   // iterate over results.tags and add each tag to the correct ods (tag.topic) but we are not adding the same tag twice, we are actually adding the tag.subtopic
   props.result.forEach((sdg) => {
     const ods = odsList.find((ods) => ods.tag === sdg.sdg);
-    if(ods === undefined) return; // if the ods is not selected, we skip it
+    if (ods === undefined) return; // if the ods is not selected, we skip it
     ods.name = ods.tag;
     ods.code = ods.odsIndex + "";
     ods.level1 = ods.code;
@@ -181,8 +192,7 @@ const dataHierarchy = computed(() => {
   // the color scale takes the hue of the ods and creates a new scale around it according to the number of subtopics
   // the colour range moves from the hue of the ods -30% lightness to the hue of the ods +30% lightness
   odsList.forEach((ods) => {
-    const colorScale = 
-      scaleLinear()
+    const colorScale = scaleLinear()
       .domain([0, Math.max(ods.children.length, 2)])
       .range([hsl(ods.color).darker(0.4), hsl(ods.color).brighter(0.4)]);
     ods.children.forEach((subtopic, index) => {
@@ -211,11 +221,12 @@ const dataHierarchy = computed(() => {
 
 // build chart:
 const radius = computed(() => {
-  if(props.onlyOds) return {
-    inner: ((70 / 180) * width.value) / 2,
-    level1: ((135 / 180) * width.value) / 2,
-    level2: ((135 / 180) * width.value) / 2,
-  };
+  if (props.onlyOds)
+    return {
+      inner: ((70 / 180) * width.value) / 2,
+      level1: ((135 / 180) * width.value) / 2,
+      level2: ((135 / 180) * width.value) / 2,
+    };
   return {
     inner: ((45 / 180) * width.value) / 2,
     level1: ((105 / 180) * width.value) / 2,
@@ -228,21 +239,21 @@ const radiusArray = computed(() => [
   radius.value.level2,
 ]);
 
-const arcGenerator = computed(() => 
+const arcGenerator = computed(() =>
   arc()
-  .startAngle(function (d) {
-    return d.x0;
-  })
-  .endAngle(function (d) {
-    return d.x1;
-  })
-  .innerRadius(function (d) {
-    return radiusArray.value[d.depth - 1];
-  })
-  .outerRadius(function (d) {
-    return radiusArray.value[d.depth];
-  })
-)
+    .startAngle(function (d) {
+      return d.x0;
+    })
+    .endAngle(function (d) {
+      return d.x1;
+    })
+    .innerRadius(function (d) {
+      return radiusArray.value[d.depth - 1];
+    })
+    .outerRadius(function (d) {
+      return radiusArray.value[d.depth];
+    })
+);
 
 function showText(d) {
   //console.log(d);

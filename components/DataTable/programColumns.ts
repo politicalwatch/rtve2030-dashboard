@@ -38,7 +38,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
   },
   {
     accessorKey: "canal",
-    header: () => h("div", { class: "text-right" }, ""),
+    header: () => h("div", { class: "text-right text-xs" }, ""),
     cell: ({ row, getValue }) => {
       return h(ChannelIconName, {
         canal: getValue() as Channels,
@@ -48,7 +48,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
   },
   {
     accessorKey: "name",
-    header: () => h("div", { class: "text-right" }, "Programa"),
+    header: () => h("div", { class: "text-right text-xs" }, "Programa"),
     cell: ({ row, getValue }) => {
       return h("div", { class: "text-right" }, getValue());
     },
@@ -74,19 +74,24 @@ export const columns: ColumnDef<TablePrograms>[] = [
         "button",
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+          class: "text-xs flex gap-1 justify-end",
         },
         ["tagged ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
-      const amount = row.original.hasActiveFilters
+      const INshowPercentage = inject("showPercentage") as Ref<boolean>;
+      
+      let amount = row.original.hasActiveFilters
         ? row.original.queryDuration
         : row.original.tagged_duration;
+
+      let pct = amount / row.original.total_duration;
 
       return h(
         "div",
         { class: "text-right font-medium" },
-        format.msToTime(amount)
+        INshowPercentage.value?format.PCT(pct):format.msToTime(amount)
       );
     },
   },
@@ -113,6 +118,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
         "button",
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+          class: "text-xs flex gap-1 justify-end",
         },
         ["Episodios", h(Icon, { name: "lucide:arrow-up-down" })]
       );
