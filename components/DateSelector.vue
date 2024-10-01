@@ -16,7 +16,6 @@
           :min-value="new CalendarDate(1900, 1, 1)"
           :max-value="today(getLocalTimeZone())"
           :preventDeselect="true"
-          @update:model-value="updateModelValue"
         />
       </PopoverContent>
     </Popover>
@@ -37,7 +36,6 @@
           :min-value="initDate"
           :max-value="today(getLocalTimeZone())"
           :preventDeselect="true"
-          @update:model-value="updateModelValue"
         />
       </PopoverContent>
     </Popover>
@@ -55,11 +53,6 @@ const placeholder = ref('')
 const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
 const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
-
-// function updateModelValue(){
-//   console.log('updateModelValue')
-//   filters.timespan=[initDate.value.toDate(getLocalTimeZone()), endDate.value.toDate(getLocalTimeZone())]
-// }
 
 watch([initDate, endDate], (newValue, oldValue) => {
   if (isProgrammaticChange.value) {
