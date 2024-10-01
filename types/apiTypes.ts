@@ -179,6 +179,22 @@ type DD = `${0}${oneToNine}` | `${1 | 2}${zeroToNine}` | `3${0 | 1}`;
  */
 export type RawDateString = `${YYYY}-${MM}-${DD}`;
 
+export interface Report {
+  accuracy: string | number;
+  programs_count: number;
+  total_duration: number;
+  tagged_duration: number;
+  programs_per_channel: {
+    [key: string]: string[];
+  };
+  sdg_summary: {
+    [key: string]: {
+      duration: number;
+      percentage: number;
+    };
+  };
+}
+
 export interface AuthSession {
   access_token: string;
   expires_at: string;
