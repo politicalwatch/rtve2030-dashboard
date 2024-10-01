@@ -35,9 +35,7 @@ export const useFiltersStore = defineStore("filters", () => {
 
   const reportType = ref<string>("einf");
 
-  function updateReportType(newReportType: string) {
-    reportType.value = newReportType;
-  }
+  const yearCompare = ref<string>(String(new Date().getFullYear() - 1));
 
   return {
     timespan: readonly(timespan),
@@ -51,7 +49,7 @@ export const useFiltersStore = defineStore("filters", () => {
     removeProgramFilter,
     programRemovedFlag,
     channelRemovedFlag,
-    reportType: readonly(reportType),
-    updateReportType,
+    reportType,
+    yearCompare,
   };
 });
