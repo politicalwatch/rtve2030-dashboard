@@ -44,12 +44,11 @@
 
 <script setup lang="js">
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
-import { toDate } from "radix-vue/date";
 import { Calendar } from "@/components/ui/calendar";
 
 const filtersStore = useFiltersStore();
+const { timespan } = storeToRefs(filtersStore);
 
-const placeholder = ref('')
 const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
 const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
@@ -65,7 +64,7 @@ watch([initDate, endDate], (newValue, oldValue) => {
 });
 
 watch(
-  () => filtersStore.timespan,
+  timespan,
   (value) => {
     if (isProgrammaticChange.value) {
       isProgrammaticChange.value = false;
