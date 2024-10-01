@@ -173,52 +173,56 @@
               id="table-ods-compare"
               class="min-w-full bg-white border border-gray-200"
             >
-              <tr class="bg-gray-100">
-                <th class="px-4 py-2 border-b">ODS</th>
-                <th class="px-4 py-2 border-b">
-                  {{ Object.keys(reportSdgCompareData)[0] }}
-                </th>
-                <th class="px-4 py-2 border-b">
-                  {{ Object.keys(reportSdgCompareData)[1] }}
-                </th>
-              </tr>
-              <tr
-                v-for="(data, sdg) in reportSdgCompareData[yearCompare]
-                  .sdg_summary"
-                :key="sdg"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-4 py-2 border-b">{{ sdg }}</td>
-                <td class="px-4 py-2 border-b">
-                  {{
-                    (
-                      (reportSdgCompareData[Number(yearCompare) - 1][
-                        "sdg_summary"
-                      ][sdg].duration /
-                        reportSdgCompareData[Number(yearCompare) - 1]
-                          .total_duration) *
-                      100
-                    ).toLocaleString("es-ES", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })
-                  }}
-                  %
-                </td>
-                <td class="px-4 py-2 border-b">
-                  {{
-                    (
-                      (data.duration /
-                        reportSdgCompareData[yearCompare].total_duration) *
-                      100
-                    ).toLocaleString("es-ES", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })
-                  }}
-                  %
-                </td>
-              </tr>
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-4 py-2 border-b">ODS</th>
+                  <th class="px-4 py-2 border-b">
+                    {{ Object.keys(reportSdgCompareData)[0] }}
+                  </th>
+                  <th class="px-4 py-2 border-b">
+                    {{ Object.keys(reportSdgCompareData)[1] }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(data, sdg) in reportSdgCompareData[yearCompare]
+                    .sdg_summary"
+                  :key="sdg"
+                  class="hover:bg-gray-50"
+                >
+                  <td class="px-4 py-2 border-b">{{ sdg }}</td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      (
+                        (reportSdgCompareData[Number(yearCompare) - 1][
+                          "sdg_summary"
+                        ][sdg].duration /
+                          reportSdgCompareData[Number(yearCompare) - 1]
+                            .total_duration) *
+                        100
+                      ).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                    %
+                  </td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      (
+                        (data.duration /
+                          reportSdgCompareData[yearCompare].total_duration) *
+                        100
+                      ).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                    %
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <div
