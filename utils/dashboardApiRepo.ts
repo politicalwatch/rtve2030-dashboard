@@ -141,6 +141,13 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       query,
     });
   },
+  async getReportSdgCompare(year: string): Promise<any> {
+    return fetch<Report>("/reports/sdg-year-compare", {
+      query: {
+        year: year,
+      },
+    });
+  },
   async getAuthToken(username: string, password: string): Promise<AuthSession> {
     return fetch<AuthSession>("/auth/token", {
       method: "POST",

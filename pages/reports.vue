@@ -30,6 +30,9 @@
           <div>
             <ReportTypeSelector />
           </div>
+          <div v-if="['aenor'].includes(reportType)">
+            <YearCompareSelector />
+          </div>
         </div>
       </div>
     </section>
@@ -45,7 +48,7 @@
       <section>
         <div class="container py-4">
           <div
-            class="mb-4"
+            class="mt-8 mb-4"
             v-if="
               ['einf', 'sprsc', 'sostenibilidad', 'sepi'].includes(reportType)
             "
@@ -55,19 +58,19 @@
             </h2>
             <p>{{ reportData.accuracy }}</p>
           </div>
-          <div class="mb-4">
+          <div class="mt-8 mb-4">
             <h2 class="text-sm uppercase font-bold font-mono">
               Número de programas incluidos en en análisis
             </h2>
             <p>{{ reportData.programs_count }} programas</p>
           </div>
-          <div class="mb-4">
+          <div class="mt-8 mb-4">
             <h2 class="text-sm uppercase font-bold font-mono">
               Número de horas analizadas
             </h2>
             <p>{{ msToHours(reportData.total_duration).toFixed(0) }} horas</p>
           </div>
-          <div class="mb-4">
+          <div class="mt-8 mb-4">
             <h2 class="text-sm uppercase font-bold font-mono">
               Porcentaje de horas dedicadas a la Agenda 2030
             </h2>
@@ -82,7 +85,7 @@
             </p>
           </div>
           <div
-            class="mb-4"
+            class="mt-8 mb-4"
             v-if="['einf', 'sprsc', 'sostenibilidad'].includes(reportType)"
           >
             <h2 class="text-sm uppercase font-bold font-mono">
@@ -98,7 +101,7 @@
               </li>
             </ul>
           </div>
-          <div class="mb-4" v-if="['einf', 'sepi'].includes(reportType)">
+          <div class="mt-8 mb-4" v-if="['einf', 'sepi'].includes(reportType)">
             <h2 class="text-sm uppercase font-bold font-mono">
               Número de horas dedicadas a cada ODS
             </h2>
@@ -109,21 +112,123 @@
               </li>
             </ul>
           </div>
-          <div class="mb-4" v-if="['aenor'].includes(reportType)">
-            <h2 class="text-sm uppercase font-bold font-mono">
-              Tabla con número de horas dedicadas a cada ODS y su % respecto del
-              total
+          <div class="mt-10 mb-4" v-if="['aenor'].includes(reportType)">
+            <h2 class="mb-4 text-sm uppercase font-bold font-mono">
+              Número de horas dedicadas a cada ODS y su % respecto del total
             </h2>
+            <table
+              id="table-ods"
+              class="min-w-full bg-white border border-gray-200"
+            >
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-4 py-2 border-b">ODS</th>
+                  <th class="px-4 py-2 border-b">Horas</th>
+                  <th class="px-4 py-2 border-b">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(data, sdg) in reportData.sdg_summary"
+                  :key="sdg"
+                  class="hover:bg-gray-50"
+                >
+                  <td class="px-4 py-2 border-b">{{ sdg }}</td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      msToHours(data.duration).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                  </td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      (
+                        (data.duration / reportData.total_duration) *
+                        100
+                      ).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                    %
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="mb-4" v-if="['aenor'].includes(reportType)">
-            <h2 class="text-sm uppercase font-bold font-mono">
-              Tabla comparativa: evolución del porcentaje del tiempo dedicado a
-              cada ODS en dos años consecutivos
+          <div
+            class="mt-10 mb-4"
+            v-if="
+              reportSdgCompareStatus === 'success' &&
+              ['aenor'].includes(reportType)
+            "
+          >
+            <h2 class="mb-4 text-sm uppercase font-bold font-mono">
+              Evolución del porcentaje del tiempo dedicado a cada ODS en dos
+              años consecutivos
             </h2>
+            <table
+              id="table-ods-compare"
+              class="min-w-full bg-white border border-gray-200"
+            >
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-4 py-2 border-b">ODS</th>
+                  <th class="px-4 py-2 border-b">
+                    {{ Object.keys(reportSdgCompareData)[0] }}
+                  </th>
+                  <th class="px-4 py-2 border-b">
+                    {{ Object.keys(reportSdgCompareData)[1] }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(data, sdg) in reportSdgCompareData[yearCompare]
+                    .sdg_summary"
+                  :key="sdg"
+                  class="hover:bg-gray-50"
+                >
+                  <td class="px-4 py-2 border-b">{{ sdg }}</td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      (
+                        (reportSdgCompareData[Number(yearCompare) - 1][
+                          "sdg_summary"
+                        ][sdg].duration /
+                          reportSdgCompareData[Number(yearCompare) - 1]
+                            .total_duration) *
+                        100
+                      ).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                    %
+                  </td>
+                  <td class="px-4 py-2 border-b">
+                    {{
+                      (
+                        (data.duration /
+                          reportSdgCompareData[yearCompare].total_duration) *
+                        100
+                      ).toLocaleString("es-ES", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    }}
+                    %
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div
             class="mb-4"
             v-if="
+              false &&
               ['einf', 'sprsc', 'sostenibilidad', 'aenor'].includes(reportType)
             "
           >
@@ -133,7 +238,9 @@
           </div>
           <div
             class="mb-4"
-            v-if="['einf', 'sostenibilidad', 'aenor'].includes(reportType)"
+            v-if="
+              false && ['einf', 'sostenibilidad', 'aenor'].includes(reportType)
+            "
           >
             <h2 class="text-sm uppercase font-bold font-mono">
               Nube de palabras con principales temáticas
@@ -169,7 +276,7 @@ const { $api } = useNuxtApp();
 const filtersStore = useFiltersStore();
 const apiRepo = dashboardApiRepo($api);
 
-const { timespan, reportType } = storeToRefs(filtersStore);
+const { timespan, reportType, yearCompare } = storeToRefs(filtersStore);
 
 const {
   data: reportData,
@@ -187,6 +294,19 @@ const {
   {
     immediate: true,
     watch: [timespan],
+  }
+);
+
+const {
+  data: reportSdgCompareData,
+  status: reportSdgCompareStatus,
+  error: reportSdgCompareError,
+} = await useLazyAsyncData(
+  `reports-compare-${yearCompare.value}`,
+  () => apiRepo.getReportSdgCompare(yearCompare.value),
+  {
+    immediate: true,
+    watch: [yearCompare],
   }
 );
 

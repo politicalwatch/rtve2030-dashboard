@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/select";
 
 const filtersStore = useFiltersStore();
+const { reportType } = storeToRefs(filtersStore);
 
 const reportTypeOptions = [
   {
@@ -31,12 +32,6 @@ const reportTypeOptions = [
     name: "Objetivos SEPI",
   },
 ];
-
-const reportType = ref(filtersStore.reportType);
-
-watch(reportType, (newValue, oldValue) => {
-  filtersStore.updateReportType(newValue);
-});
 </script>
 
 <template>

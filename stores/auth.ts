@@ -1,121 +1,134 @@
 import { defineStore } from "pinia";
 
-export const useAuthStore = defineStore("auth", {
-  state: () => {
-    return {
-      user: null,
-      session: null,
-      error: null,
-    };
-  },
-  getters: {
-    isLoggedIn: (state) => state.user !== null,
-    isAdmin: (state) => state.user !== null && state.user.role === "admin",
-  },
-  actions: {
-    async restoreSession() {
-      const { $api } = useNuxtApp();
-      const apiRepo = dashboardApiRepo($api);
+export const useAuthStore = defineStore("auth", () => {
+  const user: Ref<AuthUser | null> = ref(null);
+  const session: Ref<AuthSession | null> = ref(null);
+  const error: Ref<string | null> = ref(null);
 
-      if (this.session) {
-        console.log("Session already exists");
+  const isLoggedIn = computed(() => user.value !== null);
+  const isAdmin = computed(
+    () => user.value !== null && user.value.role === "admin"
+  );
+
+  const restoreSession = async () => {
+    const { $api } = useNuxtApp();
+    const apiRepo = dashboardApiRepo($api);
+
+    if (session.value) {
+      console.log("Session already exists");
+      return;
+    }
+    console.log("Restoring session");
+
+    const sessionData = JSON.parse(
+      localStorage.getItem("rtve2030-dashboard-auth") as string
+    );
+
+    if (!sessionData) {
+      console.log("No session found");
+    } else {
+      session.value = sessionData;
+
+      if (!session.value) {
+        console.log("Problem with session data");
         return;
       }
-      console.log("Restoring session");
 
-      const sessionData = JSON.parse(
-        localStorage.getItem("rtve2030-dashboard-auth")
-      );
+      // Check if session is still valid
+      const now = new Date().toISOString();
 
-      if (!sessionData) {
-        console.log("No session found");
-      } else {
-        this.session = sessionData;
+      console.log("Session expires at:", session.value?.expires_at);
+      console.log("Refresh expires at:", session.value?.refresh_expires_at);
 
-        // Check if session is still valid
-        const now = new Date().toISOString();
+      // If session is expired, refresh it
+      if (now > session.value.expires_at) {
+        console.log("Session expired, refreshing");
+        try {
+          const refreshData = await apiRepo.refreshAuthToken(
+            session.value.refresh_token
+          );
+          if (!refreshData) {
+            error.value = "Error while refreshing session.";
+            logout();
+            return;
+          } else {
+            // Update session
+            session.value = { ...session.value, ...refreshData };
 
-        console.log("Session expires at:", this.session.expires_at);
-        console.log("Refresh expires at:", this.session.refresh_expires_at);
-
-        // If session is expired, refresh it
-        if (now > this.session.expires_at) {
-          console.log("Session expired, refreshing");
-          try {
-            const refreshData = await apiRepo.refreshAuthToken(
-              this.session.refresh_token
+            // Save session in localStorage
+            localStorage.setItem(
+              "rtve2030-dashboard-auth",
+              JSON.stringify(session.value)
             );
-            if (!refreshData) {
-              this.error = "Error while refreshing session.";
-              this.logout();
-              return;
-            } else {
-              // Update session
-              this.session = { ...this.session, ...refreshData };
-
-              // Save session in localStorage
-              localStorage.setItem(
-                "rtve2030-dashboard-auth",
-                JSON.stringify(this.session)
-              );
-            }
-          } catch (e) {
-            console.log(e);
-            this.logout();
           }
+        } catch (e) {
+          console.log(e);
+          logout();
         }
+      }
+
+      const userData = await apiRepo.getCurrentUser();
+      if (!userData) {
+        error.value = "Error retrieving user data.";
+        logout();
+        return;
+      } else {
+        user.value = userData;
+      }
+    }
+  };
+
+  const login = async (username: string, password: string) => {
+    const { $api } = useNuxtApp();
+    const apiRepo = dashboardApiRepo($api);
+
+    error.value = null;
+    try {
+      const sessionData = await apiRepo.getAuthToken(username, password);
+      if (!sessionData) {
+        error.value = "Error while logging in.";
+      } else {
+        session.value = sessionData;
 
         const userData = await apiRepo.getCurrentUser();
         if (!userData) {
-          this.error = "Error retrieving user data.";
-          this.logout();
+          error.value = "Error retrieving user data.";
+          session.value = null;
           return;
         } else {
-          this.user = userData;
+          user.value = userData;
         }
+
+        // Save session in localStorage
+        localStorage.setItem(
+          "rtve2030-dashboard-auth",
+          JSON.stringify(sessionData)
+        );
       }
-    },
-    async login(username: string, password: string) {
-      const { $api } = useNuxtApp();
-      const apiRepo = dashboardApiRepo($api);
+    } catch (e: any) {
+      error.value = e.response?.data?.detail ?? e.message;
+    }
+  };
+  const logout = async () => {
+    // Remove session from localStorage
+    localStorage.removeItem("rtve2030-dashboard-auth");
 
-      this.error = null;
-      try {
-        const sessionData = await apiRepo.getAuthToken(username, password);
-        if (!sessionData) {
-          this.error = "Error while logging in.";
-        } else {
-          this.session = sessionData;
+    // Remove session from store
+    user.value = null;
+    session.value = null;
 
-          const userData = await apiRepo.getCurrentUser();
-          if (!userData) {
-            this.error = "Error retrieving user data.";
-            this.session = null;
-            return;
-          } else {
-            this.user = userData;
-          }
+    // Remove auth header for axios and redirect
+    location.assign("/");
+  };
 
-          // Save session in localStorage
-          localStorage.setItem(
-            "rtve2030-dashboard-auth",
-            JSON.stringify(sessionData)
-          );
-        }
-      } catch (e) {
-        this.error = e.response?.data?.detail ?? e.message;
-      }
-    },
-    async logout() {
-      // Remove session from localStorage
-      localStorage.removeItem("rtve2030-dashboard-auth");
-
-      // Remove session from store
-      this.user = null;
-      this.session = null;
-
-      // Remove auth header for axios and redirect
-      location.assign("/");
-    },
-  },
+  return {
+    user,
+    session,
+    error,
+    isLoggedIn,
+    isAdmin,
+    restoreSession,
+    login,
+    logout,
+  };
 });
