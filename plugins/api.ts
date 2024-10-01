@@ -5,22 +5,16 @@ export default defineNuxtPlugin({
       // interceptors TBD https://github.com/unjs/ofetch
       onRequest({ request, options }) {
         const authStore = useAuthStore();
-        const { session } = storeToRefs(authStore);
+        const session = authStore.session;
         const headers = (options.headers as HeadersInit) || [];
 
-        if (session.value) {
+        if (session) {
           if (Array.isArray(headers)) {
-            headers.push([
-              "Authorization",
-              `Bearer ${session.value.access_token}`,
-            ]);
+            headers.push(["Authorization", `Bearer ${session.access_token}`]);
           } else if (headers instanceof Headers) {
-            headers.set(
-              "Authorization",
-              `Bearer ${session.value.access_token}`
-            );
+            headers.set("Authorization", `Bearer ${session.access_token}`);
           } else {
-            headers.Authorization = `Bearer ${session.value.access_token}`;
+            headers.Authorization = `Bearer ${session.access_token}`;
           }
         }
       },
