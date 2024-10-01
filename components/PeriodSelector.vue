@@ -42,7 +42,7 @@ const { timespan } = storeToRefs(filtersStore);
 const selectedPeriod = ref(datesToPeriod(timespan.value[0], timespan.value[1]));
 const isProgrammaticChange = ref(false);
 
-watch(selectedPeriod, (newValue, oldValue) => {
+watch(selectedPeriod, (newValue) => {
   if (isProgrammaticChange.value) {
     isProgrammaticChange.value = false;
     return;
@@ -53,19 +53,16 @@ watch(selectedPeriod, (newValue, oldValue) => {
   }
 });
 
-watch(
-  () => timespan,
-  (value) => {
-    if (isProgrammaticChange.value) {
-      isProgrammaticChange.value = false;
-      return;
-    }
-    if (value) {
-      isProgrammaticChange.value = true;
-      selectedPeriod.value = "custom";
-    }
+watch(timespan, (value) => {
+  if (isProgrammaticChange.value) {
+    isProgrammaticChange.value = false;
+    return;
   }
-);
+  if (value) {
+    isProgrammaticChange.value = true;
+    selectedPeriod.value = datesToPeriod(value[0], value[1]);
+  }
+});
 
 /* returns init and end date for the selected period */
 function periodToDates(period: string): [Date, Date] {
