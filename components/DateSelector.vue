@@ -16,7 +16,6 @@
           :min-value="new CalendarDate(1900, 1, 1)"
           :max-value="today(getLocalTimeZone())"
           :preventDeselect="true"
-          @update:model-value="updateModelValue"
         />
       </PopoverContent>
     </Popover>
@@ -37,7 +36,6 @@
           :min-value="initDate"
           :max-value="today(getLocalTimeZone())"
           :preventDeselect="true"
-          @update:model-value="updateModelValue"
         />
       </PopoverContent>
     </Popover>
@@ -46,20 +44,14 @@
 
 <script setup lang="js">
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
-import { toDate } from "radix-vue/date";
 import { Calendar } from "@/components/ui/calendar";
 
 const filtersStore = useFiltersStore();
+const { timespan } = storeToRefs(filtersStore);
 
-const placeholder = ref('')
 const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
 const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
-
-// function updateModelValue(){
-//   console.log('updateModelValue')
-//   filters.timespan=[initDate.value.toDate(getLocalTimeZone()), endDate.value.toDate(getLocalTimeZone())]
-// }
 
 watch([initDate, endDate], (newValue, oldValue) => {
   if (isProgrammaticChange.value) {
@@ -72,7 +64,7 @@ watch([initDate, endDate], (newValue, oldValue) => {
 });
 
 watch(
-  () => filtersStore.timespan,
+  timespan,
   (value) => {
     if (isProgrammaticChange.value) {
       isProgrammaticChange.value = false;

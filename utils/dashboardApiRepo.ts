@@ -1,6 +1,7 @@
 import type { NitroFetchRequest, $Fetch } from "nitropack";
 import type {
   StatsEvolutionStacked,
+  Report,
   AuthSession,
   AuthUser,
 } from "~/types/apiTypes";
@@ -136,7 +137,7 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
     };
-    return fetch<any>("/reports", {
+    return fetch<Report>("/reports", {
       query,
     });
   },
