@@ -439,8 +439,6 @@ const baseTaggedDuration = computed(() => {
  * It is important because data availabie in this page is  always updated with filters
  *  */
 watch(timespan, () => {
-  console.log("timestamp updated");
-  filters.resetFilters();
   mustLoadBase.value.globalCounterData = true;
   mustLoadBase.value.evolutionData = true;
   mustLoadBase.value.timeSpanCounterData = true;

@@ -2,6 +2,7 @@ export const useFiltersStore = defineStore("filters", () => {
   const timespan = ref<[Date, Date]>([new Date(initDateString), new Date()]);
 
   function updateTimespan(newTimespan: [Date, Date]) {
+    resetFilters();
     timespan.value = newTimespan;
   }
 
@@ -39,6 +40,13 @@ export const useFiltersStore = defineStore("filters", () => {
 
   const yearCompare = ref<string>(String(new Date().getFullYear() - 1));
 
+  function resetFilters() {
+    sdgActive.value = [];
+    channels.value = [];
+    programs.value = [];
+    programRemovedFlag.value = false;
+    channelRemovedFlag.value = false;
+  }
   return {
     timespan: readonly(timespan),
     updateTimespan,
@@ -49,6 +57,7 @@ export const useFiltersStore = defineStore("filters", () => {
     removeSdgFilter,
     removeChannelFilter,
     removeProgramFilter,
+    resetFilters,
     programRemovedFlag,
     channelRemovedFlag,
     reportType,
