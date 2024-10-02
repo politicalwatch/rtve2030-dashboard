@@ -38,46 +38,51 @@
         </text>
       </g>
     </svg>
+
+    <div>
+      <!-- {{ msToHours(dataHierarchy.value) }} -->
+    </div>
+
     <Teleport to="body">
       <div
-        class="simple-tooltip"
-        v-show="selectedSubtopic"
+        class="simple-tooltip shadow-lg outline-gray-500 px-4 py-2"
+        v-show="hoveredItem"
         :style="{
           top: tooltipPosition.y + 'px',
           left: tooltipPosition.x + 'px',
         }"
       >
-        <div v-if="selectedSubtopic">
+        <div v-if="hoveredItem">
           <div class="tooltip-content">
             <div class="codes-indicators">
               <div
                 class="ods-number"
                 :style="{
-                  'background-color': selectedSubtopic.data.color,
+                  'background-color': hoveredItem.data.color,
                 }"
               >
-                {{ selectedSubtopic.data.level1 }}
+                {{ hoveredItem.data.level1 }}
               </div>
               <div
-                v-if="selectedSubtopic.depth > 1"
+                v-if="hoveredItem.depth > 1"
                 class="meta-number"
                 :style="{
-                  'background-color': selectedSubtopic.data.color,
+                  'background-color': hoveredItem.data.color,
                 }"
               >
-                {{ selectedSubtopic.data.level2 }}
+                {{ hoveredItem.data.level2 }}
               </div>
             </div>
             <div class="codes-labels">
-              <div>{{ selectedSubtopic.parent.tag }}</div>
-              <div>{{ selectedSubtopic.data.name }}</div>
+              <div>{{ hoveredItem.parent.tag }}</div>
+              <div>{{ hoveredItem.data.name }}</div>
             </div>
-            <div class="tag-count">
+            <div class="font-semibold">
               <template v-if="showPercentage">
-                  {{ format.PCT (selectedSubtopic.value/queryDuration) }}
+                  {{ format.PCT (hoveredItem.data.originalDuration/queryDuration) }}
               </template>
               <template v-else>
-                {{ format.msToTime(selectedSubtopic.value) }} horas
+                {{ format.msToTime(hoveredItem.data.originalDuration) }} horas
               </template>
             </div>
           </div>
@@ -171,10 +176,8 @@ const dataHierarchy = computed(() => {
     ods.code = ods.odsIndex + "";
     ods.level1 = ods.code;
     ods.level2 = "";
-    // ods.duration = sdg.duration;
-    ods.ocurrence = sdg.ocurrence;
+    ods.originalDuration = sdg.duration;
     if (!ods) return;
-
     for (let goal of sdg.goals) {
       // add subtopic to ods
       ods.children.push({
@@ -183,11 +186,12 @@ const dataHierarchy = computed(() => {
         level2: goal.goal.split(" ")[0].split(".")[1],
         name: goal.goal,
         subtopic: goal.goal,
+        originalDuration: goal.duration,
         duration: goal.duration,
-        ocurrence: goal.ocurrence,
       });
     }
   });
+
   // add a colour scale to each ods that will be used to color the subtopics.
   // the color scale takes the hue of the ods and creates a new scale around it according to the number of subtopics
   // the colour range moves from the hue of the ods -30% lightness to the hue of the ods +30% lightness
@@ -211,7 +215,7 @@ const dataHierarchy = computed(() => {
   };
 
   const newroot = hierarchy(odsRoot).sum((d) => d.duration);
-
+  console.log(newroot)
   // we are creating a sunburst chart and we want to add the init and end radius to each element in the hierarchy
   const partitionGen = partition().size([2 * Math.PI, radius.value.level2]);
   partitionGen(newroot);
@@ -262,12 +266,13 @@ function showText(d) {
 }
 
 // interactivity
-const selectedSubtopic = ref(null);
+const hoveredItem = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 
 function onMouseOver(event, d) {
-  selectedSubtopic.value = d;
-  tooltipPosition.value = getRealPosition(event.pageX, event.pageY); // { x: event.pageX, y: event.pageY };
+  console.log(d)
+  hoveredItem.value = d;
+  tooltipPosition.value = {x:event.pageX, y:event.pageY}; // { x: event.pageX, y: event.pageY };
   emits("update:mouseOverElement", {
     name: d.data.name,
     level: d.depth,
@@ -277,24 +282,15 @@ function onMouseOver(event, d) {
   });
 }
 // this function considers the screen width and height and adjusts the tooltip position to avoid it to be cut by the screen
-function getRealPosition(x, y) {
-  const tooltipWidth = 400;
-  const tooltipHeight = 100;
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  if (x + tooltipWidth > windowWidth) x = windowWidth - tooltipWidth;
-  if (y + tooltipHeight > windowHeight) y = windowHeight - tooltipHeight;
-  return { x, y };
-}
 function onMouseOut(event, d) {
-  selectedSubtopic.value = null;
+  hoveredItem.value = null;
   emits("update:mouseOverElement", null);
 }
 function onClick(event, d) {
   if (d.depth != 1) return;
-  selectedSubtopic.value = d;
-  //  tooltipPosition.value = { x: event.pageX, y: event.pageY };
-  tooltipPosition.value = getRealPosition(event.pageX, event.pageY); // { x: event.pageX, y: event.pageY };
+  // hoveredItem.value = d;
+  // //  tooltipPosition.value = { x: event.pageX, y: event.pageY };
+  // tooltipPosition.value = {x:event.pageX, y:event.pageY}; // { x: event.pageX, y: event.pageY };
 
   emits("update:clickedElement", {
     name: d.data.name,
@@ -343,20 +339,11 @@ function getClassesForHovered(d) {
 }
 
 .radialView path {
-  transition: all 0.3s ease;
 }
 
-.simple-tooltip {
-  position: absolute;
-  z-index: 10;
-  background-color: white;
-  border: 1px solid black;
-  padding: 5px;
-  border-radius: 5px;
-  pointer-events: none;
-}
 path:hover,
 path.hovered {
+  
   opacity: 0.8;
 }
 
@@ -367,12 +354,15 @@ path.active {
 }
 
 .simple-tooltip {
+   position: absolute;
+  z-index: 100;
   transition: all 0.3s ease;
-  background-color: #222;
-  color: white;
-  padding: 16px;
-  min-height: 40px;
-  min-width: 300px;
+  background: #fff;
+  pointer-events: none;
+  color: #222;
+
+  
+  
 }
 .simple-tooltip .tooltip-content {
   display: flex;
@@ -406,6 +396,7 @@ path.active {
   width: 32px;
   height: 32px;
   display: flex;
+  color:white;
   justify-content: center; /* align horizontal */
   align-items: center; /* align vertical */
   line-height: 32px;
@@ -418,17 +409,6 @@ path.active {
   align-items: center; /* align vertical */
   border-radius: 100%;
   line-height: 32px;
-}
-.simple-tooltip .tag-count {
-  width: 48px;
-  height: 48px;
-  border-radius: 100%;
-  border-color: white;
-  border-style: dashed;
-  padding: 8px;
-  text-align: center;
-  font-weight: bold;
-  line-height: 30px;
 }
 
 .hoveredOut,
