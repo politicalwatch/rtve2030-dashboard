@@ -17,7 +17,7 @@ import { useElementSize } from "@vueuse/core";
 interface Props {
   statsData: StatsEvolution;
   formatter?: Function;
-  timeSpan?: [Date, Date];
+  readonly timespan: [Date, Date];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -113,11 +113,11 @@ const averagedData = computed(() => {
 });
 
 const averagedFilteredData = computed(() => {
-  if (props.timeSpan !== undefined) {
+  if (props.timespan !== undefined) {
     return averagedData.value.filter(
       (d) =>
-        new Date(d.date) >= props.timeSpan[0] &&
-        new Date(d.date) <= props.timeSpan[1]
+        new Date(d.date) >= props.timespan[0] &&
+        new Date(d.date) <= props.timespan[1]
     );
   } else return [];
 });
@@ -133,10 +133,10 @@ const areaGenerator = computed(() => {
 // selected period  ---------------
 const selectedPeriodRect = computed(() => {
   // let's fill with white the non selected region
-  if (props.timeSpan === undefined) return undefined;
+  if (props.timespan === undefined) return undefined;
   const y1 = availableHeighForBars.value;
-  const x0 = timeScale.value(props.timeSpan[0]);
-  const x1 = timeScale.value(props.timeSpan[1]);
+  const x0 = timeScale.value(props.timespan[0]);
+  const x1 = timeScale.value(props.timespan[1]);
   return {
     x0,
     width: x1 - x0,

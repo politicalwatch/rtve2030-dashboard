@@ -31,7 +31,7 @@
             <chartsSimpleAreaChart
               v-if="evolutionData != null"
               :statsData="evolutionData"
-              :time-span="filters.timespan"
+              :timespan="filters.timespan"
             ></chartsSimpleAreaChart>
           </div>
         </div>
@@ -390,7 +390,6 @@ const { data: tagsData } = await useAsyncData(
     const key = tagsQueryString.value;
     const cacheData = cache.get(key);
     if (cacheData) {
-      console.log("cache tags data hit");
       return cacheData;
     }
     const newData = await apiRepo.getTags(
@@ -401,7 +400,6 @@ const { data: tagsData } = await useAsyncData(
       filters.programs
     );
     cache.add(key, newData);
-    console.log("cache tags data miss");
     return newData;
   },
 
