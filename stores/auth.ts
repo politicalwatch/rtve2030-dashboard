@@ -15,7 +15,6 @@ export const useAuthStore = defineStore("auth", () => {
     const apiRepo = dashboardApiRepo($api);
 
     if (session.value) {
-      console.log("Session already exists");
       return;
     }
     console.log("Restoring session");
@@ -30,7 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
       session.value = sessionData;
 
       if (!session.value) {
-        console.log("Problem with session data");
+        console.log("Error restoring session data");
         return;
       }
 
