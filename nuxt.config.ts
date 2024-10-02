@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/content",
   ],
-  css: ["@/assets/css/global.css", "@/assets/fonts/iosevka.css"],
+  css: ["@/assets/css/global.css", "@/assets/fonts/inconsolata.css"],
   alias: {
     "@types": resolve(projDir, "types"),
   },

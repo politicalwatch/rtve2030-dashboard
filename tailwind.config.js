@@ -16,7 +16,7 @@ module.exports = {
     },
     fontFamily: {
       serif: ["ui-serif", "Georgia"],
-      mono: ["iosevka-web", "ui-monospace", "SFMono-Regular"],
+      mono: ["inconsolata", "ui-monospace", "SFMono-Regular"],
       sans: ["Roboto Slab", "sans-serif", "ui-sans-serif", "system-ui"],
     },
     extend: {
