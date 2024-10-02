@@ -1,17 +1,25 @@
 <template>
   <div>
     <div class="grid grid-cols-5 gap-8">
-      <div class="col-span-2">
-        <TooltipProvider>
+      <div class="col-span-2 ">
+
+        <div class="grid grid-cols-[32px_1fr] gap-4 ">
+          <img src="/img/calendar.svg" alt="calendar" class="h-auto w-full">
+          <div class="border-t border-black pt-2">
+            <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <div class="flex gap-0.5">
-                <h2 class="chart-titles">Objetivos y metas</h2>
+              <div class="flex justify-between gap-0.5 w-full">
+                <h2 class="chart-titles-big">Objetivos</h2>
+
+                <!--
                 <Icon
                   name="heroicons:information-circle"
                   class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
                 >
                 </Icon>
+                -->
+
               </div>
             </TooltipTrigger>
             <TooltipContent
@@ -29,7 +37,7 @@
         <div class="flex justify-start gap-2 text-2xs">
           <button
             v-for="(longname, code, i) in SdgTopic"
-            class="border-b-4 w-5 text-center hover:border-b-2"
+            class="border-b-4 w-5 text-center hover:border-b-2 font-bold"
             :style="{
               'border-color':
                 noSdgSelection || sdgActive.includes(longname)
@@ -41,6 +49,13 @@
             {{ i + 1 }}
           </button>
         </div>
+          </div>
+         
+        </div>
+
+        
+
+        
 
         <ChartsScannerRadialOds
           v-if="sdgData != null"
@@ -58,6 +73,14 @@
       </div>
 
       <div class="col-span-3">
+        <div class="grid grid-cols-[32px_1fr] gap-4 ">
+          <img src="/img/calendar.svg" alt="calendar" class="h-auto w-full">
+          <div class="border-t border-black pt-2">
+            <h2 class="chart-titles-big ">Metas</h2>
+            </div>
+        </div>
+
+        
         <DataTableBaseTable
           :columns="columns"
           :data="dataForTables"

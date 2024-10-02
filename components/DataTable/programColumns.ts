@@ -48,14 +48,14 @@ export const columns: ColumnDef<TablePrograms>[] = [
   },
   {
     accessorKey: "name",
-    header: () => h("div", { class: "text-right text-xs" }, "Programa"),
+    header: () => h("div", { class: "text-left text-xs" }, "Programa"),
     cell: ({ row, getValue }) => {
-      return h("div", { class: "text-right" }, getValue());
+      return h("div", { class: "text-left" }, getValue());
     },
   },
   {
     accessorKey: "sdgs",
-    header: () => h("div", { class: "text-right" }, "ods"),
+    header: () => h("div", { class: "text-left" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -76,7 +76,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
           class: "text-xs flex gap-1 justify-end",
         },
-        ["tagged ", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["horas", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {
@@ -120,7 +120,7 @@ export const columns: ColumnDef<TablePrograms>[] = [
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
           class: "text-xs flex gap-1 justify-end",
         },
-        ["Episodios", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["episodios", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row, getValue }) => {

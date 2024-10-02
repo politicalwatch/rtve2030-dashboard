@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-96" ref="chartWrapper">
+  <div class="w-full h-80" ref="chartWrapper">
     <ChartsFrequencyChart
       v-if="evoDataGrouped != null && availableHeight > 0"
       :dataset="evoDataGrouped"

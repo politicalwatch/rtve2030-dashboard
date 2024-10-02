@@ -39,7 +39,7 @@ export const columns: ColumnDef<TableSdg>[] = [
       return h("img", {
         class: "text-left h-6 w-6",
         style: "background-color: " + style?.color,
-        src: "/img/topics/" + style?.image,
+        src: "/img/sdg/" + style?.image,
       });
     },
   },
@@ -53,7 +53,7 @@ export const columns: ColumnDef<TableSdg>[] = [
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["\u2001 \u2001 \u2001", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["horas", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-content">
+  <div class="dashboard-content mt-6">
     <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
@@ -11,29 +11,43 @@
       <div class="flex items-center">
         <NuxtLink
           to="/reports"
-          class="flex items-center font-bold hover:text-gray-600 uppercase"
+          class="flex items-center font-mono text-sm hover:text-gray-600 "
         >
-          <FileSpreadsheet :size="16" class="mr-2" /> Ver informes
+          <FileSpreadsheet :size="24" class="mr-2 " /> ver informes
         </NuxtLink>
       </div>
     </header>
-    <section class="bg-gray-50 border-b border-gray-500">
+
+    <section class="">
       <div class="container py-4">
+
+        <!--
         <h1 class="text-sm uppercase font-bold font-mono">
           vista global y selección de periodo de estudio
         </h1>
-        <div class="grid grid-cols-5 gap-8 items-center my-4">
-          <DateSelector />
-          <div>
+        -->
+        
+        <div class="grid grid-cols-5 gap-8  my-4">
+
+          <div class="border-t  border-black">
+            
+            <DateSelector />
+          </div>
+
+
+          <div class="border-t pt-4 border-black">
+            <p class="font-mono text-xs mb-2">periodo de estudio:</p>
             <PeriodSelector></PeriodSelector>
           </div>
-          <div class="col-span-3">
+
+          <div class="col-span-3 border-t border-black pt-4">
             <chartsSimpleAreaChart
               v-if="evolutionData != null"
               :statsData="evolutionData"
               :time-span="filters.timespan"
             ></chartsSimpleAreaChart>
           </div>
+
         </div>
 
         <div class="grid grid-cols-5 gap-8">
@@ -53,7 +67,7 @@
               :varValue="msToHours(timeSpanCounterData.tagged_duration)"
               :maxValue="msToHours(globalCounterData.tagged_duration)"
             >
-              Horas Agenda 2030
+              horas Agenda 2030
             </chartsNumberCounter>
           </div>
 
@@ -91,32 +105,60 @@
             </chartsNumberCounter>
           </div>
         </div>
+
+        <div class="w-full my-6">
+          <WrappersFrequencyWr
+          v-if="evolutionStackedData != null"
+          :evoData="evolutionStackedData"
+          :hasActiveFilters="filters.hasActiveFilters"
+        />
+        </div>
       </div>
     </section>
     <!--- end of global stats  -->
+
     <section class="mt-12">
+      <!--
       <div class="container mb-1">
         <h1 class="text-sm uppercase font-bold font-mono">
-          datos del periodo seleccionado
+          datos del periodo seleccionado 
         </h1>
       </div>
-      <div
-        class="container sticky top-0 z-40 bg-white border-b border-gray-500 pb-4"
-      >
-        <div class="pt-4 grid grid-cols-5 gap-8">
-          <div class="col-span-2">
-            
-           <div class="text-2xs pb-2 flex justify-end items-center gap-2"> <Switch v-model:checked="showPercentage" /> mostrar porcentajes</div>
+      -->
 
-            <FiltersState  />
+      <div
+        class="container sticky top-0 z-40 bg-white"
+      >
+
+      <!-- first row-->
+      <div class="pt-4 grid grid-cols-5 gap-8">
+        <div class="col-span-2">
+          <div class="flex justify-between ">
+            <p class="font-mono text-sm">
+              desde el <span class="font-sans font-bold">00.00.0000</span> hasta el <span class="font-sans font-bold">00.00.0000</span>
+            </p>
+            <div class="text-xs flex justify-end items-center gap-2 font-mono ">
+                <Switch v-model:checked="showPercentage" />
+                <p>mostrar porcentajes</p>
+              </div>
           </div>
+        </div>
+      </div>
+
+        <div class="pt-4 grid grid-cols-5 gap-8 border-b pb-4">
+
+         
+          <div class="col-span-2 ">
+           <FiltersState  />
+          </div>
+          
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
               :varValue="msToHours(queryDuration)"
               :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
             >
-              Horas tageadas
+              horas Agenda 2030
             </chartsNumberCounter>
           </div>
           <div>
@@ -125,7 +167,7 @@
               :varValue="filteredProgramsCount"
               :maxValue="timeSpanCounterData.programs_count"
             >
-              Programas
+              programas
             </chartsNumberCounter>
           </div>
           <div>
@@ -134,18 +176,19 @@
               :varValue="filteredEpisodesCount"
               :maxValue="timeSpanCounterData.episodes_count"
             >
-              Episodios
+              episodios
             </chartsNumberCounter>
           </div>
         </div>
+
       </div>
+
       <!---- evolution in detail-->
       <div class="container">
-        <WrappersFrequencyWr
-          v-if="evolutionStackedData != null"
-          :evoData="evolutionStackedData"
-          :hasActiveFilters="filters.hasActiveFilters"
-        />
+
+        <!--
+       frequency
+        -->
 
         <div class="mt-16">
           <WrappersSdgWr
@@ -200,6 +243,8 @@ definePageMeta({
   middleware: ["auth-user"],
 });
 import { FileSpreadsheet } from "lucide-vue-next";
+
+
 
 import { cloneDeep } from "lodash";
 import { sum } from "d3";

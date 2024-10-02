@@ -137,7 +137,7 @@ function datesToPeriod(initDate: Date, endDate: Date): string {
 <template>
   <Select v-model:modelValue="selectedPeriod">
     <SelectTrigger>
-      <SelectValue placeholder="Select a fruit" />
+      <SelectValue placeholder="Select a fruit" class="font-mono"/>
     </SelectTrigger>
     <SelectContent>
       <SelectItem
@@ -145,6 +145,7 @@ function datesToPeriod(initDate: Date, endDate: Date): string {
         :key="period.id"
         :value="period.id"
         :disabled="period.id === 'custom'"
+        
       >
         {{ period.name }}
       </SelectItem>

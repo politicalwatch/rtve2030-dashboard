@@ -1,30 +1,35 @@
 <template>
-  <div class="flex justify-between w-full">
-    <Popover>
-      <PopoverTrigger>
-        <div class="hover:underline">
-          Desde
-          <div class="text-sm">{{ initDate.toString() }}</div>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent class="w-auto p-0">
-        <CalendarCustom
-          :pagedNavigation="true"
-          v-model="initDate"
-          calendar-label="Fecha de inicio"
-          initial-focus
-          :min-value="new CalendarDate(2015, 1, 1)"
-          :max-value="today(getLocalTimeZone())"
-          :preventDeselect="true"
-        />
-      </PopoverContent>
-    </Popover>
+  <div class="flex justify-between w-full mt-4">
+    <img src="/img/calendar.svg" alt="calendar" class="h-8 w-auto">
 
+    <div>
+      <p class="text-xs font-mono">desde</p>
+      <Popover>
+        <PopoverTrigger>
+          <div class="hover:underline">
+            <div class="text-sm font-bold oldstyle-nums">{{ myDate(initDate) }}</div>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent class="w-auto p-0">
+          <CalendarCustom
+            :pagedNavigation="true"
+            v-model="initDate"
+            calendar-label="Fecha de inicio"
+            initial-focus
+            :min-value="new CalendarDate(2015, 1, 1)"
+            :max-value="today(getLocalTimeZone())"
+            :preventDeselect="true"
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+   
+  <div>
+      <p class="text-xs font-mono text-right">hasta</p>
     <Popover>
       <PopoverTrigger>
         <div class="hover:underline">
-          Hasta:
-          <div class="text-sm">{{ endDate.toString() }}</div>
+          <div class="text-sm oldstyle-nums font-bold">{{ myDate(endDate) }}</div>
         </div>
       </PopoverTrigger>
       <PopoverContent class="w-auto p-0">
@@ -39,6 +44,8 @@
         />
       </PopoverContent>
     </Popover>
+    </div>
+
   </div>
 </template>
 
@@ -52,6 +59,12 @@ const { timespan } = storeToRefs(filtersStore);
 const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
 const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
+
+const myDate = (d) => {
+   return d.day.toString().padStart(2, '0') + "." + d.month.toString().padStart(2, '0') + "." + d.year
+  // console.log(d.day)
+  // return "25.07.1966"
+}
 
 watch([initDate, endDate], (newValue, oldValue) => {
   if (isProgrammaticChange.value) {

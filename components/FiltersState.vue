@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-2 border-t border-black">
-    <div class="flex justify-between">
+  <div class="space-y-2">
+    <div class="flex justify-between border-t border-black">
       <h2 class="chart-titles">filtros activos</h2>
       <div class="text-sm text-gray-500">{{ mouseoverText }}</div>
     </div>

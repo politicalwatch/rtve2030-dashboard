@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2 flex-wrap">
+  <div class="flex gap-1 flex-wrap">
     <TooltipProvider :delayDuration="0">
       <Tooltip v-for="sdg in sdgs" :key="sdg">
         <TooltipTrigger as-child>

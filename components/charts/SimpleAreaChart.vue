@@ -162,10 +162,10 @@ const onMouseExitCanvas = () => {
 
 <template>
   <div>
-    <div ref="svgContainer" class="w-full">
+    <div ref="svgContainer" class="w-full pt-2">
       <svg
         ref="svg"
-        class="stroke-black border-2"
+        
         :width="canvasWidth"
         :height="canvasHeight"
         @mousemove="setMouseXPosition($event)"
@@ -198,6 +198,16 @@ const onMouseExitCanvas = () => {
           </g>
           <!-- x axis -->
           <g id="axis" :transform="`translate(0,${availableHeighForBars})`">
+
+            <!-- hor line -->
+             <line
+             x1="0"
+             :x2="availableWidthForBars"
+             y1="0"
+             y2="0"
+             stroke="#000"
+             stroke-width="0.5"
+             />
             <g
               v-for="(d, i) in timeScale.ticks(6)"
               :key="i"
@@ -209,13 +219,14 @@ const onMouseExitCanvas = () => {
                 x2="0"
                 y2="4"
                 stroke="#000"
-                stroke-width="1"
+                stroke-width="0.5"
               />
+
               <text
                 x="0"
-                :y="xAxisHeight * 0.66"
+                :y="xAxisHeight * 0.99"
                 text-anchor="middle"
-                class="text-2xs font-thin fill-neutral-500"
+                class="tick_text"
               >
                 {{ d.getFullYear() }}
               </text>
@@ -227,4 +238,8 @@ const onMouseExitCanvas = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .tick_text{
+    @apply  font-mono font-light text-xs fill-gray-500
+  }
+</style>

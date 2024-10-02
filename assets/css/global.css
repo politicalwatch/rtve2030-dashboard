@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 .chart-titles{
-    @apply font-sans font-semibold text-xs mb-2
+    @apply font-sans font-semibold text-xs mb-4 mt-1
 }
+
+.chart-titles-big{
+    @apply font-sans font-semibold text-sm mb-4 
+}
+
+
+
 
 @layer base {
 body{

@@ -240,6 +240,7 @@ function getVisiblePages() {
         >
           <TableHead
             v-for="header in headerGroup.headers"
+            class="font-light font-mono lowercase text-black"
             :key="header.id"
             :style="
               header.getSize() && header.getSize() != 150
