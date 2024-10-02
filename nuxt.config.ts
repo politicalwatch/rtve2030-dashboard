@@ -18,6 +18,15 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/content",
   ],
+  icon: {
+    clientBundle: {
+      // list of icons to include in the client bundle
+      icons: ["lucide:arrow-up-down"],
+
+      // scan all components in the project and include icons
+      scan: true,
+    },
+  },
   css: ["@/assets/css/global.css", "@/assets/fonts/inconsolata.css"],
   alias: {
     "@types": resolve(projDir, "types"),
@@ -28,7 +37,7 @@ export default defineNuxtConfig({
   },
   googleFonts: {
     families: {
-      "Roboto+Slab": [200,300,400,500, 600],
+      "Roboto+Slab": [200, 300, 400, 500, 600],
     },
   },
 
