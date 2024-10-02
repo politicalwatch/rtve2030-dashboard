@@ -105,10 +105,11 @@
       >
         <div class="pt-4 grid grid-cols-5 gap-8">
           <div class="col-span-2">
-            
-           <div class="text-2xs pb-2 flex justify-end items-center gap-2"> <Switch v-model:checked="showPercentage" /> mostrar porcentajes</div>
+            <div class="text-2xs pb-2 flex justify-end items-center gap-2">
+              <Switch v-model:checked="showPercentage" /> mostrar porcentajes
+            </div>
 
-            <FiltersState  />
+            <FiltersState />
           </div>
           <div>
             <chartsNumberCounter
@@ -208,6 +209,7 @@ const filters = useFiltersStore();
 const baseDataStore = useBaseData();
 const apiRepo = dashboardApiRepo($api);
 const nuxtApp = useNuxtApp();
+const cache = simpleCache();
 /* status flag */
 const mustLoadBase = ref({
   globalCounterData: true,
@@ -220,7 +222,8 @@ const mustLoadBase = ref({
 });
 
 /** following data depends only on timespan***/
-const { timespan, channels, sdgActive, programs, showPercentage } = storeToRefs(filters);
+const { timespan, channels, sdgActive, programs, showPercentage } =
+  storeToRefs(filters);
 
 const { data: globalCounterData } = await useAsyncData(() =>
   apiRepo.getStatsCounter()
@@ -256,27 +259,37 @@ const evolutionStackedQueryString = computed(() => {
 
 const { data: evolutionStackedData } = await useAsyncData(
   evolutionStackedQueryString.value,
-  () =>
-    apiRepo.getEvolutionStacked(
+  async () => {
+    const key = evolutionStackedQueryString.value;
+    const cacheData = cache.get(key);
+    if (cacheData) {
+      return cacheData;
+    }
+    const newData = await apiRepo.getEvolutionStacked(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       filters.sdgActive,
       filters.channels,
       filters.programs
-    ),
+    );
+    cache.add(key, newData);
+    return newData;
+  },
   {
     immediate: true,
-    watch: [evolutionStackedQueryString],
     getCachedData: (key) => {
       return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
     },
+    watch: [evolutionStackedQueryString],
     transform: (data) => {
       // let's transform all dates into javascript date objects considering that the date format in the api is YYYY-MM-DD
+      if (data.transformed) return data;
       data.hoursPeriod.forEach((item) => {
         item.dateObj = new Date(item.date);
       });
       data.initObj = new Date(data.init);
       data.endObj = new Date(data.end);
+      data.transformed = true;
       return data;
     },
   }
@@ -373,14 +386,25 @@ const tagsQueryString = computed(() => {
 
 const { data: tagsData } = await useAsyncData(
   tagsQueryString.value,
-  () =>
-    apiRepo.getTags(
+  async () => {
+    const key = tagsQueryString.value;
+    const cacheData = cache.get(key);
+    if (cacheData) {
+      console.log("cache tags data hit");
+      return cacheData;
+    }
+    const newData = await apiRepo.getTags(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       filters.sdgActive,
       filters.channels,
       filters.programs
-    ),
+    );
+    cache.add(key, newData);
+    console.log("cache tags data miss");
+    return newData;
+  },
+
   {
     immediate: true,
     getCachedData: (key) => {
@@ -397,8 +421,6 @@ const isDataReady = computed(
     timeSpanCounterData != null &&
     sdgData != null
 );
-
-
 
 const queryDuration = computed(() => {
   if (evolutionStackedData.value?.hoursPeriod == null) return 0;
@@ -493,7 +515,6 @@ watch(
   },
   { deep: true, immediate: true }
 );
-
 
 // --- inject data to children ---
 provide("queryDuration", queryDuration);
