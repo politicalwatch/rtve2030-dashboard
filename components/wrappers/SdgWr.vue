@@ -80,7 +80,6 @@ const { sdgActive  } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
 import { columns } from "../DataTable/sdgColumns";
 import { goalColumns } from "../DataTable/goalColumns";
-import { parseDuration } from "@internationalized/date";
 
 interface Props {
   sdgData: Array<StatsSdg>;
