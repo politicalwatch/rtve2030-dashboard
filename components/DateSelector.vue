@@ -8,12 +8,12 @@
         </div>
       </PopoverTrigger>
       <PopoverContent class="w-auto p-0">
-        <Calendar
+        <CalendarCustom
           :pagedNavigation="true"
           v-model="initDate"
-          calendar-label="Date of birth"
+          calendar-label="Fecha de inicio"
           initial-focus
-          :min-value="new CalendarDate(1900, 1, 1)"
+          :min-value="new CalendarDate(2015, 1, 1)"
           :max-value="today(getLocalTimeZone())"
           :preventDeselect="true"
         />
@@ -28,10 +28,10 @@
         </div>
       </PopoverTrigger>
       <PopoverContent class="w-auto p-0">
-        <Calendar
+        <CalendarCustom
           :pagedNavigation="true"
           v-model="endDate"
-          calendar-label="Date of birth"
+          calendar-label="Fecha de fin"
           initial-focus
           :min-value="initDate"
           :max-value="today(getLocalTimeZone())"
