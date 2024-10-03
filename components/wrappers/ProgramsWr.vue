@@ -59,6 +59,9 @@ interface Props {
   hasActiveFilters: boolean;
 }
 
+const hasOdsFilter = computed(() => {
+  return filtersStore.sdgActive.length > 0;
+});
 const props = withDefaults(defineProps<Props>(), {});
 
 const maxTotalDuration = computed(() => {
@@ -84,15 +87,15 @@ const dataForTable = computed(() => {
       const topTopics = alltopics
         .sort((a, b) => b.duration - a.duration)
         .slice(0, 5);
-      const queryDuration = props.hasActiveFilters
+      const queryDurationSumTopics = hasOdsFilter.value
         ? sum(filteredEquivalent.topics, (d) => d.duration)
         : 0;
 
       return {
-        hasActiveFilters: props.hasActiveFilters,
+        hasActiveFilters: hasOdsFilter.value,
         canal: prgBase.channel,
         name: prgBase.name,
-        queryDuration: queryDuration,
+        queryDuration: queryDurationSumTopics,
         total_duration: prgBase.total_duration,
         tagged_duration: prgBase.tagged_duration,
         episode_count: prgBase.episode_count,
