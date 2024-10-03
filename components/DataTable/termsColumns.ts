@@ -7,15 +7,15 @@ import { Icon } from "#components";
 export const columns: ColumnDef<TableTags>[] = [
   {
     accessorKey: "name",
-    header: () => h("div", { class: "text-left" }, "términos"),
+    header: () => h("div", { class: "text-left" }, "término"),
     cell: ({ row }) => {
       const name = row.original.name;
-      return h("div", { class: "text-left font-medium" }, name ?? "");
+      return h("div", { class: "text-left font-light" }, name ?? "");
     },
   },
   {
     accessorKey: "sdgs",
-    header: () => h("div", { class: "text-right" }, "ods"),
+    header: () => h("div", { class: "text-left" }, "ods"),
     size: 40,
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
@@ -55,7 +55,7 @@ export const columns: ColumnDef<TableTags>[] = [
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["Duración", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["horas ", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {

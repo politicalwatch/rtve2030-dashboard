@@ -4,37 +4,38 @@
       <div class="col-span-2 ">
 
         <div class="grid grid-cols-[32px_1fr] gap-4 ">
-          <img src="/img/calendar.svg" alt="calendar" class="h-auto w-full">
+          <img src="/img/ods_icon.svg" alt="ods" class="h-auto w-full" :class="filtersStore.sdgActive.length ? 'opacity-100': 'opacity-20'">
+
           <div class="border-t border-black pt-2">
-            <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <div class="flex justify-between gap-0.5 w-full">
-                <h2 class="chart-titles-big">Objetivos</h2>
+            <div class="flex justify-between">
+              <h2 class="chart-titles-big">Objetivos</h2>
+              <TooltipProvider>
+               <Tooltip>
+                  <TooltipTrigger>
+                      <Icon
+                        name="ooui:info"
+                        class="hover:shadow-lg  cursor-pointer w-6 h-6"
+                      >
+                      </Icon>
+                    
+                  </TooltipTrigger>
+                  <TooltipContent
+                    class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+                  >
+                    <slot name="description">
+                      <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                        <ContentRenderer :value="data" class="prose prose-sm" />
+                      </ContentQuery>
+                    </slot>
+                  </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
-                <!--
-                <Icon
-                  name="heroicons:information-circle"
-                  class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
-                >
-                </Icon>
-                -->
 
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
-            >
-              <slot name="description">
-                <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
-                  <ContentRenderer :value="data" class="prose prose-sm" />
-                </ContentQuery>
-              </slot>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <div class="flex justify-start gap-2 text-2xs">
+            </div>
+           
+            
+        <div class="flex justify-start gap-2 text-2xs mt-2">
           <button
             v-for="(longname, code, i) in SdgTopic"
             class="border-b-4 w-5 text-center hover:border-b-2 font-bold"
@@ -74,7 +75,7 @@
 
       <div class="col-span-3">
         <div class="grid grid-cols-[32px_1fr] gap-4 ">
-          <img src="/img/calendar.svg" alt="calendar" class="h-auto w-full">
+          <img src="/img/metas.svg" alt="metas" class="h-auto w-full" :class="filtersStore.sdgActive.length ? 'opacity-100': 'opacity-20'">
           <div class="border-t border-black pt-2">
             <h2 class="chart-titles-big ">Metas</h2>
             </div>

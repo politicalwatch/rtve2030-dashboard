@@ -1,17 +1,28 @@
 <template>
   <div>
-    <div class="flex justify-between items-center h-9">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <div class="flex gap-0.5">
-              <h2 class="chart-titles">Canales</h2>
-              <Icon
-                name="heroicons:information-circle"
-                class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
-              >
-              </Icon>
+
+    <!-- head -->
+    <div class="grid grid-cols-[32px_1fr] gap-4 ">
+      <img src="/img/rtve.svg" alt="rtve" class="h-[32px] w-auto mt-1" :class="filtersStore.channels.length ? 'opacity-100': 'opacity-20'">
+      <div class="border-t border-black pt-2">
+        <div class="flex justify-between">
+          <h2 class="chart-titles-big">Canales</h2>
+
+          <div class="flex gap-3">
+            <div class="flex gap-1 items-center text-2xs font-mono">
+              <Switch v-model:checked="relativeMode" /> relativo
             </div>
+
+            <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                
+                  <Icon
+                    name="ooui:info"
+                    class="hover:shadow-lg  cursor-pointer w-6 h-6"
+                  >
+                  </Icon>
+                
           </TooltipTrigger>
           <TooltipContent
             class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
@@ -23,12 +34,17 @@
             </slot>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
+            </TooltipProvider>
 
-      <div class="flex gap-1 items-center text-2xs font-mono">
-        <Switch v-model:checked="relativeMode" /> relativo
+           
+          </div>
+
+        </div>
+        
       </div>
     </div>
+
+
     <!-- <div class="flex justify-start gap-2 text-2xs">
       <button
         v-for="chan in Channels"

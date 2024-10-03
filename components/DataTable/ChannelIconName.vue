@@ -1,6 +1,6 @@
 <template>
-  <div class="flex gap-2">
-    <img :src="`/img/channels/${canal}.png`" :alt="'channel-icon' + canal" class="w-8 h-auto"/>
+  <div class="flex gap-1">
+    <img :src="`/img/channels/${canal}.png`" :alt="'channel-icon' + canal" class="h-6 w-auto"/>
     <span v-if="showName"> {{ canal }}</span>
   </div>
 </template>

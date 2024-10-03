@@ -1,17 +1,31 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4">
-      <TooltipProvider>
+    <!-- head -->
+    <div class="grid grid-cols-[32px_1fr] gap-4 ">
+      <img src="/img/programas.svg" alt="programas" class="h-auto w-full " :class="filtersStore.programs.length ? 'opacity-100': 'opacity-20'">
+      <div class="border-t border-black pt-2">
+        <div class="flex justify-between">
+          <h2 class="chart-titles-big">Programas y episodios</h2>
+          <!-- the rest on the right -->
+          <div class="flex gap-3">
+           
+            <div class="flex gap-1 items-center text-2xs font-mono">
+              <Switch v-model:checked="relativeMode" /> relativo
+            </div>
+
+            <div id="programs-search-input"></div>
+
+            <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <div class="flex gap-0.5">
-              <h2 class="chart-titles">Programas y episodios</h2>
+           
+              
               <Icon
-                name="heroicons:information-circle"
-                class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
-              >
+                    name="ooui:info"
+                    class="hover:shadow-lg  cursor-pointer w-6 h-6"
+                  >
               </Icon>
-            </div>
+           
           </TooltipTrigger>
           <TooltipContent
             class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
@@ -24,15 +38,13 @@
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      
 
-      <div class="flex flex-col gap-2 items-end">
-        <div class="flex gap-1 items-center text-2xs font-mono">
-          <Switch v-model:checked="relativeMode" /> relativo
-        </div>
-        <div id="programs-search-input"></div>
+          </div>
+      </div>
+
       </div>
     </div>
+
     <DataTableBaseTable
       :columns="columns"
       :data="dataForTable"

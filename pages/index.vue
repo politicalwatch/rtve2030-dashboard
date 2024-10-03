@@ -145,7 +145,7 @@
         </div>
       </div>
 
-        <div class="pt-4 grid grid-cols-5 gap-8 border-b pb-4">
+        <div class="pt-4 grid grid-cols-5 gap-8 borderrr-b pb-4">
 
          
           <div class="col-span-2 ">
@@ -203,7 +203,7 @@
           </WrappersSdgWr>
         </div>
 
-        <div class="mt-8 grid grid-cols-5 gap-8 border-t border-black pt-2">
+        <div class="mt-16 grid grid-cols-5 gap-8 ">
           <div class="col-span-2">
             <WrappersChannelsWr
               v-if="channelsData != null && baseDataStore.channelsData != null"
@@ -213,6 +213,7 @@
             >
             </WrappersChannelsWr>
           </div>
+
           <div class="col-span-3">
             <WrappersProgramsWr
               v-if="programsData != null && baseDataStore.programsData != null"
@@ -224,7 +225,7 @@
           </div>
         </div>
 
-        <div class="mt-8">
+        <div class="mt-12">
           <WrappersTermsWr
             v-if="tagsData != null && baseDataStore.tagsData != null"
             :tagsData="tagsData"

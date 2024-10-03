@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 export const columns: ColumnDef<TableChannels>[] = [
   {
     id: "select",
-    size: 20,
+    size: 24,
     header: ({ column }) => {
       return h("div", {});
     },
@@ -26,7 +26,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   {
     accessorKey: "name",
 
-    header: () => h("div", { class: "text-right text-xs" }, "Canal"),
+    header: () => h("div", { class: "text-left text-xs" }, "Canal"),
     cell: ({ row }) => {
       return h(ChannelIconName, {
         canal: row.getValue("name") as Channels,
@@ -36,7 +36,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   {
     accessorKey: "sdgs",
     size: 80,
-    header: () => h("div", { class: "text-right text-xs" }, "ods"),
+    header: () => h("div", { class: "text-left text-xs" }, "ods"),
     cell: ({ getValue }) => {
       const sdgs = getValue() as SdgTopic[];
       return h(sdgSquares, {
@@ -55,7 +55,7 @@ export const columns: ColumnDef<TableChannels>[] = [
           class: "text-xs flex gap-1 justify-end",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        ["tagged", h(Icon, { name: "lucide:arrow-up-down" })]
+        ["horas", h(Icon, { name: "lucide:arrow-up-down" })]
       );
     },
     cell: ({ row }) => {

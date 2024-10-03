@@ -1,44 +1,55 @@
 <template>
-  <div class="border-t border-black">
+  <div>
     <div class="grid grid-cols-5 gap-8">
-      <div class="col-span-3">
-        <div class="flex justify-between my-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div class="flex gap-0.5">
-                  <h2 class="chart-titles">términos</h2>
-                  <Icon
-                    name="heroicons:information-circle"
-                    class="hover:shadow-lg ml-2 cursor-pointer w-4 h-4"
-                  >
-                  </Icon>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
-              >
-                <slot name="description">
-                  <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
-                    <ContentRenderer :value="data" class="prose prose-sm" />
-                  </ContentQuery>
-                </slot>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
-          <div class="flex flex-col gap-2 items-end">
-            <div
-              class="flex gap-1 items-center text-2xs font-mono"
-              :class="[
-                !hasActiveFilters ? 'opacity-30 pointer-events-none' : '',
-              ]"
-            >
+      <div class="col-span-3">
+
+        <!-- head -->
+        <div class="grid grid-cols-[32px_1fr] gap-4 ">
+          <img src="/img/terminos.svg" alt="términos" class="h-[32px] w-auto">
+          <div class="border-t border-black pt-2">
+            <div class="flex justify-between">
+              <h2 class="chart-titles-big">Términos</h2>
+              <!-- the rest on the right -->
+              <div class="flex gap-3">
+                <div
+                  class="flex gap-1 items-center text-2xs font-mono"
+                  :class="[
+                    !hasActiveFilters ? 'opacity-30 pointer-events-none' : '',
+                  ]"
+                >
               <Switch v-model:checked="relativeMode" /> máximo según filtros
             </div>
-            <div id="terms-search-input"></div>
+              <div id="terms-search-input"></div>
+                
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                   
+                    <Icon
+                      name="ooui:info"
+                      class="hover:shadow-lg  cursor-pointer w-6 h-6"
+                    >
+                    </Icon>
+                          
+                  </TooltipTrigger>
+                  <TooltipContent
+                    class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
+                  >
+                    <slot name="description">
+                      <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                        <ContentRenderer :value="data" class="prose prose-sm" />
+                      </ContentQuery>
+                    </slot>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              </div>
+            </div>
           </div>
         </div>
+
+
         <DataTableBaseTable
           :columns="columns"
           :data="dataForTable"
@@ -47,10 +58,13 @@
         />
       </div>
 
-      <div class="col-span-2 flex flex-col h-full">
+      <!-- cloud -->
+      <div class="col-span-2 flex flex-col h-full border-t border-black">
+        
         <div class="flex gap-1 items-center text-2xs font-mono mt-4 justify-end">
           <Switch v-model:checked="colorBySdg" /> color por ODS
         </div>
+
         <div ref="wordcloudContainer" class="w-full h-full">
           <VueWordCloud
             :words="topWords"
@@ -62,7 +76,7 @@
               'margin-top': padding.top + 'px',
             }"
             v-if="width > 0 && height > 0"
-            :fontFamily="'Roboto'"
+            :fontFamily="'Roboto Slab'"
             :font-size-ratio="4"
             :enter-animation="enterAnimation"
             :leave-animation="leaveAnimation"
