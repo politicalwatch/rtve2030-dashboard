@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-content">
+  <div class="dashboard-content mt-6">
     <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
@@ -11,23 +11,29 @@
       <div class="flex items-center">
         <NuxtLink
           to="/"
-          class="flex items-center font-bold hover:text-gray-600 uppercase"
+          class="flex items-center font-mono text-sm hover:text-gray-600"
         >
-          <LayoutDashboard :size="16" class="mr-2" /> Ir al dashboard
+          <LayoutDashboard :size="16" class="mr-2" /> ir al dashboard
         </NuxtLink>
       </div>
     </header>
-    <section class="bg-gray-50 border-b border-gray-500">
+    <section class="border-b border-gray-500">
       <div class="container py-4">
-        <h1 class="text-sm uppercase font-bold font-mono">
-          vista global y selección de periodo de estudio
-        </h1>
-        <div class="grid grid-cols-5 gap-8 items-center my-4">
-          <DateSelector />
-          <div>
+        <!--
+          <h1 class="text-sm uppercase font-bold font-mono">
+            vista global y selección de periodo de estudio
+          </h1>
+        -->
+        <div class="grid grid-cols-5 gap-8 my-4">
+          <div class="border-t border-black">
+            <DateSelector />
+          </div>
+          <div class="border-t pt-4 border-black">
+            <p class="font-mono text-xs mb-2">periodo de estudio:</p>
             <PeriodSelector />
           </div>
-          <div>
+          <div class="border-t pt-4 border-black">
+            <p class="font-mono text-xs mb-2">tipo de informe:</p>
             <ReportTypeSelector />
           </div>
           <div v-if="['aenor'].includes(reportType)">
