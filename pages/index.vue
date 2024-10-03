@@ -11,29 +11,25 @@
       <div class="flex items-center">
         <NuxtLink
           to="/reports"
-          class="flex items-center font-mono text-sm hover:text-gray-600 "
+          class="flex items-center font-mono text-sm hover:text-gray-600"
         >
-          <FileSpreadsheet :size="24" class="mr-2 " /> ver informes
+          <FileSpreadsheet :size="16" class="mr-2" /> ver informes
         </NuxtLink>
       </div>
     </header>
 
     <section class="">
       <div class="container py-4">
-
         <!--
         <h1 class="text-sm uppercase font-bold font-mono">
           vista global y selección de periodo de estudio
         </h1>
         -->
-        
-        <div class="grid grid-cols-5 gap-8  my-4">
 
-          <div class="border-t  border-black">
-            
+        <div class="grid grid-cols-5 gap-8 my-4">
+          <div class="border-t border-black">
             <DateSelector />
           </div>
-
 
           <div class="border-t pt-4 border-black">
             <p class="font-mono text-xs mb-2">periodo de estudio:</p>
@@ -47,7 +43,6 @@
               :timespan="filters.timespan"
             ></chartsSimpleAreaChart>
           </div>
-
         </div>
 
         <div class="grid grid-cols-5 gap-8">
@@ -108,10 +103,10 @@
 
         <div class="w-full my-6">
           <WrappersFrequencyWr
-          v-if="evolutionStackedData != null"
-          :evoData="evolutionStackedData"
-          :hasActiveFilters="filters.hasActiveFilters"
-        />
+            v-if="evolutionStackedData != null"
+            :evoData="evolutionStackedData"
+            :hasActiveFilters="filters.hasActiveFilters"
+          />
         </div>
       </div>
     </section>
@@ -126,24 +121,25 @@
       </div>
       -->
 
-      <div
-        class="container sticky top-0 z-40 bg-white"
-      >
-
-      <!-- first row-->
-      <div class="pt-4 grid grid-cols-5 gap-8">
-        <div class="col-span-2">
-          <div class="flex justify-between ">
-            <p class="font-mono text-sm">
-              desde el <span class="font-sans font-bold">00.00.0000</span> hasta el <span class="font-sans font-bold">00.00.0000</span>
-            </p>
-            <div class="text-xs flex justify-end items-center gap-2 font-mono ">
+      <div class="container sticky top-0 z-40 bg-white">
+        <!-- first row-->
+        <div class="pt-4 grid grid-cols-5 gap-8">
+          <div class="col-span-2">
+            <div class="flex justify-between">
+              <p class="font-mono text-sm">
+                desde el
+                <span class="font-sans font-bold">00.00.0000</span> hasta el
+                <span class="font-sans font-bold">00.00.0000</span>
+              </p>
+              <div
+                class="text-xs flex justify-end items-center gap-2 font-mono"
+              >
                 <Switch v-model:checked="showPercentage" />
                 <p>mostrar porcentajes</p>
               </div>
+            </div>
           </div>
         </div>
-      </div>
 
         <div class="pt-4 grid grid-cols-5 gap-8 borderrr-b pb-4">
 
@@ -151,7 +147,7 @@
           <div class="col-span-2 ">
            <FiltersState  />
           </div>
-          
+
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
@@ -180,12 +176,10 @@
             </chartsNumberCounter>
           </div>
         </div>
-
       </div>
 
       <!---- evolution in detail-->
       <div class="container">
-
         <!--
        frequency
         -->
@@ -244,8 +238,6 @@ definePageMeta({
   middleware: ["auth-user"],
 });
 import { FileSpreadsheet } from "lucide-vue-next";
-
-
 
 import { cloneDeep } from "lodash";
 import { sum } from "d3";
