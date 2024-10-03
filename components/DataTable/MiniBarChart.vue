@@ -36,7 +36,10 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Horas analizadas: {{ format.msToTime(total_duration) }} horas</p>
+          <div>
+            Horas analizadas:
+            <div class="font-bold">{{ format.msToTime(total_duration) }}</div>
+          </div>
         </TooltipContent>
       </Tooltip>
 
@@ -48,16 +51,18 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>
+          <div>
             Horas de agenda ODS detectada:
-            <span class="font-semibold"
-              >{{ format.msToTime(tagged_duration) }}
-            </span>
-            horas
-            <span class="font-semibold"
-              >({{ format.PCT(tagged_duration / total_duration) }})
-            </span>
-          </p>
+            <div>
+              <span class="font-semibold"
+                >{{ format.msToTime(tagged_duration) }}
+              </span>
+
+              <span class="">
+                ({{ format.PCT(tagged_duration / total_duration) }})
+              </span>
+            </div>
+          </div>
         </TooltipContent>
       </Tooltip>
 
@@ -69,13 +74,16 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>
+          <div>
             {{ format.msToTime(queryDuration) }} horas de contenido con los
             filtros aplicados
-            <span class="font-semibold"
-              >({{ format.PCT(queryDuration / tagged_duration) }} 
-            </span> de todo lo etiquetado)
-          </p>
+            <div>
+              <span class="font-semibold"
+                >({{ format.PCT(queryDuration / tagged_duration) }}
+              </span>
+              de todo lo etiquetado)
+            </div>
+          </div>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

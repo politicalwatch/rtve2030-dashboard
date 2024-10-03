@@ -34,7 +34,7 @@
                 !hasActiveFilters ? 'opacity-30 pointer-events-none' : '',
               ]"
             >
-              <Switch v-model:checked="relativeMode" /> maximo según filtros
+              <Switch v-model:checked="relativeMode" /> máximo según filtros
             </div>
             <div id="terms-search-input"></div>
           </div>

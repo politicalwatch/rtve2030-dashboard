@@ -295,6 +295,7 @@ function getVisiblePages() {
                   :queryGoals="row.original.queryGoals"
                   :hasActiveFilters="row.original.hasActiveFilters"
                   :maxTotalDuration="row.original.maxBaseDuration"
+                  :parentSdgDuration="row.original.base_duration"
                 >
                 </GoalSub>
               </TableCell>

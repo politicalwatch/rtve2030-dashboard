@@ -19,6 +19,8 @@
             :isSubTopic="true"
             :name="baseGoal.goal"
             :showQueryDuration="hasActiveFilters"
+            :parentDuration="parentSdgDuration"
+            
           />
         </div>
       </div>
@@ -37,6 +39,7 @@ interface Props {
   queryGoals: StatsGoal[];
   maxTotalDuration: number;
   hasActiveFilters: boolean;
+  parentSdgDuration: number;
 }
 
 const maxSdgDuration = computed(() => {

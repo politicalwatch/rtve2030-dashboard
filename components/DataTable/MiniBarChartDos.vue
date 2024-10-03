@@ -23,21 +23,6 @@ const filteredTaggedTimePercentage = computed(() => {
 <template>
   <div class="w-full h-5 bg-gray-50 relative">
     <TooltipProvider :delayDuration="0">
-      <!-- <Tooltip>
-        <TooltipTrigger as-child>
-          <div
-            class="h-full absolute bg-gray-200"
-            :style="{ width: maxAvailableWidth + '%' }"
-          ></div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Tiempo analizado: {{ format.N(msToHours(maxTotal)) }} horas</p>
-        </TooltipContent>
-      </Tooltip> -->
-
-      <!-- this is the bar for the tagged duration -->
-
-      <!-- this is the bar for the total duration -->
       <Tooltip>
         <TooltipTrigger as-child>
           <div
@@ -46,7 +31,7 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>duración total: {{ format.msToTime(total) }}</p>
+          <div>Horas de duración de este tag: {{ format.msToTime(total) }}</div>
         </TooltipContent>
       </Tooltip>
 
@@ -58,10 +43,12 @@ const filteredTaggedTimePercentage = computed(() => {
           ></div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{{ format.msToTime(filtered) }} según filtros
-            ({{ format.PCT(filtered / total) }})
+          <div>
+            <span class="font-bold">{{ format.msToTime(filtered) }} </span> horas detectadas según filtros
+            
+            <span v-if="total">({{ format.PCT(filtered / total) }})</span>
 
-          </p>
+          </div>
 
         </TooltipContent>
       </Tooltip>

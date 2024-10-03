@@ -79,10 +79,10 @@
             </div>
             <div class="font-semibold">
               <template v-if="showPercentage">
-                  {{ format.PCT (hoveredItem.data.originalDuration/queryDuration) }}
+                  {{ format.PCT (hoveredItem.data.apiDuration/queryDuration) }}
               </template>
               <template v-else>
-                {{ format.msToTime(hoveredItem.data.originalDuration) }} horas
+                {{ format.msToTime(hoveredItem.data.apiDuration) }} horas
               </template>
             </div>
           </div>
@@ -176,7 +176,7 @@ const dataHierarchy = computed(() => {
     ods.code = ods.odsIndex + "";
     ods.level1 = ods.code;
     ods.level2 = "";
-    ods.originalDuration = sdg.duration;
+    ods.apiDuration = sdg.duration;
     if (!ods) return;
     for (let goal of sdg.goals) {
       // add subtopic to ods
@@ -186,7 +186,7 @@ const dataHierarchy = computed(() => {
         level2: goal.goal.split(" ")[0].split(".")[1],
         name: goal.goal,
         subtopic: goal.goal,
-        originalDuration: goal.duration,
+        apiDuration: goal.duration,
         duration: goal.duration,
       });
     }
