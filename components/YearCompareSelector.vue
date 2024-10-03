@@ -23,7 +23,7 @@ const computedYearOptions = computed(() => {
     </SelectTrigger>
     <SelectContent>
       <SelectItem v-for="year in computedYearOptions" :key="year" :value="year">
-        {{ year }}
+        {{ `${Number(year) - 1}-${year}` }}
       </SelectItem>
     </SelectContent>
   </Select>
