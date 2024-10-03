@@ -128,8 +128,8 @@
             <div class="flex justify-between">
               <p class="font-mono text-sm">
                 desde el
-                <span class="font-sans font-bold">00.00.0000</span> hasta el
-                <span class="font-sans font-bold">00.00.0000</span>
+                <span class="font-sans font-bold">{{ format.dottedDate(jsDateToCalendarDate(timespan[0])) }}</span> hasta el
+                <span class="font-sans font-bold">{{format.dottedDate(jsDateToCalendarDate(timespan[1]))}}</span>
               </p>
               <div
                 class="text-xs flex justify-end items-center gap-2 font-mono"

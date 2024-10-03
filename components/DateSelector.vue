@@ -7,7 +7,7 @@
       <Popover>
         <PopoverTrigger>
           <div class="hover:underline">
-            <div class="text-sm font-bold oldstyle-nums">{{ myDate(initDate) }}</div>
+            <div class="text-sm font-bold oldstyle-nums">{{ format.dottedDate(initDate) }}</div>
           </div>
         </PopoverTrigger>
         <PopoverContent class="w-auto p-0">
@@ -29,7 +29,7 @@
     <Popover>
       <PopoverTrigger>
         <div class="hover:underline">
-          <div class="text-sm oldstyle-nums font-bold">{{ myDate(endDate) }}</div>
+          <div class="text-sm oldstyle-nums font-bold">{{ format.dottedDate(endDate) }}</div>
         </div>
       </PopoverTrigger>
       <PopoverContent class="w-auto p-0">
@@ -60,11 +60,6 @@ const initDate = ref(jsDateToCalendarDate(filtersStore.timespan[0]))
 const endDate = ref(jsDateToCalendarDate(filtersStore.timespan[1]))
 const isProgrammaticChange = ref(false);
 
-const myDate = (d) => {
-   return d.day.toString().padStart(2, '0') + "." + d.month.toString().padStart(2, '0') + "." + d.year
-  // console.log(d.day)
-  // return "25.07.1966"
-}
 
 watch([initDate, endDate], (newValue, oldValue) => {
   if (isProgrammaticChange.value) {

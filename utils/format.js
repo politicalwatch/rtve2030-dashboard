@@ -1,5 +1,6 @@
 import {  formatLocale } from "d3";
 
+
  const locale = formatLocale({
    decimal: ",",
    thousands: ".",
@@ -38,6 +39,12 @@ function msToTime(ms) {
   return `${N(hours)}:${N(minutes)}'`;
 }
 
+function dottedDate(d) {
+  return d.day.toString().padStart(2, '0') + "." + d.month.toString().padStart(2, '0') + "." + d.year
+}
+
+
+
 const format = {
   localES_money,
   localES,
@@ -45,6 +52,7 @@ const format = {
   F,
   N,
   PCT,
-  msToTime
+  msToTime,
+  dottedDate
 };
 export default format;
