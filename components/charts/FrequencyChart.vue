@@ -4,24 +4,16 @@
     <svg :width="availableWidth" :height="availableHeight">
       
       <!--  axis -->
-      <g
-        class="axis yaxis"
-        :transform="`translate(${margin.left - MARGIN_AXIS}, ${margin.top})`"
-      >
-      
-        <g
-          class="tick"
-          v-for="(tick, index) in yScale.nice().ticks(5)"
-          :key="index"
-          :transform="`translate(0, ${yScale(tick)})`"
-        >
-          <line x1="-6" :x2="width" class="ticks" />
-          <text x="-9" dy=".32em" text-anchor="end">
-            {{ format.N(msToHours(tick)) }}h
-          </text>
-        </g>
-      </g>
+      <!-- cutted from here now on the top -->
 
+      <!-- bottom line -->
+       <line
+        x1="0"
+        :x2="availableWidth"
+        :y1="availableHeight  - margin.bottom"
+        :y2="availableHeight - margin.bottom"
+        stroke="#000"
+       />
       <g
         class="axis xaxis"
         :transform="`translate(${margin.left},${margin.top})`"
@@ -33,19 +25,19 @@
           :x1="0"
           :x2="width"
           stroke="black"
-          stroke-width="1"f
+          stroke-width="1"
         ></line>
    
         <g
-          class="tick"
+          class="tick_hor"
           v-for="(tick, index) in xTicks"
           :key="index"
           :transform="`translate(${xScale(tick) + barWidth / 2}, ${
-            height + 10
+            height + 1
           })`"
         >
-          <line x1="0" x2="0" y1="0" y2="6" />
-          <text y="9" dy=".71em" text-anchor="middle">
+          <line x1="0" x2="0" y1="2" y2="8" />
+          <text y="12" dy=".71em" text-anchor="middle" class="font-mono">
             {{
               firstDayToTick(tick, index)
             }}
@@ -119,7 +111,8 @@
           v-if="activeBar"
           font-size="0.8rem"
           font-weight="light"
-          fill="#9cb0bf"
+          fill="#333"
+          class="font-mono"
           :text-anchor="
             xScale(activeBar.index) < 50
               ? 'start'
@@ -147,15 +140,34 @@
             </tspan>
           </tspan>
           <tspan dy="2.4em" :x="xScale(activeBar.index)" :y="margin.top / 2">
-            ODS:
+            Agenda 2030:
             <tspan font-weight="bold">
               {{ format.F(msToHours(activeBar.tagged_duration)) }} horas
             </tspan>
           </tspan>
         </text>
       </g>
+
+
+      <g
+        class="axis yaxis"
+        :transform="`translate(${margin.left - MARGIN_AXIS + MARGIN_AXIS}, ${margin.top})`"
+      >
+      
+        <g
+          class="tick"
+          v-for="(tick, index) in yScale.nice().ticks(5)"
+          :key="index"
+          :transform="`translate(0, ${yScale(tick)})`"
+        >
+          <line x1="-6" :x2="availableWidth" class="ticks" />
+          <text :x="availableWidth" dy="-0.333em" dx="-0.5em" text-anchor="end" class="font-mono">
+            {{ format.N(msToHours(tick)) }}h
+          </text>
+        </g>
+      </g>
     </svg>
-    <div class="text-sm text-gray-500">
+    <div class="text-sm font-mono mt-2 opacity-50">
       Cada barra representa {{ dataset.groupingBy }} días
     </div>
     
@@ -216,7 +228,7 @@ const margin = { top: 30, right: 60, bottom: 40, left: 0 };
 const MARGIN_AXIS = 10;
 
 /* chart size inside the axis*/
-const width = computed(() => props.availableWidth - margin.left - margin.right);
+const width = computed(() => props.availableWidth - margin.left - margin.right );
 const height = computed(
   () => props.availableHeight - margin.top - margin.bottom
 );
@@ -371,13 +383,21 @@ watch(height, (newValue, oldValue) => {
 .axis text {
   font-size: 0.8rem;
   font-weight: light;
-  fill: v-bind("theme.lightGray");
+  /*fill: v-bind("theme.lightGray");*/
+  fill: #333;
 }
 .axis line {
-  stroke: v-bind("theme.lightGray");
+   /*stroke: v-bind("theme.lightGray");*/
+  stroke: rgba(0,0,0,.1)
 }
 .axis line.ticks {
-  stroke-opacity: 0.2;
+  /*stroke-opacity: 0.5;*/
+  
+}
+
+.tick_hor line{
+  stroke: #333;
+ 
 }
 
 .yearSelectors {
