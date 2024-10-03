@@ -8,16 +8,16 @@ const props = defineProps<{
 }>();
 
 const totalTimePercentage = computed(() => {
-  return ((props.total_duration / props.maxTotalDuration) * 100).toFixed(2);
+  return ((props.total_duration / props.maxTotalDuration) * 100)
 });
 
 const taggedTimePercentage = computed(() => {
-  return ((props.tagged_duration / props.maxTotalDuration) * 100).toFixed(2);
+  return Math.min(((props.tagged_duration / props.maxTotalDuration) * 100),totalTimePercentage.value)
 });
 
 const filteredTaggedTimePercentage = computed(() => {
   if (props.queryDuration) {
-    return ((props.queryDuration / props.maxTotalDuration) * 100).toFixed(2);
+    return Math.min((props.queryDuration / props.maxTotalDuration) * 100, taggedTimePercentage.value)
   } else {
     return 0;
   }
