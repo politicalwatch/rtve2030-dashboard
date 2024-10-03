@@ -40,7 +40,7 @@
             v-if="['aenor'].includes(reportType)"
             class="border-t pt-4 border-black"
           >
-            <p class="font-mono text-xs mb-2">año fin comparativa:</p>
+            <p class="font-mono text-xs mb-2">año comparativa:</p>
             <YearCompareSelector />
           </div>
         </div>
