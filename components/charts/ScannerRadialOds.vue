@@ -40,7 +40,9 @@
     </svg>
 
     <div>
-      <!-- {{ msToHours(dataHierarchy.value) }} -->
+      <!-- 
+        suma de la duracion desde las metas: {{ Math.round(msToHours(dataHierarchy.value)) }},--- , suma de todos los SDG.duration:{{  Math.round(msToHours(totalSdgDurationCalculated)) }}
+        -->
     </div>
 
     <Teleport to="body">
@@ -79,7 +81,7 @@
             </div>
             <div class="font-semibold">
               <template v-if="showPercentage">
-                  {{ format.PCT (hoveredItem.data.apiDuration/queryDuration) }}
+                  {{ format.PCT (hoveredItem.data.apiDuration/totalSdgDurationCalculated) }}
               </template>
               <template v-else>
                 {{ format.msToTime(hoveredItem.data.apiDuration) }} horas
@@ -94,7 +96,7 @@
 
 <script setup>
 // d3 functions coming from : https://observablehq.com/@yieldtactics/radial-stacked-bar-chart
-import { hsl, hierarchy, partition, scaleRadial, scaleLinear, arc } from "d3";
+import { hsl, hierarchy, partition, scaleRadial, scaleLinear, arc,sum } from "d3";
 
 const props = defineProps({
   result: {
@@ -265,6 +267,9 @@ function showText(d) {
   return d.x1 - d.x0 > 0.2;
 }
 
+const totalSdgDurationCalculated = computed(() => {
+  return sum(props.result, (d) => d.duration);
+});
 // interactivity
 const hoveredItem = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
