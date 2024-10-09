@@ -179,6 +179,7 @@ const dataHierarchy = computed(() => {
     ods.level1 = ods.code;
     ods.level2 = "";
     ods.apiDuration = sdg.duration;
+    ods.value = sdg.duration;
     if (!ods) return;
     for (let goal of sdg.goals) {
       // add subtopic to ods
@@ -190,6 +191,7 @@ const dataHierarchy = computed(() => {
         subtopic: goal.goal,
         apiDuration: goal.duration,
         duration: goal.duration,
+        value: goal.duration,
       });
     }
   });
@@ -216,7 +218,11 @@ const dataHierarchy = computed(() => {
     color: "white",
   };
 
-  const newroot = hierarchy(odsRoot).sum((d) => d.duration);
+  const newroot = hierarchy(odsRoot)//.sum((d) => d.duration); 
+  newroot.eachAfter((d) => {
+    d.value = d.data.value?? sum(d.children, (d) => d.value);
+  });
+  
   console.log(newroot)
   // we are creating a sunburst chart and we want to add the init and end radius to each element in the hierarchy
   const partitionGen = partition().size([2 * Math.PI, radius.value.level2]);
