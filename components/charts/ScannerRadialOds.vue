@@ -219,12 +219,6 @@ const dataHierarchy = computed(() => {
     });
   });
 
-  odsList.forEach((ods) => {
-    const sumChildren = sum(ods.children, (d) => d.value);
-    ods.sumChildren = sumChildren;
-    ods.percentScale = ods.value / sumChildren;
-  });
-
   // remove ods with no children from odslist
   const newOdsList = odsList.filter((ods) => ods.children.length > 0);
 
@@ -237,14 +231,7 @@ const dataHierarchy = computed(() => {
 
   const newroot = hierarchy(odsRoot); //.sum((d) => d.duration);
   newroot.eachAfter((d) => {
-    if (d.depth === 2) {
-      d.value =
-        d.data.value && d.parent.data.percentScale
-          ? d.data.value * d.parent.data.percentScale
-          : sum(d.children, (d) => d.value);
-    } else {
-      d.value = d.data.value ?? sum(d.children, (d) => d.value);
-    }
+    d.value = d.data.value ?? sum(d.children, (d) => d.value);
   });
 
   // we are creating a sunburst chart and we want to add the init and end radius to each element in the hierarchy
