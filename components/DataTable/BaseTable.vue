@@ -93,7 +93,6 @@ watch(rowSelection, (newValue, oldValue) => {
 watch(
   () => filters[props.filterFlagField],
   (newValue, oldValue) => {
-    console.log(props.filterFlagField);
 
     if (!props.syncWithFilters || props.filterField === undefined) return;
     if (newValue === true) {

@@ -357,7 +357,6 @@ onMounted(() => {
 });
 
 watch(height, (newValue, oldValue) => {
-  console.log("height", newValue, oldValue);
 });
 </script>
 

@@ -247,7 +247,6 @@ const dataHierarchy = computed(() => {
     }
   });
 
-  console.log("newroot", newroot);
   // we are creating a sunburst chart and we want to add the init and end radius to each element in the hierarchy
   const partitionGen = partition().size([2 * Math.PI, radius.value.level2]);
   partitionGen(newroot);
@@ -305,7 +304,6 @@ const hoveredItem = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 
 function onMouseOver(event, d) {
-  console.log(d);
   hoveredItem.value = d;
   tooltipPosition.value = { x: event.pageX, y: event.pageY }; // { x: event.pageX, y: event.pageY };
   emits("update:mouseOverElement", {
