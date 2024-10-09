@@ -81,7 +81,11 @@
             </div>
             <div class="font-semibold">
               <template v-if="showPercentage">
-                  {{ format.PCT (hoveredItem.data.apiDuration/totalSdgDurationCalculated) }}
+                {{
+                  format.PCT(
+                    hoveredItem.data.apiDuration / totalSdgDurationCalculated
+                  )
+                }}
               </template>
               <template v-else>
                 {{ format.msToTime(hoveredItem.data.apiDuration) }} horas
@@ -96,7 +100,15 @@
 
 <script setup>
 // d3 functions coming from : https://observablehq.com/@yieldtactics/radial-stacked-bar-chart
-import { hsl, hierarchy, partition, scaleRadial, scaleLinear, arc,sum } from "d3";
+import {
+  hsl,
+  hierarchy,
+  partition,
+  scaleRadial,
+  scaleLinear,
+  arc,
+  sum,
+} from "d3";
 
 const props = defineProps({
   result: {
@@ -124,12 +136,11 @@ const props = defineProps({
   sdgActive: {
     type: Array,
     default: () => [],
-  }
+  },
 });
 
 const showPercentage = inject("showPercentage");
 const queryDuration = inject("queryDuration");
-
 
 const noSdgSelection = computed(() => props.sdgActive.length === 0);
 
@@ -208,6 +219,12 @@ const dataHierarchy = computed(() => {
     });
   });
 
+  odsList.forEach((ods) => {
+    const sumChildren = sum(ods.children, (d) => d.value);
+    ods.sumChildren = sumChildren;
+    ods.percentScale = ods.value / sumChildren;
+  });
+
   // remove ods with no children from odslist
   const newOdsList = odsList.filter((ods) => ods.children.length > 0);
 
@@ -218,12 +235,19 @@ const dataHierarchy = computed(() => {
     color: "white",
   };
 
-  const newroot = hierarchy(odsRoot)//.sum((d) => d.duration); 
+  const newroot = hierarchy(odsRoot); //.sum((d) => d.duration);
   newroot.eachAfter((d) => {
-    d.value = d.data.value?? sum(d.children, (d) => d.value);
+    if (d.depth === 2) {
+      d.value =
+        d.data.value && d.parent.data.percentScale
+          ? d.data.value * d.parent.data.percentScale
+          : sum(d.children, (d) => d.value);
+    } else {
+      d.value = d.data.value ?? sum(d.children, (d) => d.value);
+    }
   });
-  
-  console.log(newroot)
+
+  console.log("newroot", newroot);
   // we are creating a sunburst chart and we want to add the init and end radius to each element in the hierarchy
   const partitionGen = partition().size([2 * Math.PI, radius.value.level2]);
   partitionGen(newroot);
@@ -281,9 +305,9 @@ const hoveredItem = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 
 function onMouseOver(event, d) {
-  console.log(d)
+  console.log(d);
   hoveredItem.value = d;
-  tooltipPosition.value = {x:event.pageX, y:event.pageY}; // { x: event.pageX, y: event.pageY };
+  tooltipPosition.value = { x: event.pageX, y: event.pageY }; // { x: event.pageX, y: event.pageY };
   emits("update:mouseOverElement", {
     name: d.data.name,
     level: d.depth,
@@ -354,7 +378,6 @@ function getClassesForHovered(d) {
 
 path:hover,
 path.hovered {
-  
   opacity: 0.8;
 }
 
@@ -365,15 +388,12 @@ path.active {
 }
 
 .simple-tooltip {
-   position: absolute;
+  position: absolute;
   z-index: 100;
   transition: all 0.3s ease;
   background: #fff;
   pointer-events: none;
   color: #222;
-
-  
-  
 }
 .simple-tooltip .tooltip-content {
   display: flex;
@@ -407,7 +427,7 @@ path.active {
   width: 32px;
   height: 32px;
   display: flex;
-  color:white;
+  color: white;
   justify-content: center; /* align horizontal */
   align-items: center; /* align vertical */
   line-height: 32px;
