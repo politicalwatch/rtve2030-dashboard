@@ -128,8 +128,13 @@
             <div class="flex justify-between">
               <p class="font-mono text-sm">
                 desde el
-                <span class="font-sans font-bold">{{ format.dottedDate(jsDateToCalendarDate(timespan[0])) }}</span> hasta el
-                <span class="font-sans font-bold">{{format.dottedDate(jsDateToCalendarDate(timespan[1]))}}</span>
+                <span class="font-sans font-bold">{{
+                  format.dottedDate(jsDateToCalendarDate(timespan[0]))
+                }}</span>
+                hasta el
+                <span class="font-sans font-bold">{{
+                  format.dottedDate(jsDateToCalendarDate(timespan[1]))
+                }}</span>
               </p>
               <div
                 class="text-xs flex justify-end items-center gap-2 font-mono"
@@ -142,38 +147,48 @@
         </div>
 
         <div class="pt-4 grid grid-cols-5 gap-8 borderrr-b pb-4">
-
-         
-          <div class="col-span-2 ">
-           <FiltersState  />
+          <div class="col-span-2">
+            <FiltersState />
           </div>
 
-          <div>
-            <chartsNumberCounter
-              v-if="globalCounterData != null && timeSpanCounterData != null"
-              :varValue="msToHours(queryDuration)"
-              :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
-            >
-              horas Agenda 2030
-            </chartsNumberCounter>
-          </div>
-          <div>
-            <chartsNumberCounter
-              v-if="globalCounterData != null && timeSpanCounterData != null"
-              :varValue="filteredProgramsCount"
-              :maxValue="timeSpanCounterData.programs_count"
-            >
-              programas
-            </chartsNumberCounter>
-          </div>
-          <div>
-            <chartsNumberCounter
-              v-if="globalCounterData != null && timeSpanCounterData != null"
-              :varValue="filteredEpisodesCount"
-              :maxValue="timeSpanCounterData.episodes_count"
-            >
-              episodios
-            </chartsNumberCounter>
+          <div class="col-span-3 grid grid-cols-4 gap-4">
+            <div>
+              <chartsNumberCounter
+                v-if="globalCounterData != null && timeSpanCounterData != null"
+                :varValue="msToHours(totalDurationFromTimeline)"
+                :maxValue="msToHours(timeSpanCounterData.total_duration)"
+              >
+                horas analizadas
+              </chartsNumberCounter>
+            </div>
+
+            <div>
+              <chartsNumberCounter
+                v-if="globalCounterData != null && timeSpanCounterData != null"
+                :varValue="msToHours(queryDuration)"
+                :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
+              >
+                horas Agenda 2030
+              </chartsNumberCounter>
+            </div>
+            <div>
+              <chartsNumberCounter
+                v-if="globalCounterData != null && timeSpanCounterData != null"
+                :varValue="filteredProgramsCount"
+                :maxValue="timeSpanCounterData.programs_count"
+              >
+                programas
+              </chartsNumberCounter>
+            </div>
+            <div>
+              <chartsNumberCounter
+                v-if="globalCounterData != null && timeSpanCounterData != null"
+                :varValue="filteredEpisodesCount"
+                :maxValue="timeSpanCounterData.episodes_count"
+              >
+                episodios
+              </chartsNumberCounter>
+            </div>
           </div>
         </div>
       </div>
@@ -197,7 +212,7 @@
           </WrappersSdgWr>
         </div>
 
-        <div class="mt-16 grid grid-cols-5 gap-8 ">
+        <div class="mt-16 grid grid-cols-5 gap-8">
           <div class="col-span-2">
             <WrappersChannelsWr
               v-if="channelsData != null && baseDataStore.channelsData != null"
@@ -466,6 +481,10 @@ const queryDuration = computed(() => {
       evolutionStackedData.value.hoursPeriod,
       (d) => d.tagged_duration
     );
+});
+
+const totalDurationFromTimeline = computed(() => {
+  return sum(evolutionStackedData.value.hoursPeriod, (d) => d.total_duration); //TBD
 });
 
 const filteredProgramsCount = computed(() => {
