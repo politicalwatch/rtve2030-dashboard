@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold mb-6 text-center">RTVE2030 Dashboard</h2>
       <form @submit.prevent="handleSignin">
         <div class="mb-4">
-          <label for="email" class="block text-gray-700">Email</label>
+          <label for="username" class="block text-gray-700"
+            >Nombre de usuario</label
+          >
           <input
             type="text"
             id="username"
@@ -14,7 +16,7 @@
           />
         </div>
         <div class="mb-6">
-          <label for="password" class="block text-gray-700">Password</label>
+          <label for="password" class="block text-gray-700">Contraseña</label>
           <input
             type="password"
             id="password"
