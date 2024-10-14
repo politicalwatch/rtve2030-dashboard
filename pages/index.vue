@@ -157,6 +157,7 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="msToHours(totalDurationFromTimeline)"
                 :maxValue="msToHours(timeSpanCounterData.total_duration)"
+                :showPercentage="showPercentage"
               >
                 horas analizadas
               </chartsNumberCounter>
@@ -167,7 +168,7 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="msToHours(queryDuration)"
                 :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
-              >
+                :showPercentage="showPercentage"              >
                 horas Agenda 2030
               </chartsNumberCounter>
             </div>
@@ -176,7 +177,7 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="filteredProgramsCount"
                 :maxValue="timeSpanCounterData.programs_count"
-              >
+                :showPercentage="showPercentage"              >
                 programas
               </chartsNumberCounter>
             </div>
@@ -185,7 +186,7 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="filteredEpisodesCount"
                 :maxValue="timeSpanCounterData.episodes_count"
-              >
+                :showPercentage="showPercentage"              >
                 episodios
               </chartsNumberCounter>
             </div>
