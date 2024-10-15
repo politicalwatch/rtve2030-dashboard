@@ -64,6 +64,8 @@ export const columns: ColumnDef<TableSdg>[] = [
           maxTotalDuration: row.original.maxBaseDuration,
           name: row.original.sdg,
           showQueryDuration: row.original.hasActiveFilters,
+          totalSdgDurationCalculatedBase: row.original.totalSdgDurationCalculatedBase,
+          totalSdgDurationCalculatedQuery: row.original.totalSdgDurationCalculatedQuery
         });
       } else return h("div", { });
     },

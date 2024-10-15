@@ -1,62 +1,63 @@
 <template>
   <div>
     <div class="grid grid-cols-5 gap-8">
-      <div class="col-span-2 ">
-
-        <div class="grid grid-cols-[32px_1fr] gap-4 ">
-          <img src="/img/ods_icon.svg" alt="ods" class="h-auto w-full" :class="filtersStore.sdgActive.length ? 'opacity-100': 'opacity-20'">
+      <div class="col-span-2">
+        <div class="grid grid-cols-[32px_1fr] gap-4">
+          <img
+            src="/img/ods_icon.svg"
+            alt="ods"
+            class="h-auto w-full"
+            :class="
+              filtersStore.sdgActive.length ? 'opacity-100' : 'opacity-20'
+            "
+          />
 
           <div class="border-t border-black pt-2">
             <div class="flex justify-between">
               <h2 class="chart-titles-big">Objetivos</h2>
               <TooltipProvider>
-               <Tooltip>
+                <Tooltip>
                   <TooltipTrigger>
-                      <Icon
-                        name="ooui:info"
-                        class="hover:shadow-lg  cursor-pointer w-6 h-6"
-                      >
-                      </Icon>
-                    
+                    <Icon
+                      name="ooui:info"
+                      class="hover:shadow-lg cursor-pointer w-6 h-6"
+                    >
+                    </Icon>
                   </TooltipTrigger>
                   <TooltipContent
                     class="max-w-96 bg-white text-sm shadow-md ring-1 ring-darkCream"
                   >
                     <slot name="description">
-                      <ContentQuery path="help/sdg" find="one" v-slot="{ data }">
+                      <ContentQuery
+                        path="help/sdg"
+                        find="one"
+                        v-slot="{ data }"
+                      >
                         <ContentRenderer :value="data" class="prose prose-sm" />
                       </ContentQuery>
                     </slot>
                   </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-
+                </Tooltip>
+              </TooltipProvider>
             </div>
-           
-            
-        <div class="flex justify-start gap-2 text-2xs mt-2">
-          <button
-            v-for="(longname, code, i) in SdgTopic"
-            class="border-b-4 w-5 text-center hover:border-b-2 font-bold"
-            :style="{
-              'border-color':
-                noSdgSelection || sdgActive.includes(longname)
-                  ? `${STYLES.topics[longname]?.color}`
-                  : '',
-            }"
-            @click="sdgClickHandler(longname)"
-          >
-            {{ i + 1 }}
-          </button>
-        </div>
+
+            <div class="flex justify-start gap-2 text-2xs mt-3">
+              <button
+                v-for="(longname, code, i) in SdgTopic"
+                class="border-b-4 w-5 text-center hover:border-b-2 font-bold"
+                :style="{
+                  'border-color':
+                    noSdgSelection || sdgActive.includes(longname)
+                      ? `${STYLES.topics[longname]?.color}`
+                      : '',
+                }"
+                @click="sdgClickHandler(longname)"
+              >
+                {{ i + 1 }}
+              </button>
+            </div>
           </div>
-         
         </div>
-
-        
-
-        
 
         <ChartsScannerRadialOds
           v-if="sdgData != null"
@@ -74,14 +75,20 @@
       </div>
 
       <div class="col-span-3">
-        <div class="grid grid-cols-[32px_1fr] gap-4 ">
-          <img src="/img/metas.svg" alt="metas" class="h-auto w-full" :class="filtersStore.sdgActive.length ? 'opacity-100': 'opacity-20'">
+        <div class="grid grid-cols-[32px_1fr] gap-4">
+          <img
+            src="/img/metas.svg"
+            alt="metas"
+            class="h-auto w-full"
+            :class="
+              filtersStore.sdgActive.length ? 'opacity-100' : 'opacity-20'
+            "
+          />
           <div class="border-t border-black pt-2">
-            <h2 class="chart-titles-big ">Metas</h2>
-            </div>
+            <h2 class="chart-titles-big">Metas</h2>
+          </div>
         </div>
 
-        
         <DataTableBaseTable
           :columns="columns"
           :data="dataForTables"
@@ -100,7 +107,7 @@
 <script setup lang="ts">
 import { sum, max } from "d3";
 const filtersStore = useFiltersStore();
-const { sdgActive  } = storeToRefs(filtersStore);
+const { sdgActive } = storeToRefs(filtersStore);
 const noSdgSelection = computed(() => sdgActive.value.length === 0);
 import { columns } from "../DataTable/sdgColumns";
 import { goalColumns } from "../DataTable/goalColumns";
@@ -110,7 +117,6 @@ interface Props {
   baseData: Array<StatsSdg>;
   baseTaggedDuration: number;
   hasActiveFilters: boolean;
-  
 }
 
 function sdgClickHandler(sdgId: SdgTopic) {
@@ -129,7 +135,13 @@ const props = withDefaults(defineProps<Props>(), {});
 const maxTotalDuration = computed(() => {
   return Math.max(...props.baseData.map((sdg) => sdg.duration));
 });
+const totalSdgDurationCalculatedBase = computed(() => {
+  return sum(props.baseData, (d) => d.duration);
+});
 
+const totalSdgDurationCalculatedQuery = computed(() => {
+  return sum(props.sdgData, (d) => d.duration);
+});
 
 const dataForTables = computed<TableSdg[]>(() => {
   return props.sdgData.map((sdg) => {
@@ -142,6 +154,8 @@ const dataForTables = computed<TableSdg[]>(() => {
       queryGoals: sdg.goals,
       baseGoals: props.baseData.find((d) => d.sdg === sdg.sdg)?.goals,
       hasActiveFilters: props.hasActiveFilters,
+      totalSdgDurationCalculatedBase: totalSdgDurationCalculatedBase.value,
+      totalSdgDurationCalculatedQuery: totalSdgDurationCalculatedQuery.value,
     };
   });
 });
@@ -184,6 +198,8 @@ const dataForTableGoals = computed<TableGoals[]>(() => {
       maxGoalDuration: maxfilteredBaseGoals,
       parentSdg: findParentFromGoal(goal.goal)?.sdg,
       hasActiveFilters: props.hasActiveFilters,
+      totalSdgDurationCalculatedBase: totalSdgDurationCalculatedBase.value,
+      totalSdgDurationCalculatedQuery: totalSdgDurationCalculatedQuery.value,
     };
   });
 

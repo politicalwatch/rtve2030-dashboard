@@ -3,7 +3,10 @@ interface MiniBarSdgProps {
   base_duration: number;
   query_duration: number;
   maxTotalDuration: number;
-  isSubTopic?: boolean;
+  totalSdgDurationCalculatedQuery: number; // aggregated duration of all sdgs
+  totalSdgDurationCalculatedBase: number;
+  isSubTopic?: boolean; // true when the component is used in a nested subtopic
+  isGoal?: boolean; // true when the component is a goal. false when it is a SDG
   name: string;
   showQueryDuration?: boolean;
   parentDuration?: number;
@@ -12,6 +15,7 @@ interface MiniBarSdgProps {
 const props = withDefaults(defineProps<MiniBarSdgProps>(), {
   query_duration: undefined,
   isSubTopic: false,
+  isGoal: false,
 });
 
 const INshowPercentage = inject("showPercentage") as Ref<boolean>;
@@ -64,6 +68,8 @@ const textQueryColorClass = computed(() => {
     :class="!isSubTopic ? '-mt-1 -mb-1 h-8' : 'mb-0.5 h-5 '"
   >
     <TooltipProvider :delayDuration="0">
+      <!-- main bar-->
+
       <Tooltip>
         <TooltipTrigger as-child>
           <div
@@ -75,7 +81,7 @@ const textQueryColorClass = computed(() => {
           ></div>
           <div
             v-if="showQueryDuration === false"
-            class="absolute text-left text-xs font-normal z-20"
+            class="absolute text-left text-xs font-normal z-20 pointer-events-none"
             :class="textColorClass"
             :style="{
               left: textPosition + '%',
@@ -83,28 +89,46 @@ const textQueryColorClass = computed(() => {
             }"
           >
             <template v-if="INshowPercentage">
-              {{ format.PCT(base_duration / INqueryDuration) }}
+              {{ format.PCT(base_duration / totalSdgDurationCalculatedBase) }}
             </template>
             <template v-else> {{ format.msToTime(base_duration) }}</template>
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <div>
+          <div v-if="isSubTopic">
             <div class="font-bold">
-              {{ isSubTopic?`Meta ${name}`:`ODS  ${getSdgNumberFromName(name)}` }}
+              {{ `Meta ${name}` }}
             </div>
             <div class="ml-2">{{ format.msToTime(base_duration) }} horas</div>
             <div class="ml-2">
-              {{ format.PCT(base_duration / INqueryDuration) }} del todo el
-              tiempo etiquetado
+              {{
+                format.PCT(base_duration / totalSdgDurationCalculatedBase)
+              }}
+              del todo el tiempo etiquetado
             </div>
-            <div class="ml-2" v-if="props.parentDuration && isSubTopic">
+            <div class="ml-2" v-if="props.parentDuration">
               {{ format.PCT(base_duration / props.parentDuration) }} del ODS
+            </div>
+          </div>
+          <div v-else>
+            <div class="font-bold">
+              <template v-if="!isGoal">
+                {{ `ODS  ${getSdgNumberFromName(name)}` }}</template
+              >
+              <template v-else> {{ `Meta ${name}` }}</template>
+            </div>
+            <div class="ml-2">{{ format.msToTime(base_duration) }} horas</div>
+            <div class="ml-2">
+              {{
+                format.PCT(base_duration / totalSdgDurationCalculatedBase)
+              }}
+              del todo el tiempo etiquetado
             </div>
           </div>
         </TooltipContent>
       </Tooltip>
 
+      <!-- query bar-->
       <Tooltip v-if="showQueryDuration && query_duration">
         <TooltipTrigger as-child>
           <div
@@ -114,7 +138,7 @@ const textQueryColorClass = computed(() => {
           ></div>
           <div
             v-if="showQueryDuration === true"
-            class="absolute text-left text-xs font-normal z-20"
+            class="absolute text-left text-xs font-normal z-20 pointer-events-none"
             :class="textQueryColorClass"
             :style="{
               left: textPositionQuery + '%',
@@ -122,18 +146,27 @@ const textQueryColorClass = computed(() => {
             }"
           >
             <template v-if="INshowPercentage">
-              {{ format.PCT(base_duration / INqueryDuration) }}
+              {{ format.PCT(query_duration / totalSdgDurationCalculatedQuery) }}
             </template>
             <template v-else> {{ format.msToTime(query_duration) }}</template>
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <div>
-            <div class="font-bold">Según filtros</div>
+          <div v-if="isSubTopic">
+            <div class="font-bold">Según filtros:</div>
             <div class="ml-2">{{ format.msToTime(query_duration) }} horas</div>
             <div class="ml-2">
-              {{ format.PCT(query_duration / base_duration) }} del total
+              {{ format.PCT(query_duration / base_duration) }} de la meta sin filtrar
             </div>
+            <div class="ml-2">
+              {{
+                format.PCT(query_duration / totalSdgDurationCalculatedQuery)
+              }}
+              de todos los ODS
+            </div>
+          </div>
+          <div v-else>
+
           </div>
         </TooltipContent>
       </Tooltip>

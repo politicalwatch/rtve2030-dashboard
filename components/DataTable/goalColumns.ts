@@ -47,6 +47,9 @@ export const goalColumns: ColumnDef<TableGoals>[] = [
         maxTotalDuration: row.original.maxGoalDuration,
         name: row.original.goal,
         showQueryDuration: row.original.hasActiveFilters,
+        totalSdgDurationCalculatedBase: row.original.totalSdgDurationCalculatedBase,
+        totalSdgDurationCalculatedQuery: row.original.totalSdgDurationCalculatedQuery,
+        isGoal: true,
       });
     },
   },

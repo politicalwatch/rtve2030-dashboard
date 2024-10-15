@@ -41,6 +41,8 @@ export interface TableSdg {
   queryGoals: StatsGoal[];
   baseGoals: StatsGoal[];
   hasActiveFilters: boolean;
+  totalSdgDurationCalculatedBase: number;
+  totalSdgDurationCalculatedQuery: number;
 }
 
 
@@ -51,4 +53,6 @@ export interface TableGoals {
   query_duration: number;
   maxGoalDuration: number;
   hasActiveFilters: boolean;
+  totalSdgDurationCalculatedBase: number;
+  totalSdgDurationCalculatedQuery: number;
 }

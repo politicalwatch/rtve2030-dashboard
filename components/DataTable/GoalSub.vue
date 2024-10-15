@@ -20,7 +20,8 @@
             :name="baseGoal.goal"
             :showQueryDuration="hasActiveFilters"
             :parentDuration="parentSdgDuration"
-            
+            :totalSdgDurationCalculatedBase="totalSdgDurationCalculatedBase"
+            :totalSdgDurationCalculatedQuery="totalSdgDurationCalculatedQuery"            
           />
         </div>
       </div>
@@ -40,6 +41,8 @@ interface Props {
   maxTotalDuration: number;
   hasActiveFilters: boolean;
   parentSdgDuration: number;
+  totalSdgDurationCalculatedBase: number;
+  totalSdgDurationCalculatedQuery: number;
 }
 
 const maxSdgDuration = computed(() => {

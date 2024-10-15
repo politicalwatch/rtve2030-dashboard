@@ -63,7 +63,7 @@ const props = withDefaults(defineProps<Props<TData, TValue>>(), {
   filterFlagField: "channelRemovedFlag",
 });
 
-const sorting = ref<SortingState>([{ "id": "mainSorting", "desc": false } ]);
+const sorting = ref<SortingState>([{ id: "mainSorting", desc: false }]);
 const expanded = ref<ExpandedState>({});
 const selectedRows = ref([]);
 
@@ -93,7 +93,6 @@ watch(rowSelection, (newValue, oldValue) => {
 watch(
   () => filters[props.filterFlagField],
   (newValue, oldValue) => {
-
     if (!props.syncWithFilters || props.filterField === undefined) return;
     if (newValue === true) {
       table.resetRowSelection();
@@ -146,7 +145,7 @@ const table = useVueTable({
   initialState: {
     pagination: {
       pageSize: 17,
-    }
+    },
   },
   // getSubRows: (row) => row.getExpandedRowModel().rows,
   state: {
@@ -196,7 +195,6 @@ function getVisiblePages() {
 
 <template>
   <div class="">
-    
     <!-- {{  rowSelection}} -->
     <template
       v-if="
@@ -295,6 +293,12 @@ function getVisiblePages() {
                   :hasActiveFilters="row.original.hasActiveFilters"
                   :maxTotalDuration="row.original.maxBaseDuration"
                   :parentSdgDuration="row.original.base_duration"
+                  :totalSdgDurationCalculatedBase="
+                    row.original.totalSdgDurationCalculatedBase
+                  "
+                  :totalSdgDurationCalculatedQuery="
+                    row.original.totalSdgDurationCalculatedQuery
+                  "
                 >
                 </GoalSub>
               </TableCell>
