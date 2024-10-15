@@ -101,9 +101,7 @@ const textQueryColorClass = computed(() => {
             </div>
             <div class="ml-2">{{ format.msToTime(base_duration) }} horas</div>
             <div class="ml-2">
-              {{
-                format.PCT(base_duration / totalSdgDurationCalculatedBase)
-              }}
+              {{ format.PCT(base_duration / totalSdgDurationCalculatedBase) }}
               del todo el tiempo etiquetado
             </div>
             <div class="ml-2" v-if="props.parentDuration">
@@ -119,9 +117,7 @@ const textQueryColorClass = computed(() => {
             </div>
             <div class="ml-2">{{ format.msToTime(base_duration) }} horas</div>
             <div class="ml-2">
-              {{
-                format.PCT(base_duration / totalSdgDurationCalculatedBase)
-              }}
+              {{ format.PCT(base_duration / totalSdgDurationCalculatedBase) }}
               del todo el tiempo etiquetado
             </div>
           </div>
@@ -156,17 +152,29 @@ const textQueryColorClass = computed(() => {
             <div class="font-bold">Según filtros:</div>
             <div class="ml-2">{{ format.msToTime(query_duration) }} horas</div>
             <div class="ml-2">
-              {{ format.PCT(query_duration / base_duration) }} de la meta sin filtrar
+              {{ format.PCT(query_duration / base_duration) }} de la meta sin
+              filtrar
             </div>
             <div class="ml-2">
-              {{
-                format.PCT(query_duration / totalSdgDurationCalculatedQuery)
-              }}
+              {{ format.PCT(query_duration / totalSdgDurationCalculatedQuery) }}
               de todos los ODS
             </div>
           </div>
           <div v-else>
-
+              <div class="font-bold">Según filtros:</div>
+              <div class="ml-2">
+                {{ format.msToTime(query_duration) }} horas
+              </div>
+              <div class="ml-2">
+                {{ format.PCT(query_duration / base_duration) }} del total del
+                ODS
+              </div>
+              <div class="ml-2">
+                {{
+                  format.PCT(query_duration / totalSdgDurationCalculatedQuery)
+                }}
+                de todos los ODS
+            </div>
           </div>
         </TooltipContent>
       </Tooltip>
