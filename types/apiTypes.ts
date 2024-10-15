@@ -149,6 +149,7 @@ export interface HoursPeriodStacked {
   total_duration: number;
   tagged_duration: number;
   query_duration: number;
+  query_total_duration: number;
 }
 export interface StatsEvolutionStacked {
   init: string;

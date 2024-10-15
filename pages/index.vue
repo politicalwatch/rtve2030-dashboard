@@ -146,18 +146,17 @@
           </div>
         </div>
 
-        <div class="pt-4 grid grid-cols-5 gap-8 borderrr-b pb-4">
-          <div class="col-span-2">
+        <div class="pt-4 grid grid-cols-10 gap-8 borderrr-b pb-4">
+          <div class="col-span-3">
             <FiltersState />
           </div>
 
-          <div class="col-span-3 grid grid-cols-4 gap-4">
+          <div class="col-span-7 grid grid-cols-5 gap-4">
             <div>
               <chartsNumberCounter
                 v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="msToHours(totalDurationFromTimeline)"
+                :varValue="msToHours(queryTotalDurationFromTimeline)"
                 :maxValue="msToHours(timeSpanCounterData.total_duration)"
-                :showPercentage="showPercentage"
               >
                 horas analizadas
               </chartsNumberCounter>
@@ -168,16 +167,24 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="msToHours(queryDuration)"
                 :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
-                :showPercentage="showPercentage"              >
+              >
                 horas Agenda 2030
               </chartsNumberCounter>
             </div>
+            <chartsNumberCounter
+              v-if="globalCounterData != null && timeSpanCounterData != null"
+              :varValue="queryDuration / queryTotalDurationFromTimeline"
+              :maxValue="1"
+              :formatter="format.PCT"
+            >
+              % agenda 2030 / analizadas
+            </chartsNumberCounter>
             <div>
               <chartsNumberCounter
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="filteredProgramsCount"
                 :maxValue="timeSpanCounterData.programs_count"
-                :showPercentage="showPercentage"              >
+              >
                 programas
               </chartsNumberCounter>
             </div>
@@ -186,7 +193,7 @@
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="filteredEpisodesCount"
                 :maxValue="timeSpanCounterData.episodes_count"
-                :showPercentage="showPercentage"              >
+              >
                 episodios
               </chartsNumberCounter>
             </div>
@@ -484,8 +491,15 @@ const queryDuration = computed(() => {
     );
 });
 
-const totalDurationFromTimeline = computed(() => {
-  return sum(evolutionStackedData.value.hoursPeriod, (d) => d.total_duration); //TBD
+const queryTotalDurationFromTimeline = computed(() => {
+  if (evolutionStackedData.value?.hoursPeriod == null) return 0;
+  if (filters.hasActiveFilters)
+    return sum(
+      evolutionStackedData.value.hoursPeriod,
+      (d) => d.query_total_duration
+    );
+  else
+    return sum(evolutionStackedData.value.hoursPeriod, (d) => d.total_duration);
 });
 
 const filteredProgramsCount = computed(() => {
