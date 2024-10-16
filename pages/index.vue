@@ -139,47 +139,55 @@
               <div
                 class="text-xs flex justify-end items-center gap-2 font-mono"
               >
-                <Switch v-model:checked="showPercentage" />
                 <p>mostrar porcentajes</p>
+                <Switch v-model:checked="showPercentage" />
+                
               </div>
             </div>
           </div>
+
+          <div class="col-span-3">
+            <FiltersInline></FiltersInline>
+          </div>
         </div>
 
-        <div class="pt-4 grid grid-cols-10 gap-8 borderrr-b pb-4">
-          <div class="col-span-3">
-            <FiltersState />
+        <!-- second row -->
+        <div class="py-4 grid grid-cols-5 gap-8">
+          <div>
+            <chartsNumberCounter
+              v-if="globalCounterData != null && timeSpanCounterData != null"
+              :varValue="msToHours(queryTotalDurationFromTimeline)"
+              :maxValue="msToHours(timeSpanCounterData.total_duration)"
+            >
+              horas analizadas
+            </chartsNumberCounter>
           </div>
 
-          <div class="col-span-7 grid grid-cols-5 gap-4">
-            <div>
-              <chartsNumberCounter
-                v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="msToHours(queryTotalDurationFromTimeline)"
-                :maxValue="msToHours(timeSpanCounterData.total_duration)"
-              >
-                horas analizadas
-              </chartsNumberCounter>
-            </div>
-
-            <div>
-              <chartsNumberCounter
-                v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="msToHours(queryDuration)"
-                :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
-              >
-                horas Agenda 2030
-              </chartsNumberCounter>
-            </div>
+          <!-- horas OR % agenda 2030 -->
+          <div v-if=" showPercentage">
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
               :varValue="queryDuration / queryTotalDurationFromTimeline"
               :maxValue="1"
               :formatter="format.PCT"
             >
-              % agenda 2030 / analizadas
+              % Agenda 2030
             </chartsNumberCounter>
-            <div>
+
+
+          </div>
+
+          <div v-else>
+            <chartsNumberCounter
+                v-if="globalCounterData != null && timeSpanCounterData != null"
+                :varValue="msToHours(queryDuration)"
+                :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
+              >
+                horas Agenda 2030
+              </chartsNumberCounter>
+          </div>
+
+          <div>
               <chartsNumberCounter
                 v-if="globalCounterData != null && timeSpanCounterData != null"
                 :varValue="filteredProgramsCount"
@@ -197,8 +205,15 @@
                 episodios
               </chartsNumberCounter>
             </div>
-          </div>
+
+            <div>
+              <FiltersArea></FiltersArea>
+            </div>
+
         </div>
+        <!-- end second row -->
+
+  
       </div>
 
       <!---- evolution in detail-->
