@@ -107,12 +107,13 @@
             :evoData="evolutionStackedData"
             :hasActiveFilters="filters.hasActiveFilters"
           />
+         
         </div>
       </div>
     </section>
     <!--- end of global stats  -->
 
-    <section class="mt-12">
+    <section class="mt-6">
       <!--
       <div class="container mb-1">
         <h1 class="text-sm uppercase font-bold font-mono">

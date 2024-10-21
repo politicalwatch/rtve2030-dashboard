@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-80" ref="chartWrapper">
-    <ChartsFrequencyChart
+    <ChartsFrequencyChartAlt
       v-if="evoDataGrouped != null && availableHeight > 0"
       :dataset="evoDataGrouped"
       :hasActiveFilters="hasActiveFilters"
@@ -8,6 +8,13 @@
       :availableWidth="availableWidth"
       :availableHeight="availableHeight"
     />
+  </div>
+  <div class="w-full">
+    <TimeSpanViewer
+      v-if="evoDataGrouped != null"
+      :availableWidth="availableWidth"
+      :dataset="evoDataGrouped"
+    ></TimeSpanViewer>
   </div>
 </template>
 
