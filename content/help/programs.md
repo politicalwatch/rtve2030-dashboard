@@ -2,4 +2,4 @@
 title: 'programas'
 description: 'programas'
 ---
-Texto de ayuda sobre los datos de los programas: qué se muestra y de donde viene el dato
+Tiempo analizado por programa y dedicado a la Agenda 2030 o a cada uno de los ODS selecionados.

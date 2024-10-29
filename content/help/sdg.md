@@ -2,4 +2,4 @@
 title: 'sdg'
 description: 'sdg'
 ---
-Texto de ayuda sobre los datos que se muestran y de donde vienen
+Tiempo dedicado a cada uno de los ODS y Metas de la Agenda 2030

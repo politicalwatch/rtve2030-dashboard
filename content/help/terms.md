@@ -2,4 +2,4 @@
 title: 'terms'
 description: 'terms'
 ---
-Texto de ayuda sobre los datos de los términos: qué se muestra y de donde viene el dato
+Análisis del tiempo dedicado a cada uno de los términos a analizar por cada uno de los ODS.
