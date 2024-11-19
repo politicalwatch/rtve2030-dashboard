@@ -2,6 +2,7 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
       <h2 class="text-2xl font-bold mb-6 text-center">RTVE2030 Dashboard</h2>
+      <p v-if="error" class="text-red-500 text-center mb-4">{{ error }}</p>
       <form @submit.prevent="handleSignin">
         <div class="mb-4">
           <label for="username" class="block text-gray-700"
@@ -40,6 +41,7 @@
 import { ref } from "vue";
 
 const authStore = useAuthStore();
+const error = ref("");
 
 const username = ref("");
 const password = ref("");
@@ -47,8 +49,12 @@ const password = ref("");
 const handleSignin = async () => {
   await authStore.login(username.value, password.value);
   if (authStore.error) {
-    // handle error
     console.log(authStore.error);
+    if (authStore.error.includes("401 Unauthorized")) {
+      error.value = "Usuario o contraseña incorrectos.";
+    } else {
+      error.value = authStore.error;
+    }
   } else {
     return navigateTo("/");
   }
