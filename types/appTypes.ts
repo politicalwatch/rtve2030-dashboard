@@ -1,6 +1,7 @@
 export enum MediaType {
   TV = "tv",
   RADIO = "radio",
+  ALL = "all",
 }
 export interface TableChannels {
   name: Channels;

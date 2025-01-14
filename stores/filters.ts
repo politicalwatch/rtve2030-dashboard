@@ -9,7 +9,18 @@ export const useFiltersStore = defineStore("filters", () => {
   }
 
 
-  const radioOrTV = ref<MediaType>(MediaType.TV);
+  const radioOrTV = ref<MediaType>(MediaType.ALL);
+
+  function updateRadioOrTV(newRadioOrTV: MediaType) {
+    resetFilters();
+    if (newRadioOrTV === MediaType.ALL) {
+      radioOrTV.value = newRadioOrTV;
+    } else if (radioOrTV.value === newRadioOrTV) {
+      radioOrTV.value = MediaType.ALL;
+    } else {
+      radioOrTV.value = newRadioOrTV;
+    }
+  }
 
   const sdgActive = ref<SdgTopic[]>([]);
   const channels = ref<Channels[]>([]);
@@ -65,6 +76,7 @@ export const useFiltersStore = defineStore("filters", () => {
     removeChannelFilter,
     removeProgramFilter,
     resetFilters,
+    updateRadioOrTV,
     programRemovedFlag,
     channelRemovedFlag,
     reportType,

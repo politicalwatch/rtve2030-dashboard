@@ -20,88 +20,85 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
 
   async getStatsCounter(
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    programType?: 'r' | 't'
   ): Promise<StatsCounter> {
-    if (!startDate || !endDate) {
-      return fetch<StatsCounter>("/stats/counters");
-    }
-    return fetch<StatsCounter>("/stats/counters", {
-      query: {
-        start_date: startDate,
-        end_date: endDate,
-      },
-    });
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(programType && { program_type: programType }),
+    };
+    return fetch<StatsCounter>("/stats/counters", { query });
   },
 
   async getOdsAndGoals(
     startDate?: string,
     endDate?: string,
     channel?: Channels[],
-    program?: string[]
+    program?: string[],
+    programType?: 'r' | 't'
   ): Promise<StatsSdg[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(channel && { channel }),
       ...(program && { program }),
+      ...(programType && { program_type: programType }),
     };
-    return fetch<StatsSdg[]>("/stats/sdg", {
-      query,
-    });
+    return fetch<StatsSdg[]>("/stats/sdg", { query });
   },
 
   async getEvolution(
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    programType?: 'r' | 't'
   ): Promise<StatsEvolution> {
-    if (!startDate || !endDate) {
-      return fetch<StatsEvolution>("/stats/evolution");
-    }
-    return fetch<StatsEvolution>("/stats/evolution", {
-      query: {
-        start_date: startDate,
-        end_date: endDate,
-      },
-    });
+    const query = {
+      ...(startDate && { start_date: startDate }),
+      ...(endDate && { end_date: endDate }),
+      ...(programType && { program_type: programType }),
+    };
+    return fetch<StatsEvolution>("/stats/evolution", { query });
   },
 
   async getPrograms(
     startDate?: string,
     endDate?: string,
     channel?: Channels[],
-    topic?: SdgTopic[]
+    topic?: SdgTopic[],
+    programType?: 'r' | 't'
   ): Promise<StatsPrograms[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(channel && { channel }),
       ...(topic && { topic }),
+      ...(programType && { program_type: programType }),
     };
-    return fetch<StatsPrograms[]>("/stats/programs", {
-      query,
-    });
+    return fetch<StatsPrograms[]>("/stats/programs", { query });
   },
 
   async getChannels(
     startDate?: string,
     endDate?: string,
-    topic?: SdgTopic[]
+    topic?: SdgTopic[],
+    programType?: 'r' | 't'
   ): Promise<StatsChannel[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(topic && { topic }),
+      ...(programType && { program_type: programType }),
     };
-    return fetch<StatsChannel[]>("/stats/channels", {
-      query,
-    });
+    return fetch<StatsChannel[]>("/stats/channels", { query });
   },
   async getTags(
     startDate?: string,
     endDate?: string,
     topic?: SdgTopic[],
     channel?: Channels[],
-    program?: string[]
+    program?: string[],
+    programType?: 'r' | 't'
   ): Promise<StatsTags[]> {
     const query = {
       ...(startDate && { start_date: startDate }),
@@ -109,28 +106,29 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       ...(topic && { topic }),
       ...(channel && { channel }),
       ...(program && { program }),
+      ...(programType && { program_type: programType }),
     };
-    return fetch<StatsTags[]>("/stats/tags", {
-      query,
-    });
+    return fetch<StatsTags[]>("/stats/tags", { query });
   },
   async getEvolutionStacked(
     startDate?: string,
     endDate?: string,
     topic?: SdgTopic[],
     channel?: Channels[],
-    program?: string[]
+    program?: string[],
+    programType?: 'r' | 't'
   ): Promise<StatsEvolutionStacked> {
+    console.log('calling api 2');
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
       ...(topic && { topic }),
       ...(channel && { channel }),
       ...(program && { program }),
+      ...(programType && { program_type: programType }),
     };
-    return fetch<StatsEvolutionStacked>("/stats/evolution-stacked", {
-      query,
-    });
+    console.log(query);
+    return fetch<StatsEvolutionStacked>("/stats/evolution-stacked", { query });
   },
   async getReportData(startDate?: string, endDate?: string): Promise<any> {
     const query = {

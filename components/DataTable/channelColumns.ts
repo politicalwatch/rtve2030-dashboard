@@ -26,7 +26,7 @@ export const columns: ColumnDef<TableChannels>[] = [
   {
     accessorKey: "name",
 
-    header: () => h("div", { class: "text-left text-xs" }, "Canal"),
+    header: () => h("div", { class: "text-left text-xs " }, "Canal"),
     cell: ({ row }) => {
       return h(ChannelIconName, {
         canal: row.getValue("name") as Channels,

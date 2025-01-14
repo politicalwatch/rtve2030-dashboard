@@ -3,45 +3,48 @@
     <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
-        <div class="flex gap-4">
+        <div class="flex">
           <button
             type="button"
             aria-label="Cambio a modo TV"
-            class="cursor-pointer transition-all duration-200"
+            class="cursor-pointer transition-all duration-200 border border-black rounded-l-lg px-6 py-2 h-8"
             :class="{
-              'opacity-20 h-5': filters.radioOrTV === MediaType.RADIO,
-              'h-8': filters.radioOrTV === MediaType.TV
+              'opacity-20': filters.radioOrTV === MediaType.RADIO,
+              'bg-gray-100':
+                filters.radioOrTV === MediaType.TV ||
+                filters.radioOrTV === MediaType.ALL,
             }"
-            @click="filters.radioOrTV = MediaType.TV"
+            @click="
+              filters.updateRadioOrTV(MediaType.TV);
+              
+            "
           >
-            <img 
-              src="/img/tve.svg" 
+            <img
+              src="/img/tve.svg"
               alt="TVE logo"
-              class="transition-all duration-200"
-              :class="{
-                'h-5': filters.radioOrTV === MediaType.RADIO,
-                'h-8': filters.radioOrTV === MediaType.TV
-              }"
+              class="transition-all duration-200 h-4"
+              :class="{}"
             />
           </button>
           <button
-            type="button" 
+            type="button"
             aria-label="Cambio a modo Radio"
-            class="cursor-pointer transition-all duration-200"
+            class="cursor-pointer transition-all duration-200 border border-black rounded-r-lg px-4 py-2 h-8"
             :class="{
-              'opacity-20 h-5': filters.radioOrTV === MediaType.TV,
-              'h-8': filters.radioOrTV === MediaType.RADIO
+              'opacity-20': filters.radioOrTV === MediaType.TV,
+              'bg-gray-100':
+                filters.radioOrTV === MediaType.RADIO ||
+                filters.radioOrTV === MediaType.ALL,
             }"
-            @click="filters.radioOrTV = MediaType.RADIO"
+            @click="
+              filters.updateRadioOrTV(MediaType.RADIO);        
+            "
           >
             <img
               src="/img/rne.svg"
               alt="RNE logo"
-              class="transition-all duration-200"
-              :class="{
-                'h-5': filters.radioOrTV === MediaType.TV,
-                'h-8': filters.radioOrTV === MediaType.RADIO
-              }"
+              class="transition-all duration-200 h-4"
+              :class="{}"
             />
           </button>
         </div>
@@ -145,7 +148,6 @@
             :evoData="evolutionStackedData"
             :hasActiveFilters="filters.hasActiveFilters"
           />
-         
         </div>
       </div>
     </section>
@@ -180,7 +182,6 @@
               >
                 <p>mostrar porcentajes</p>
                 <Switch v-model:checked="showPercentage" />
-                
               </div>
             </div>
           </div>
@@ -203,7 +204,7 @@
           </div>
 
           <!-- horas OR % agenda 2030 -->
-          <div v-if=" showPercentage">
+          <div v-if="showPercentage">
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
               :varValue="queryDuration / queryTotalDurationFromTimeline"
@@ -212,47 +213,42 @@
             >
               % Agenda 2030
             </chartsNumberCounter>
-
-
           </div>
 
           <div v-else>
             <chartsNumberCounter
-                v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="msToHours(queryDuration)"
-                :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
-              >
-                horas Agenda 2030
-              </chartsNumberCounter>
+              v-if="globalCounterData != null && timeSpanCounterData != null"
+              :varValue="msToHours(queryDuration)"
+              :maxValue="msToHours(timeSpanCounterData.tagged_duration)"
+            >
+              horas Agenda 2030
+            </chartsNumberCounter>
           </div>
 
           <div>
-              <chartsNumberCounter
-                v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="filteredProgramsCount"
-                :maxValue="timeSpanCounterData.programs_count"
-              >
-                programas
-              </chartsNumberCounter>
-            </div>
-            <div>
-              <chartsNumberCounter
-                v-if="globalCounterData != null && timeSpanCounterData != null"
-                :varValue="filteredEpisodesCount"
-                :maxValue="timeSpanCounterData.episodes_count"
-              >
-                episodios
-              </chartsNumberCounter>
-            </div>
+            <chartsNumberCounter
+              v-if="globalCounterData != null && timeSpanCounterData != null"
+              :varValue="filteredProgramsCount"
+              :maxValue="timeSpanCounterData.programs_count"
+            >
+              programas
+            </chartsNumberCounter>
+          </div>
+          <div>
+            <chartsNumberCounter
+              v-if="globalCounterData != null && timeSpanCounterData != null"
+              :varValue="filteredEpisodesCount"
+              :maxValue="timeSpanCounterData.episodes_count"
+            >
+              episodios
+            </chartsNumberCounter>
+          </div>
 
-            <div>
-              <FiltersArea></FiltersArea>
-            </div>
-
+          <div>
+            <FiltersArea></FiltersArea>
+          </div>
         </div>
         <!-- end second row -->
-
-  
       </div>
 
       <!---- evolution in detail-->
@@ -336,7 +332,7 @@ const mustLoadBase = ref({
 });
 
 /** following data depends only on timespan***/
-const { timespan, channels, sdgActive, programs, showPercentage } =
+const { timespan, channels, sdgActive, programs, showPercentage, radioOrTV } =
   storeToRefs(filters);
 
 const { data: globalCounterData } = await useAsyncData(() =>
@@ -351,14 +347,22 @@ const { data: timeSpanCounterData } = await useAsyncData(
   `stats${jsDatetoApiString(timespan.value[0])}-${jsDatetoApiString(
     timespan.value[1]
   )}`,
-  () =>
-    apiRepo.getStatsCounter(
+  () => {
+    const mediaTypeParameter =
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t";
+    return apiRepo.getStatsCounter(
       jsDatetoApiString(timespan.value[0]),
-      jsDatetoApiString(timespan.value[1])
-    ),
+      jsDatetoApiString(timespan.value[1]),
+      mediaTypeParameter
+    );
+  },
   {
     immediate: true,
-    watch: [timespan],
+    watch: [timespan, radioOrTV],
   }
 );
 
@@ -368,7 +372,9 @@ const evolutionStackedQueryString = computed(() => {
     timespan.value[0]
   )}-${jsDatetoApiString(timespan.value[1])}-channels-${filters.channels.join(
     "-"
-  )}-sdg${filters.sdgActive.join("-")}-programs${filters.programs.join("-")}`;
+  )}-sdg${filters.sdgActive.join("-")}-programs${filters.programs.join("-")}-${
+    filters.radioOrTV
+  }`;
 });
 
 const { data: evolutionStackedData } = await useAsyncData(
@@ -379,12 +385,19 @@ const { data: evolutionStackedData } = await useAsyncData(
     if (cacheData) {
       return cacheData;
     }
+    const mediaTypeParameter =
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t";
     const newData = await apiRepo.getEvolutionStacked(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       filters.sdgActive,
       filters.channels,
-      filters.programs
+      filters.programs,
+      mediaTypeParameter
     );
     cache.add(key, newData);
     return newData;
@@ -414,7 +427,7 @@ const sdgQueryString = computed(() => {
     timespan.value[1]
   )}
   -programs${filters.programs.join("-")}
-  -channels${filters.channels.join("-")}`;
+  -channels${filters.channels.join("-")}-${filters.radioOrTV}`;
 });
 
 const { data: sdgData } = await useAsyncData(
@@ -424,7 +437,12 @@ const { data: sdgData } = await useAsyncData(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       filters.channels,
-      filters.programs
+      filters.programs,
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t"
     ),
   {
     immediate: true,
@@ -441,17 +459,24 @@ const programasQueryString = computed(() => {
   )}-${jsDatetoApiString(timespan.value[1])}-channels-${filters.channels.join(
     "-"
   )}
-  -sdg${sdgActive.value.join("-")}`;
+  -sdg${sdgActive.value.join("-")}-${filters.radioOrTV}`;
 });
 
 const { data: programsData } = await useAsyncData(
   programasQueryString.value,
   () => {
+    const mediaTypeParameter =
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t";
     return apiRepo.getPrograms(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
       channels.value,
-      sdgActive.value
+      sdgActive.value,
+      mediaTypeParameter
     );
   },
   {
@@ -469,7 +494,7 @@ const channelsQueryString = computed(() => {
   )}-${jsDatetoApiString(timespan.value[1])}-channels-${filters.channels.join(
     "-"
   )}
-  -sdg${sdgActive.value.join("-")}`;
+  -sdg${sdgActive.value.join("-")}-${filters.radioOrTV}`;
 });
 
 const { data: channelsData } = await useAsyncData(
@@ -478,7 +503,12 @@ const { data: channelsData } = await useAsyncData(
     apiRepo.getChannels(
       jsDatetoApiString(timespan.value[0]),
       jsDatetoApiString(timespan.value[1]),
-      sdgActive.value
+      sdgActive.value,
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t"
     ),
   {
     immediate: true,
@@ -495,7 +525,7 @@ const tagsQueryString = computed(() => {
     timespan.value[1]
   )}-channels-${filters.channels.join("-")}
   -sdg${sdgActive.value.join("-")}
-  -programs${filters.programs.join("-")}`;
+  -programs${filters.programs.join("-")}-${filters.radioOrTV}`;
 });
 
 const { data: tagsData } = await useAsyncData(
@@ -511,7 +541,12 @@ const { data: tagsData } = await useAsyncData(
       jsDatetoApiString(timespan.value[1]),
       filters.sdgActive,
       filters.channels,
-      filters.programs
+      filters.programs,
+      filters.radioOrTV === MediaType.ALL
+        ? undefined
+        : filters.radioOrTV === MediaType.RADIO
+        ? "r"
+        : "t"
     );
     cache.add(key, newData);
     return newData;

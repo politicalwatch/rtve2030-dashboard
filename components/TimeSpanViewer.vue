@@ -139,10 +139,7 @@
         return scaleTime([firstDay.value, lastDay.value], [0, width.value]);
     })
 
-    const yyToDispay = computed(()=> {
-        console.log("dataset ..........")
-        console.log(props.dataset)
-        // return array of YYYY
+    const yyToDispay = computed(()=> {        // return array of YYYY
         const yfrom = new Date(props.dataset.initObj).getFullYear();
         const yto = new Date(props.dataset.endObj).getFullYear();
         const length = (yto - yfrom) + 1;
