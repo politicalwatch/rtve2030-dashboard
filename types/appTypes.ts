@@ -1,3 +1,7 @@
+export enum MediaType {
+  TV = "tv",
+  RADIO = "radio",
+}
 export interface TableChannels {
   name: Channels;
   sdgs: SdgTopic[];
@@ -7,7 +11,7 @@ export interface TableChannels {
   queryDuration: number;
   programs: number;
   basePrograms?: number; // tbd check
-  hasActiveFilters:boolean;
+  hasActiveFilters: boolean;
   showQueryDuration?: boolean;
 }
 
@@ -19,7 +23,7 @@ export interface TablePrograms {
   tagged_duration: number;
   maxTotalDuration: number;
   queryDuration?: number;
-  hasActiveFilters:boolean;
+  hasActiveFilters: boolean;
 }
 
 export interface TableTags {
@@ -29,7 +33,6 @@ export interface TableTags {
   maxTotalDuration: number;
   filtered_duration: number;
   hasActiveFilters: boolean;
-
 }
 
 export interface TableSdg {
@@ -44,7 +47,6 @@ export interface TableSdg {
   totalSdgDurationCalculatedBase: number;
   totalSdgDurationCalculatedQuery: number;
 }
-
 
 export interface TableGoals {
   goal: string;

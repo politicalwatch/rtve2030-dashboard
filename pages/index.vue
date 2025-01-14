@@ -4,8 +4,46 @@
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
         <div class="flex gap-4">
-          <img src="/img/tve.svg" alt="logo" class="h-6" />
-          <img src="/img/rne.svg" alt="logo" class="h-6" />
+          <button
+            type="button"
+            aria-label="Cambio a modo TV"
+            class="cursor-pointer transition-all duration-200"
+            :class="{
+              'opacity-20 h-5': filters.radioOrTV === MediaType.RADIO,
+              'h-8': filters.radioOrTV === MediaType.TV
+            }"
+            @click="filters.radioOrTV = MediaType.TV"
+          >
+            <img 
+              src="/img/tve.svg" 
+              alt="TVE logo"
+              class="transition-all duration-200"
+              :class="{
+                'h-5': filters.radioOrTV === MediaType.RADIO,
+                'h-8': filters.radioOrTV === MediaType.TV
+              }"
+            />
+          </button>
+          <button
+            type="button" 
+            aria-label="Cambio a modo Radio"
+            class="cursor-pointer transition-all duration-200"
+            :class="{
+              'opacity-20 h-5': filters.radioOrTV === MediaType.TV,
+              'h-8': filters.radioOrTV === MediaType.RADIO
+            }"
+            @click="filters.radioOrTV = MediaType.RADIO"
+          >
+            <img
+              src="/img/rne.svg"
+              alt="RNE logo"
+              class="transition-all duration-200"
+              :class="{
+                'h-5': filters.radioOrTV === MediaType.TV,
+                'h-8': filters.radioOrTV === MediaType.RADIO
+              }"
+            />
+          </button>
         </div>
       </div>
       <div class="flex items-center">
@@ -277,7 +315,7 @@ definePageMeta({
   middleware: ["auth-user"],
 });
 import { FileSpreadsheet } from "lucide-vue-next";
-
+import { MediaType } from "~/types/appTypes";
 import { cloneDeep } from "lodash";
 import { sum } from "d3";
 const { $api } = useNuxtApp();

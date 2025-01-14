@@ -1,3 +1,5 @@
+import { MediaType } from "~/types/appTypes";
+
 export const useFiltersStore = defineStore("filters", () => {
   const timespan = ref<[Date, Date]>([new Date(initDateString), new Date()]);
 
@@ -5,6 +7,9 @@ export const useFiltersStore = defineStore("filters", () => {
     resetFilters();
     timespan.value = newTimespan;
   }
+
+
+  const radioOrTV = ref<MediaType>(MediaType.TV);
 
   const sdgActive = ref<SdgTopic[]>([]);
   const channels = ref<Channels[]>([]);
@@ -47,9 +52,11 @@ export const useFiltersStore = defineStore("filters", () => {
     programRemovedFlag.value = false;
     channelRemovedFlag.value = false;
   }
+
   return {
     timespan: readonly(timespan),
     updateTimespan,
+    radioOrTV,
     sdgActive,
     channels,
     hasActiveFilters,
@@ -63,5 +70,6 @@ export const useFiltersStore = defineStore("filters", () => {
     reportType,
     yearCompare,
     showPercentage,
+    
   };
 });
