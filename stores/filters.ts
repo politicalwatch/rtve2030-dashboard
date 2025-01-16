@@ -12,7 +12,11 @@ export const useFiltersStore = defineStore("filters", () => {
   const radioOrTV = ref<MediaType>(MediaType.ALL);
 
   function updateRadioOrTV(newRadioOrTV: MediaType) {
-    resetFilters();
+      channels.value = [];
+      programs.value = [];
+      programRemovedFlag.value = true;
+      channelRemovedFlag.value = true;
+
     if (newRadioOrTV === MediaType.ALL) {
       radioOrTV.value = newRadioOrTV;
     } else if (radioOrTV.value === newRadioOrTV) {

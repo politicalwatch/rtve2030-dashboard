@@ -3,50 +3,29 @@
     <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
-        <div class="flex">
-          <button
-            type="button"
-            aria-label="Cambio a modo TV"
-            class="cursor-pointer transition-all duration-200 border border-black rounded-l-lg px-6 py-2 h-8"
-            :class="{
-              'opacity-20': filters.radioOrTV === MediaType.RADIO,
-              'bg-gray-100':
-                filters.radioOrTV === MediaType.TV ||
-                filters.radioOrTV === MediaType.ALL,
-            }"
-            @click="
-              filters.updateRadioOrTV(MediaType.TV);
-              
-            "
-          >
+        <div class="flex gap-8">
+          <div class="flex items-center gap-2">
             <img
               src="/img/tve.svg"
               alt="TVE logo"
               class="transition-all duration-200 h-4"
-              :class="{}"
+              :class="{
+                'opacity-20': !showTV,
+              }"
             />
-          </button>
-          <button
-            type="button"
-            aria-label="Cambio a modo Radio"
-            class="cursor-pointer transition-all duration-200 border border-black rounded-r-lg px-4 py-2 h-8"
-            :class="{
-              'opacity-20': filters.radioOrTV === MediaType.TV,
-              'bg-gray-100':
-                filters.radioOrTV === MediaType.RADIO ||
-                filters.radioOrTV === MediaType.ALL,
-            }"
-            @click="
-              filters.updateRadioOrTV(MediaType.RADIO);        
-            "
-          >
+            <Switch v-model:checked="showTV" />
+          </div>
+          <div class="flex items-center gap-2">
             <img
               src="/img/rne.svg"
               alt="RNE logo"
               class="transition-all duration-200 h-4"
-              :class="{}"
+              :class="{
+                'opacity-20': !showRadio,
+              }"
             />
-          </button>
+            <Switch v-model:checked="showRadio" />
+          </div>
         </div>
       </div>
       <div class="flex items-center">
@@ -618,7 +597,7 @@ const baseTaggedDuration = computed(() => {
  * Base data means the data used for charts when no filter is applied
  * It is important because data availabie in this page is  always updated with filters
  *  */
-watch(timespan, () => {
+watch([timespan, radioOrTV], () => {
   mustLoadBase.value.globalCounterData = true;
   mustLoadBase.value.evolutionData = true;
   mustLoadBase.value.timeSpanCounterData = true;
@@ -673,6 +652,25 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+// adjust TVE and RNE switch
+const showRadio = ref(true);
+const showTV = ref(true);
+
+watch([showRadio, showTV], () => {
+  if (showRadio.value === false && showTV.value === false) {
+    showRadio.value = true;
+    showTV.value = true;
+  }
+
+  if (showRadio.value && showTV.value) {
+    filters.updateRadioOrTV(MediaType.ALL);
+  } else if (showRadio.value) {
+    filters.updateRadioOrTV(MediaType.RADIO);
+  } else if (showTV.value) {
+    filters.updateRadioOrTV(MediaType.TV);
+  }
+});
 
 // --- inject data to children ---
 provide("queryDuration", queryDuration);

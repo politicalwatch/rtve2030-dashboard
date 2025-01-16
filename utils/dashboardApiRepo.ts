@@ -118,7 +118,6 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     program?: string[],
     programType?: 'r' | 't'
   ): Promise<StatsEvolutionStacked> {
-    console.log('calling api 2');
     const query = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
@@ -127,7 +126,6 @@ export const dashboardApiRepo = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       ...(program && { program }),
       ...(programType && { program_type: programType }),
     };
-    console.log(query);
     return fetch<StatsEvolutionStacked>("/stats/evolution-stacked", { query });
   },
   async getReportData(startDate?: string, endDate?: string): Promise<any> {
