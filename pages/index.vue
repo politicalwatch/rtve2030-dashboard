@@ -3,29 +3,8 @@
     <header class="container flex justify-between bg-white mb-2">
       <div class="flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
-        <div class="flex gap-8">
-          <div class="flex items-center gap-2">
-            <img
-              src="/img/tve.svg"
-              alt="TVE logo"
-              class="transition-all duration-200 h-4"
-              :class="{
-                'opacity-20': !showTV,
-              }"
-            />
-            <Switch v-model:checked="showTV" />
-          </div>
-          <div class="flex items-center gap-2">
-            <img
-              src="/img/rne.svg"
-              alt="RNE logo"
-              class="transition-all duration-200 h-4"
-              :class="{
-                'opacity-20': !showRadio,
-              }"
-            />
-            <Switch v-model:checked="showRadio" />
-          </div>
+        <div class="flex ">
+          <CustomUiTypeSwitcher />
         </div>
       </div>
       <div class="flex items-center">
@@ -653,24 +632,24 @@ watch(
   { deep: true, immediate: true }
 );
 
-// adjust TVE and RNE switch
-const showRadio = ref(true);
-const showTV = ref(true);
+// // adjust TVE and RNE switch
+// const showRadio = ref(true);
+// const showTV = ref(true);
 
-watch([showRadio, showTV], () => {
-  if (showRadio.value === false && showTV.value === false) {
-    showRadio.value = true;
-    showTV.value = true;
-  }
+// watch([showRadio, showTV], () => {
+//   if (showRadio.value === false && showTV.value === false) {
+//     showRadio.value = true;
+//     showTV.value = true;
+//   }
 
-  if (showRadio.value && showTV.value) {
-    filters.updateRadioOrTV(MediaType.ALL);
-  } else if (showRadio.value) {
-    filters.updateRadioOrTV(MediaType.RADIO);
-  } else if (showTV.value) {
-    filters.updateRadioOrTV(MediaType.TV);
-  }
-});
+//   if (showRadio.value && showTV.value) {
+//     filters.updateRadioOrTV(MediaType.ALL);
+//   } else if (showRadio.value) {
+//     filters.updateRadioOrTV(MediaType.RADIO);
+//   } else if (showTV.value) {
+//     filters.updateRadioOrTV(MediaType.TV);
+//   }
+// });
 
 // --- inject data to children ---
 provide("queryDuration", queryDuration);
