@@ -44,22 +44,6 @@
       </div>
     </div>
 
-
-    <!-- <div class="flex justify-start gap-2 text-2xs">
-      <button
-        v-for="chan in Channels"
-        class="w-6 text-center hover:brightness-150 hover:shadow-md"
-        :class="[
-          noChannelSelection || filterChannels.includes(chan)
-            ? ''
-            : 'grayscale',
-        ]"
-        @click="channelClickHandler(chan)"
-      >
-        <img :src="`/img/channels/${chan}.png`" :alt="'channel-icon' + chan" />
-      </button>
-    </div> -->
-
     <DataTableBaseTable
       :columns="columns"
       :data="dataForTable"

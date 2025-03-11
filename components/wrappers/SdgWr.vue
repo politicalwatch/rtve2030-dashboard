@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="grid grid-cols-5 gap-8">
-      <div class="col-span-2">
+    <div class="grid grid-cols-3 xl:grid-cols-5 gap-8">
+      <div class="col-span-3 xl:col-span-2">
         <div class="grid grid-cols-[32px_1fr] gap-4">
           <img
             src="/img/ods_icon.svg"

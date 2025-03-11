@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="grid grid-cols-5 gap-8">
+    <div class="grid grid-cols-3 xl:grid-cols-5 gap-8">
 
       <div class="col-span-3">
 
@@ -59,13 +59,13 @@
       </div>
 
       <!-- cloud -->
-      <div class="col-span-2 flex flex-col h-full border-t border-black">
+      <div class="col-span-3 xl:col-span-2 flex flex-col h-full border-t border-black">
         
         <div class="flex gap-1 items-center text-2xs font-mono mt-4 justify-end">
           <Switch v-model:checked="colorBySdg" /> color por ODS
         </div>
 
-        <div ref="wordcloudContainer" class="w-full h-full">
+        <div ref="wordcloudContainer" class="w-full h-full min-h-96">
           <VueWordCloud
             :words="topWords"
             :color="colorfn"

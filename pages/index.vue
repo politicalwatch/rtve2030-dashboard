@@ -17,15 +17,9 @@
       </div>
     </header>
 
-    <section class="">
+    <section>
       <div class="container py-4">
-        <!--
-        <h1 class="text-sm uppercase font-bold font-mono">
-          vista global y selección de periodo de estudio
-        </h1>
-        -->
-
-        <div class="grid grid-cols-5 gap-8 my-4">
+        <div class="grid grid-cols-3 lg:grid-cols-5 gap-8 my-4">
           <div class="border-t border-black">
             <DateSelector />
           </div>
@@ -44,7 +38,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-5 gap-8">
+        <div class="grid grid-cols-3 lg:grid-cols-5 gap-8">
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
@@ -112,18 +106,12 @@
     <!--- end of global stats  -->
 
     <section class="mt-6">
-      <!--
-      <div class="container mb-1">
-        <h1 class="text-sm uppercase font-bold font-mono">
-          datos del periodo seleccionado 
-        </h1>
-      </div>
-      -->
 
-      <div class="container sticky top-0 z-40 bg-white">
+      <div class="container lg:sticky lg:top-0 lg:z-40 bg-white">
+
         <!-- first row-->
-        <div class="pt-4 grid grid-cols-5 gap-8">
-          <div class="col-span-2">
+        <div class="pt-4 grid grid-cols-3 lg:grid-cols-5 gap-8">
+          <div class="col-span-3 lg:col-span-2">
             <div class="flex justify-between">
               <p class="font-mono text-sm">
                 desde el
@@ -150,7 +138,7 @@
         </div>
 
         <!-- second row -->
-        <div class="py-4 grid grid-cols-5 gap-8">
+        <div class="py-4 grid grid-cols-3 lg:grid-cols-5 gap-8">
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
@@ -211,10 +199,7 @@
 
       <!---- evolution in detail-->
       <div class="container">
-        <!--
-       frequency
-        -->
-
+       
         <div class="mt-16">
           <WrappersSdgWr
             v-if="sdgData != null && baseDataStore.sdgData != null"
@@ -228,8 +213,8 @@
           </WrappersSdgWr>
         </div>
 
-        <div class="mt-16 grid grid-cols-5 gap-8">
-          <div class="col-span-2">
+        <div class="mt-16 grid grid-cols-3 xl:grid-cols-5 gap-8">
+          <div class="col-span-3 xl:col-span-2">
             <WrappersChannelsWr
               v-if="channelsData != null && baseDataStore.channelsData != null"
               :channelsData="channelsData"
