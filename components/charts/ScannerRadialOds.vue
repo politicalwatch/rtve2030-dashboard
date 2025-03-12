@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative w-full" ref="svgContainer">
     <svg class="radialView" :width="width" :height="canvasHeight">
       <g :transform="`translate(${width / 2}, ${canvasHeight / 2})`">
         <path
@@ -110,6 +110,12 @@ import {
   sum,
 } from "d3";
 
+import { useElementSize } from "@vueuse/core";
+const svgContainer = ref(null);
+
+const { width: availableWidth, height: availableHeight } =
+  useElementSize(svgContainer);
+
 const props = defineProps({
   result: {
     // type StatsSdg
@@ -125,10 +131,12 @@ const props = defineProps({
     required: true,
     default: () => ({}),
   },
+  /*
   availableWidth: {
     type: Number,
     default: 400,
   },
+  */
   mouseOverElement: {
     type: Object || null,
     default: null,
@@ -146,9 +154,12 @@ const noSdgSelection = computed(() => props.sdgActive.length === 0);
 
 const emits = defineEmits(["update:mouseOverElement", "update:clickedElement"]);
 
+// now responsive
 const width = computed(() => {
-  return Math.min(props.availableWidth, 500);
+  // return Math.min(props.availableWidth, 500);
+  return Math.min(availableWidth.value, 500);
 });
+
 const canvasHeight = computed(() => {
   return width.value;
 });

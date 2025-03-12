@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="grid grid-cols-3 xl:grid-cols-5 gap-8">
-      <div class="col-span-3 xl:col-span-2">
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-8">
+      <div class="col-span-1 md:col-span-3 xl:col-span-2">
         <div class="grid grid-cols-[32px_1fr] gap-4">
           <img
             src="/img/ods_icon.svg"
@@ -41,10 +41,10 @@
               </TooltipProvider>
             </div>
 
-            <div class="flex justify-start gap-2 text-2xs mt-3">
+            <div class="md:flex justify-start gap-2 text-2xs mt-3">
               <button
                 v-for="(longname, code, i) in SdgTopic"
-                class="border-b-4 w-5 text-center hover:border-b-2 font-bold"
+                class="border-b-4 w-5 text-center hover:border-b-2 font-bold mx-1 md:mx-0"
                 :style="{
                   'border-color':
                     noSdgSelection || sdgActive.includes(longname)
@@ -74,7 +74,7 @@
         </ChartsScannerRadialOds>
       </div>
 
-      <div class="col-span-3">
+      <div class="md:col-span-3">
         <div class="grid grid-cols-[32px_1fr] gap-4">
           <img
             src="/img/metas.svg"

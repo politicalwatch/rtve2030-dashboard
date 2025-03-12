@@ -1,12 +1,15 @@
 <template>
   <div class="dashboard-content mt-6">
-    <header class="container flex justify-between bg-white mb-2">
-      <div class="flex justify-start items-center gap-16">
+
+    <header class="container flex flex-col md:flex-row justify-between bg-white mb-2">
+      
+      <div class="md:flex justify-start items-center gap-16">
         <img src="/img/logo.svg" alt="logo" class="h-16" />
-        <div class="flex ">
+        <div class="flex my-4 md:my-0">
           <CustomUiTypeSwitcher />
         </div>
       </div>
+
       <div class="flex items-center">
         <NuxtLink
           to="/reports"
@@ -19,7 +22,7 @@
 
     <section>
       <div class="container py-4">
-        <div class="grid grid-cols-3 lg:grid-cols-5 gap-8 my-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 my-4">
           <div class="border-t border-black">
             <DateSelector />
           </div>
@@ -29,7 +32,7 @@
             <PeriodSelector></PeriodSelector>
           </div>
 
-          <div class="col-span-3 border-t border-black pt-4">
+          <div class="md:col-span-3 border-t border-black pt-4">
             <chartsSimpleAreaChart
               v-if="evolutionData != null"
               :statsData="evolutionData"
@@ -38,7 +41,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-3 lg:grid-cols-5 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
@@ -110,8 +113,8 @@
       <div class="container lg:sticky lg:top-0 lg:z-40 bg-white">
 
         <!-- first row-->
-        <div class="pt-4 grid grid-cols-3 lg:grid-cols-5 gap-8">
-          <div class="col-span-3 lg:col-span-2">
+        <div class="pt-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div class="md:col-span-3 lg:col-span-2">
             <div class="flex justify-between">
               <p class="font-mono text-sm">
                 desde el
@@ -138,7 +141,7 @@
         </div>
 
         <!-- second row -->
-        <div class="py-4 grid grid-cols-3 lg:grid-cols-5 gap-8">
+        <div class="py-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div>
             <chartsNumberCounter
               v-if="globalCounterData != null && timeSpanCounterData != null"
